@@ -1,0 +1,503 @@
+@import "tailwindcss"; /* * { */ /* outline: 1px solid red; */ /* } */ /* Base Styles */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #0a0a0a;
+  color: #e5e5e5;
+  overflow: hidden;
+  cursor: crosshair;
+  height: 100%;
+  width: 100vw;
+} /* The base class for any text you want to have this effect */
+.chromatic-text {
+  position: relative;
+  display: inline-block;
+  color: inherit; /* Respects your text-zinc-500 or low opacity classes */
+} /* Creating the Red and Blue "Ghost" layers */
+.chromatic-text::before,
+.chromatic-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.6; /* Keeps it subtle */
+  z-index: -1;
+} /* The Red Shift */
+.chromatic-text::before {
+  color: #ff0000;
+  transform: translateX(-1.5px);
+  mix-blend-mode: screen; /* Blends colors back to white where they overlap */
+} /* The Blue Shift */
+.chromatic-text::after {
+  color: #0000ff;
+  transform: translateX(1.5px);
+  mix-blend-mode: screen;
+} /* Optional: Make it jitter on hover (Arknights style) */
+.chromatic-text:hover::before {
+  animation: glitch-1 0.3s infinite;
+}
+.chromatic-text:hover::after {
+  animation: glitch-2 0.3s infinite reverse;
+}
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.8s;
+}
+.loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loading-text {
+  font-family: "JetBrains Mono", monospace; /* font-size: 0.875rem; */
+  font-size: 1.8rem;
+  letter-spacing: 0.4em;
+  color: #ddd;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+.loading-bar-container {
+  width: 800px;
+  height: 1px;
+  background: #222;
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;
+}
+.loading-bar {
+  height: 100%;
+  background: #fff;
+  width: 0%; /* transition: width 0.5s ease-out; */
+  animation: loadProgress 0.8s ease-out forwards;
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.6);
+}
+@keyframes loadProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+.crt-noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+  overflow: hidden;
+}
+.crt-noise::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  animation: noiseMove 0.5s infinite steps(2);
+}
+@keyframes noiseMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5%, -10%);
+  }
+  20% {
+    transform: translate(-15%, 5%);
+  }
+  30% {
+    transform: translate(7%, -25%);
+  }
+  40% {
+    transform: translate(-5%, 25%);
+  }
+  50% {
+    transform: translate(-15%, 10%);
+  }
+  60% {
+    transform: translate(15%, 0%);
+  }
+  70% {
+    transform: translate(0%, 15%);
+  }
+  80% {
+    transform: translate(3%, 35%);
+  }
+  90% {
+    transform: translate(-10%, 10%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10000;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 6px,
+    /* crt line fineness. (how noticable the crt lines are) */ transparent 6px
+  );
+  animation: flicker 0.2s infinite;
+}
+@keyframes flicker {
+  0% {
+    opacity: 0.45;
+  }
+  5% {
+    opacity: 0.32;
+  }
+  10% {
+    opacity: 0.78;
+  }
+  15% {
+    opacity: 0.23;
+  }
+  20% {
+    opacity: 0.67;
+  }
+  50% {
+    opacity: 0.34;
+  }
+  80% {
+    opacity: 0.99;
+  }
+  100% {
+    opacity: 0.45;
+  }
+}
+.scan-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 99;
+  animation: scan 8s linear infinite;
+  pointer-events: none;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.24);
+}
+@keyframes scan {
+  /* Horizontal scan-lines */
+  0% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#scroll-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  width: 100vw;
+  height: 100vh;
+}
+.snap-slide {
+  flex: 0 0 100vh;
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+section {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+}
+.stairs-piece {
+  transition:
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 3s ease;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 10;
+}
+.left-piece {
+  transform: translateX(18%) translateY(50px);
+}
+.middle-piece {
+  transform: translateX(0%) translateY(-15px);
+}
+.right-piece {
+  transform: translateX(-18%) translateY(50px);
+} /* When blog section becomes active */
+#blog.active .stairs-piece {
+  transform: translateX(0) translateY(0);
+  opacity: 0.24; /* This one alone controls opacity */
+}
+.clear-stairs {
+  opacity: 1;
+  transition: opacity 1s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+#blog.active .clear-stairs {
+  opacity: 0.01;
+}
+.projects-reveal-wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden; /* Essential to hide the mask as it slides away */
+  pointer-events: none;
+}
+.projects-reveal {
+  position: absolute; /* Start the div offset upwards so the transparent bottom is already sitting over the image */
+  top: -150vh;
+  left: 0;
+  width: 100%;
+  height: 250vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 80%,
+    rgba(0, 0, 0, 1) 100% /* BOTTOM: Long, soft transparency leads the reveal */
+  ); /* Movement is still downward */
+  transform: translateY(
+    0
+  ); /* Increased duration to 6s to remove the 'hasty' feel */
+  transition: transform 8s cubic-bezier(0.2, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 5;
+}
+.projects-blur-mask {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(4px); /* Strength of the blur */
+  -webkit-mask-image: linear-gradient(
+    /* How do I get a blur gradient? 4px blur strength at the top, 40px blur strength at the bottom or something like that */
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 80%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 80%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 2;
+}
+.projects-reveal.revealed {
+  /* Move down to clear the screen */
+  transform: translateY(250vh);
+}
+#projects-bg {
+  transform: scale(1.1);
+  transition: transform 1s ease-out;
+}
+#projects.active #projects-bg {
+  transform: scale(1);
+}
+.playing-label {
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+}
+.playing-label.active {
+  opacity: 1;
+}
+.menu-item {
+  position: relative;
+  transition: color 0.3s ease;
+}
+@keyframes textBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+.menu-item:hover {
+  color: #ffffff; /* color: transparent; */
+  text-shadow: 0 0 24px rgba(255, 255, 255, 1);
+  animation: textBlink 0.01s steps(2, start) infinite; /* Flickering (glitchy?) look for menu-items by blinking super fast */
+  cursor: pointer;
+  filter: url(#chromatic-aberration) drop-shadow(0 0 2px rgba(255, 255, 255, 1));
+}
+.main-bio {
+  transition: transition 1.2s;
+  z-index: 10;
+}
+.bio-shifted {
+  /* transform: translateX(-80px); */
+  transform: translateX(-64%);
+}
+.bio-margin-line {
+  position: absolute;
+  left: -38px;
+  top: 64px;
+  width: 1px;
+  height: 100%; /* Doesn't control height */
+  background: #ddd;
+  transform-origin: top;
+  transform: scaleY(0);
+  transition: transform 1.2s ease;
+}
+.line-draw {
+  transform: scaleY(1);
+}
+.glitch-text {
+  position: relative;
+  display: inline-block; /* inline-block, inline-flex. What the fuck is the difference */ /* text-align: center; */
+  color: #444444;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* opacity: 0; */
+  background: black;
+  display: none; /* align-items: center; */ /* text-align: center; */
+}
+.glitch-text:hover::before {
+  animation: glitch-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: #fff;
+  z-index: 1;
+  opacity: 0.8;
+  display: block;
+}
+.glitch-text:hover::after {
+  animation: glitch-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both
+    infinite;
+  color: #fff;
+  z-index: 2;
+  opacity: 0.8;
+  display: block;
+}
+@keyframes glitch-1 {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+@keyframes glitch-2 {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(2px, -2px);
+  }
+  40% {
+    transform: translate(2px, 2px);
+  }
+  60% {
+    transform: translate(-2px, -2px);
+  }
+  80% {
+    transform: translate(-2px, 2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+#home {
+  position: relative;
+  background-color: black; /* Ensure this is the base */
+} /* By default, hide the castle when we aren't looking at Home */
+#lowerCastle {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+} /* Only show it if the home section has the 'triggered' class AND is visible */
+#home.triggered.active #lowerCastle {
+  opacity: 0.2;
+}
+#castleVeil {
+  opacity: 1;
+}
+#castleVeil.hidden-veil {
+  opacity: 0;
+}
+#intro-content,
+#main-bio {
+  position: relative;
+  z-index: 10; /* Ensure text is always on top of the image */
+}
+.project-portal {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Add this to your existing CSS block */
+#blog.portals-visible .blog-portal,
+#projects.portals-visible .blog-portal {
+  opacity: 1;
+}
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 20% 33.33%;
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition:
+    transform 1.2s ease,
+    opacity 0.8s ease;
+}
+/* Add this to keep the preview image clean during swaps */
+#preview-img {
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* Ensure the log list doesn't show a scrollbar but remains scrollable */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

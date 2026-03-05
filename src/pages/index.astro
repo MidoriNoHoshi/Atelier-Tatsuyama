@@ -1,11 +1,625 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import ScrollIndicator from "../components/ScrollIndicator.jsx";
+import "../styles/global.css";
+import AudioVisualizer from "../components/AudioVisualizer.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import defautImg from "../assets/default.jpg";
+
+import homeLower from "../assets/Home(Lower)Gradient2.png";
+
+import dizzystarsLpiece from "../assets/dizzystairsLpiece.png";
+import dizzystarsRpiece from "../assets/dizzystairsRpiece.png";
+import dizzystarsMpiece from "../assets/dizzystairsMpiece.png";
+import clearstairs from "../assets/clearstairs.jpg";
+import log1 from "../assets/log1.jpg";
+import log2 from "../assets/log2.jpg";
+import log3 from "../assets/log3.jpg";
+import log4 from "../assets/log4.png";
+
+const blogEntries = [
+  { id: '001', title: 'Creation', sub: 'The creation of this website', img: log1 },
+  { id: '002', title: 'Memory', sub: 'The memory of what?', img: log2 },
+  { id: '003', title: 'Introspection', sub: 'Looking back', img: log3 },
+  { id: '004', title: 'Hyprland', sub: 'Ricing and minimalism', img: log4 },
+];
+
+// Grid dimensions
+const cols = 12;
+const rows = 6;
+
+function getRandomPositions(count) {
+  let cells = [];
+  for (let r = 1; r <= rows; r++) {
+    for (let c = 1; c <= cols; c++) {
+      cells.push({ row: r, col: c });
+    }
+  }
+  // Shuffle and pick the first 'count' cells
+  return cells.sort(() => Math.random() - 0.5).slice(0, count);
+}
+// const positions = getRandomPositions(blogEntries.length);
+
+const githubUsername = "MidoriNoHoshi";
+const githubProfile = `https://github.com/${githubUsername}`;
+const email = "nemitatsu@proton.me";
+
+import projectsBg from "../assets/ProjectsRemoved.png";
+const projects = [
+  {
+    id: 'p1',
+    title: "JaptoAnki",
+    desc: "Japanese OCR to Anki flashcards.",
+    github: "https://github.com/MidoriNoHoshi/JaptoAnki",
+    img: log1, // Or a specific project screenshot
+    video: "/videos/japtoanki.mp4" // Optional video path
+  },
+  {
+    id: 'p2',
+    title: "StowDotfiles",
+    desc: "Minimalistic Hyprland configuration.",
+    github: "https://github.com/MidoriNoHoshi/StowDotfiles_Arch",
+    img: log4,
+  },
+  {
+    id: 'p3',
+    title: "Kyubi",
+    desc: "Screen aware AI assistant.",
+    link: "https://www.kyubi.dev/",
+    img: log2,
+  }
+];
+
+// 2. Reuse the Grid Logic
+const projectCols = 5;
+const projectRows = 3;
+
+import contactBg from "../assets/contactBg.png";
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aki Tatsu | Personal Website</title>
+  </head>
+  <body>
+    <div id="loading-screen" class="loading-screen">
+      <div data-text="ようこそう！"class="chromatic-text loading-text tracking-[2rem] text-zinc-500 uppercase text-9xl">ようこそう！</div>
+      <div class="loading-bar-container">
+        <div id="loading-bar" class="loading-bar"></div>
+      </div>
+    </div>
+
+    <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+      <defs>
+        <filter id="subtle-aberration" x="-15%" y="-15%" width="130%" height="130%">
+          <feOffset in="SourceGraphic" dx="2.5" dy="0" result="red-shift" />
+          <feOffset in="SourceGraphic" dx="-2.5" dy="0" result="blue-shift" />
+          
+          <feColorMatrix in="red-shift" type="matrix" 
+            values="1 0.5 0 0 0  0 0.2 0 0 0  0 0 0 0 0  0 0 0 0.6 0" result="red-fringe"/>
+          <feColorMatrix in="blue-shift" type="matrix" 
+            values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0" result="blue-fringe"/>
+          
+          <feGaussianBlur in="red-fringe" stdDeviation="0.2" result="red-blur" />
+          <feGaussianBlur in="blue-fringe" stdDeviation="0.2" result="blue-blur" />
+          
+          <feMerge result="fringe-combined">
+            <feMergeNode in="red-blur" />
+            <feMergeNode in="blue-blur" />
+          </feMerge>
+          
+          <feMerge>
+          <!-- <feMergeNode in="red-fringe" /> <feMergeNode in="blue-fringe"/> -->
+            <feMergeNode in="fringe-combined" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+    <div class="crt-noise"></div>
+    <div class="crt-overlay"></div>
+    <div class="crt-screen">
+      <main class="opacity-0 transition-opacity duration-1000 ease-in-out" id="main-content">
+        <div class="scan-line"></div>
+          <div class="fixed inset-0 pointer-events-none z-90 flex flex-col justify-between p-6 md:p-12">
+            <header class="flex items-center justify-between w-full pointer-events-auto">
+              <div class="flex flex-col items-start gap-2">
+                <AudioVisualizer />
+                <div id="playing" class="playing-label hidden opacity-0 transition-all duration-700 ease-out text-xs font-mono tracking-widest text-neutral-300">Now playing: <span class="text-neutral-300">Aineth – Till Death Do Us Part</span>
+                </div>
+              </div>
+              <nav class="hidden md:flex items-center gap-8 lg:gap-12">
+                <a data-slide="0" class="menu-item text-sm font-medium tracking-widest uppercase">Home</a>
+                <a data-slide="1" class="menu-item text-sm font-medium tracking-widest uppercase">Blogs</a>
+                <a data-slide="2" class="menu-item text-sm font-medium tracking-widest uppercase">Projects</a>
+                <a data-slide="3" class="menu-item text-sm font-medium tracking-widest uppercase">Contact</a>
+              </nav>
+            </header>
+
+            <footer class="flex flex-col md:flex-row items-center justify-between gap-6 pointer-events-auto">
+              <div class="text-xs font-mono tracking-[0.4em] text-white uppercase">
+                AKI TATSUYAMA
+              </div>
+            </footer>
+          </div>
+
+        <div id="scroll-container" class="flex flex-col h-screen w-screen overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth">
+
+          <section id="home" class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center">
+            <img id="lowerCastle" src={homeLower.src} class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 z-0 pointer-events-none"/>
+            <div id="castleVeil" class="absolute inset-0 bg-black z-5 pointer-events-none transition-opacity duration-2000 ease-in-out"></div>
+            <div class="relative z-10 max-w-4xl mx-auto px-6">
+              <div id="intro-content" class="transition-all duration-1000 ease-in-out">
+                <div data-text="Hello Friend" class="chromatic-text flex flex-col items-center justify-center gap-4 mb-6 text-neutral-600">
+                  <h1 data-text="Hello Friend" class="glitch-text chromatic-text text-[9rem] md:text-[9xl] text-center font-black leading-none mb-4 select-none">
+                    Hello Friend
+                  </h1>
+                </div>
+
+                <div class="flex items-center justify-center gap-4 text-xs font-mono text-gray-400 tracking-[0.3em] uppercase">
+                  <span class="w-12 h-px bg-gray-500"></span>
+                  <span data-text="Click anywhere" class="">Click anywhere</span>
+                  <span class="w-12 h-px bg-gray-500"></span>
+                </div>
+              </div>
+              <div id="main-bio" class="hidden opacity-0 transform translate-y-4 transition-all duration-100 ease-out">
+                <div id="bio-move-container" class="relative text-left flex flex-col gap-0 transition-all duration-1000 ease-in-out mx-auto max-w-3xl">
+                <span class=" text-neutral-200 font-mono text-[10px] block mb-0.1 tracking-tighter leading-none">[ Entry: Introduction ]</span>
+                  <div class="bio-margin-line"></div>
+                  <p id="clean-paragraph" class="relative z-10 text-sm md:text-2xl font-light leading-snug md:leading-relaxed tracking-wide text-gray-300 m-0 mt-0">
+
+                  大阪(Osaka, Japan),<br>
+                  I've come here for my gap-year,<br>
+                  this website is made as tribute to my experiences here, living with my grandmother.<br>
+                  -<br>
+                  I hope you enjoy reading my stories and blogs,<br>
+                  and I wish you a great day. I have literally no idea what else to write here. . . yeah?
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="blog" class="relative snap-start shrink-0 w-screen h-screen overflow-hidden">
+            <div class="absolute inset-0 bg-black z-0"></div>
+            <img src={clearstairs.src} class="clear-stairs absolute inset-0 w-full h-full object-cover opacity-3 z-0"/>
+
+            <div class="absolute inset-0 z-10 pointer-events-none">
+              <img src={dizzystarsLpiece.src} class="stairs-piece left-piece absolute inset-0 w-full h-full object-cover" />
+              <img src={dizzystarsMpiece.src} class="stairs-piece middle-piece absolute inset-0 w-full h-full object-cover" />
+              <img src={dizzystarsRpiece.src} class="stairs-piece right-piece absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <div class="grid-overlay"></div>
+
+            <div id="blog-ui-container" class="relative z-20 flex h-full w-full items-center opacity-0 transition-opacity duration-1000">
+              
+            <div class="w-3/5 h-full flex flex-col justify-center px-20">
+              <div id="blog-preview-frame" class="relative group max-w-4xl">
+                <a id="preview-anchor" href={`/blogs/${blogEntries[0].id}`} class="block cursor-pointer">
+                
+                  <div class="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-white/50 z-20"></div>
+                  <div class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-white/50 z-20"></div>
+
+                  <div class="relative aspect-video border border-white/10 overflow-hidden bg-black/60">
+                    <img id="preview-img" src={blogEntries[0].img.src} class="w-full h-full object-cover opacity-80 transition-all duration-500 scale-105 group:hover:scale-115"/>
+                  </div>
+
+                  <div class="absolute bottom-8 left-8 z-30">
+                    <h2 id="logId" class="text-sm font-black tracking-tighter text-white">
+                      Log #{blogEntries[0].id}: 
+                      <span class="text-sm ml-2 font-mono text-zinc-500">{blogEntries[0].title}</span> 
+                    </h2>
+                    <p id="preview-sub" class="mt-4 text-zinc-400 font-mono text-sm max-w-md">
+                    {blogEntries[0].sub}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </div>
+              <div class="w-2/5 h-[60vh] border-l border-t border-white/5 flex flex-col">
+                <div class="p-6 border-b border-white/10 flex justify-between items-center">
+                  <span class="text-xl font-mono text-zinc-200 tracking-[0.5em] uppercase">Archive of Logs</span>
+                  <span class="text-[10px] font-mono text-zinc-300">TOTAL_RECORDS: {blogEntries.length}</span>
+              </div>
+      
+              <div class="flex-1 overflow-y-auto no-scrollbar py-4">
+                  {blogEntries.map((entry) => (
+                  <a
+                    href={`/blogs/${entry.id}`}
+                      class="blog-item w-full group relative p-6 text-left transition-all hover:bg-white/5 block"
+                      data-id={entry.id}
+                      data-title={entry.title}
+                      data-sub={entry.sub}
+                      data-img={(entry.img ?? defaultImg).src}
+                      >
+                    <div class="flex items-center gap-4"></div>
+                      <span class="text-[10px] font-mono text-zinc-600">#{entry.id}</span>
+                      <h3 class="text-lg font-mono tracking-tight text-zinc-300 group-hover:text-white transition-colors">
+                        #{entry.title}
+                      </h3>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+<section id="projects" class="relative snap-start shrink-0 w-screen h-screen overflow-hidden">
+  <div class="absolute inset-0 bg-black z-0"></div>
+
+  {/* Using the same background reveal structure as blog */}
+  <div class="projects-reveal-wrapper absolute inset-0 pointer-events-none bg-black">
+    <img id="projects-bg" src={projectsBg.src} class="absolute inset-0 w-full h-full object-cover opacity-48"/>
+    <div id="projects-blur" class="projects-reveal projects-blur-mask"></div>
+    <div id="projects-reveal" class="projects-reveal"></div>
+  </div>
+
+  <div class="grid-overlay"></div>
+
+  <div id="project-portal-container" class="relative z-20 h-screen w-screen overflow-hidden">
+    {projects.map((project) => (
+      <a
+        href={project.github || project.link}
+        target="_blank"
+        class="blog-portal group absolute w-64 h-80 border border-white/20 overflow-hidden cursor-pointer opacity-0 transition-all duration-700 ease-in-out" 
+        data-project-portal
+      >
+        <img 
+          src={project.img.src} 
+          class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700"
+        />
+        <div class="absolute bottom-4 left-4 z-30 text-left">
+          <span class="text-[10px] font-mono text-zinc-100 block uppercase">PROJ_ID: {project.id}</span>
+          <h3 class="text-lg font-bold tracking-tighter uppercase">{project.title}</h3>
+          <h6 class="text-xs font-light tracking-tighter">{project.desc}</h6>
+        </div>
+        <div class="absolute inset-0 border border-black group-hover:border-white transition-all duration-300"></div>
+      </a>
+    ))}
+  </div>
+
+  <div class="absolute top-36 left-14 z-30 text-left">
+    <span data-text="- SOURCE DIRECTORY" class="text-sm font-mono tracking-widest text-zinc-200 block">
+      - SOURCE DIRECTORY
+    </span>
+    <br>
+    <h2 data-text="PROJECTS" class="text-4xl font-bold tracking-tight">
+      PROJECTS
+    </h2>
+  </div>
+</section>
+
+          <section id="contact" class="snap-start shrink-0 w-screen h-screen bg-zinc-900 text-white flex items-center justify-center relative overflow-hidden">
+            <img id="contactBg" src={contactBg.src} class="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"/>
+            
+            <div class="relative z-10 text-center flex flex-col items-center gap-8">
+              <div class="space-y-2">
+                <span class="text-sm font-mono tracking-[0.5em] text-neutral-200">Let's be friends, here are my contacts</span>
+              </div>
+
+              <div class="flex flex-col md:flex-row gap-12 mt-8">
+                <a href={`mailto:${email}`} class="group">
+                  <span class="block text-[10px] font-mono text-zinc-500 text-left">EMAIL_ADDRESS</span>
+                  <span class="text-2xl font-light hover:text-zinc-400 transition-colors">{email}</span>
+                </a>
+                
+                <a href={githubProfile} target="_blank" class="group">
+                  <span class="block text-[10px] font-mono text-zinc-500 text-left">GITHUB_PROFILE</span>
+                  <span class="text-2xl font-light hover:text-zinc-400 transition-colors">@{githubUsername}</span>
+                </a>
+              </div>
+            </div>
+            <span class="text-xs font-mono text-neutral-300">Things that need fixing:
+                  fix introductory paragraph (home page is just a bit empty and pointless right  now).
+                  Make backgrounds and images work with the blogs,
+                  write more blogs (fix the current one too),
+                  Instagram and other social media on contact page,
+                  make contact page into contact + need to do page,
+                  Transition on scrolling for archive of logs (only background works rn),
+                  make Contacts background transition,
+                  want to make "electric" effect on contacts page.
+
+                  --Make Japanese version of website--
+            </span>
+
+          </section>
+        </div>
+
+          <div class="fixed bottom-10 right-10 z-50">
+            <ScrollIndicator client:load />
+          </div>
+        </main>
+      </div>
+    <script is:inline>
+      // Using 'load' ensures all assets are ready
+      window.addEventListener('load', () => {
+        const container = document.getElementById("scroll-container");
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingScreen = document.getElementById('loading-screen');
+
+        const homeSection = document.getElementById("home");
+        let hasBeenTriggered = false;
+        const lowerCastle = document.getElementById("lowerCastle")
+        const mainContent = document.getElementById("main-content");
+
+
+        const blogSection = document.getElementById("blog");
+        const blogItems = document.querySelectorAll(".blog-item");
+        const previewAnchor = document.getElementById("preview-anchor")
+
+        const projectsSection = document.getElementById("projects");
+        const projectsBg = document.getElementById("projects-bg");
+        
+        loadingBar.style.width = '100%';
+
+        setTimeout(() => {
+          loadingScreen.classList.add('hidden');
+          // Show content
+          mainContent.classList.remove('opacity-0');
+          mainContent.classList.add('opacity-100'); }, 1000); 
+
+        document.querySelectorAll(".menu-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            const index = parseInt(item.dataset.slide);
+            container.scrollTo({
+              top: window.innerHeight * index,
+              behavior: "smooth",
+            });
+          });
+        });
+
+        const homeObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              homeSection.classList.add("active");
+            } else {
+              homeSection.classList.remove("active");
+            }
+          });
+        }, { root: container, threshold: 0.5 });
+
+        homeObserver.observe(homeSection);
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                blogSection.classList.add("active");
+
+                const grid = blogSection.querySelector(".grid-overlay");
+                grid.style.opacity = "1";
+                grid.style.transform = "scaleY(1)";
+
+                setTimeout(() => {
+                    const uiContainer = document.getElementById("blog-ui-container");
+                    uiContainer.classList.remove("opacity-0");
+                    uiContainer.classList.add("opacity-100");
+                  }, 800); 
+
+                } else {
+                  blogSection.classList.remove("active");
+                  const uiContainer = document.getElementById("blog-ui-container");
+                  uiContainer.classList.add("opacity-0");
+                }
+              });
+          },
+          {
+            root: container,
+            threshold: 0.6, // triggers when 60% visible
+          }
+        );
+
+        observer.observe(blogSection);
+        document.addEventListener("keydown", (e) => {
+          const slideHeight = window.innerHeight;
+          const currentScroll = container.scrollTop;
+          const currentSlide = Math.round(currentScroll / slideHeight);
+          const maxSlides = container.children.length - 1;
+          if (e.key === "ArrowDown" && currentSlide < maxSlides) {
+            container.scrollTo({
+              top: slideHeight * (currentSlide + 1),
+              behavior: "smooth",
+            });
+          } else if (e.key === "ArrowUp" && currentSlide > 0) {
+            container.scrollTo({
+              top: slideHeight * (currentSlide - 1),
+              behavior: "smooth",
+            });
+          }
+        });
+
+        blogItems.forEach(item => {
+          item.addEventListener('mouseenter', () => {
+            const id = item.dataset.id;
+            const title = item.dataset.title;
+            const sub = item.dataset.sub;
+            const img = item.dataset.img;
+
+            document.getElementById('preview-img').src = img;
+            document.getElementById('preview-sub').textContent = sub;
+            document.getElementById('logId').innerHTML = `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-500">${title}</span>`;
+            
+            if (previewAnchor) {
+              previewAnchor.href = `/blogs/${id}`;
+            }
+          });
+        });
+
+        const projectsObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const reveal = document.getElementById("projects-reveal");
+              const grid = projectsSection.querySelector(".grid-overlay");
+
+              if (entry.isIntersecting) {
+                shuffleProjectPortals();
+                projectsSection.classList.add("active");
+                
+                grid.style.opacity = "1";
+                grid.style.transform = "scaleY(1)";
+
+                setTimeout(() => {
+                  projectsSection.classList.add("portals-visible");
+                  reveal.classList.add("revealed");
+                }, 900); // 900ms matches your blog logic delay
+              } else {
+                projectsSection.classList.remove("active", "portals-visible");
+                reveal.classList.remove("revealed");
+                
+                grid.style.opacity = "0";
+                grid.style.transform = "scaleY(0)";
+              }
+            });
+          },
+          { root: container, threshold: 0.6 } // Threshold matches blog logic
+        );
+        projectsObserver.observe(projectsSection);
+      });
+
+    function typeWriter(element, speed, callback) {
+      const text = element.innerHTML.trim().replace(/<br\s*\/?>/gi, '\n'); // Preserve line breaks
+      element.innerHTML = '';
+      element.style.visibility = 'visible';
+      
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          if (text.charAt(i) === '\n') {
+            if (element.innerHTML.slice(-4) !== '<br>') {
+              element.innerHTML += '<br>';
+            }
+          } else {
+            element.innerHTML += text.charAt(i);
+          }
+          i++;
+          setTimeout(type, speed);
+        } else if (callback) {
+          callback(); // Run glitch effect logic after typing
+        }
+      }
+      type();
+    }
+
+    // function shufflePortals() {
+    //   const portals = document.querySelectorAll('[data-portal]');
+    //   const cols = 5;
+    //   const rows = 3;
+    //
+    //   let cells = [];
+    //   for (let r = 1; r <= rows; r++) {
+    //     for (let c = 1; c <= cols; c++) {
+    //       cells.push({ row: r, col: c });
+    //     }
+    //   }
+    //   const shuffledCells = cells.sort(() => Math.random() - 0.5);
+    //
+    //   portals.forEach((portal, index) => {
+    //     const cell = shuffledCells[index];
+    //     // Use the center-point math
+    //     const left = (cell.col - 1) * 20 + 10;
+    //     const top = (cell.row - 1) * 33.33 + 16.66;
+    //
+    //     // Apply new coordinates
+    //     portal.style.left = `${left}%`;
+    //     portal.style.top = `${top}%`;
+    //     portal.style.transform = 'translate(-50%, -50%)';
+    //   });
+    // }
+
+function shuffleProjectPortals() {
+  const portals = document.querySelectorAll('[data-project-portal]');
+  const cols = 5;
+  const rows = 3;
+
+  let cells = [];
+  for (let r = 1; r <= rows; r++) {
+    for (let c = 1; c <= cols; c++) {
+      cells.push({ row: r, col: c });
+    }
+  }
+  const shuffledCells = cells.sort(() => Math.random() - 0.5);
+
+  portals.forEach((portal, index) => {
+    const cell = shuffledCells[index];
+    // EXACT MATH FROM BLOG LOGIC
+    const left = (cell.col - 1) * 20 + 10;
+    const top = (cell.row - 1) * 33.33 + 16.66;
+
+    portal.style.left = `${left}%`;
+    portal.style.top = `${top}%`;
+    portal.style.transform = 'translate(-50%, -50%)';
+  });
+}
+    let audioStarted = false;
+
+    function trigger() {
+      if (!audioStarted && window.startBackgroundAudio) {
+        audioStarted = true;
+        window.startBackgroundAudio(); 
+      }
+      const intro = document.getElementById('intro-content');
+      const bio = document.getElementById('main-bio');
+      const cleanParagraph = document.getElementById("clean-paragraph");
+      const bioLine = document.querySelector(".bio-margin-line");
+      // const bioContainer = document.getElementById("bio-move-container");
+
+
+
+      intro.classList.add("opacity-0", "pointer-events-none");
+
+      // if (intro && bio) {
+      //   intro.classList.add('opacity-0', 'pointer-events-none');
+      //
+      //   if (playing) {
+      //     playing.classList.remove('hidden');
+      //     setTimeout(() => playing.classList.add('opacity-100'), 100);
+      //   }
+      //
+      //   setTimeout(() => {
+      //     intro.classList.add('hidden');
+      //     bio.classList.remove('hidden');
+      //     requestAnimationFrame(() => {
+      //       bio.classList.remove('opacity-0', 'translate-y-4');
+      //       bio.classList.add('opacity-100', 'translate-y-0');
+      //     });
+      //   }, 1000) // duration-1000 transition
+      // }
+      if (intro && bio) {
+        intro.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          intro.classList.add('hidden');
+          bio.classList.remove('hidden');
+
+          requestAnimationFrame(() => {
+            bio.classList.remove('opacity-0', 'translate-y-4');
+            bio.classList.add('opacity-100', 'translate-y-0');
+              typeWriter(cleanParagraph, 1, () => {
+                const homeSection = document.getElementById("home");
+                const veil = document.getElementById("castleVeil");
+                const bioContainer = document.getElementById("bio-move-container");
+                hasBeenTriggered = true;
+                if (bioContainer) bioContainer.classList.add("bio-shifted");
+                if (veil) {
+                  veil.classList.add("hidden-veil");
+                }
+                if (homeSection) {
+                  homeSection.classList.add("triggered");
+                }
+                if (bioLine) {
+                  bioLine.classList.add("line-draw");
+                }
+                }, 100);
+          });
+        }, 1000);
+        setTimeout(() => {
+          bioLine.style.height = "80%"; // This one alone controls bioLine height
+        }, 200);
+      }
+    }
+    // On any first click, start music (like in the Hypergryph website)
+    window.addEventListener( "click", () => {
+      trigger()
+    }, { once: true });
+    </script>
+  </body>
+</html>

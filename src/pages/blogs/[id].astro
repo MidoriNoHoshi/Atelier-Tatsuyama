@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import "../../styles/global.css";
+
+export async function getStaticPaths() {
+  const posts = Object.values(import.meta.glob('../../blogs/*.md', { eager: true }));
+  return posts.map((post: any) => {
+    const filename = post.file.split('/').pop().replace('.md', '');
+    return {
+      params: { id: filename }, 
+      props: { post },
+    };
+  });
+}
+
+const { post } = Astro.props;
+const { Content, frontmatter } = post;
+
+const subtitle = frontmatter.sub || frontmatter.description || "NO_DATA_ARCHIVED";
+// Fallback to a default if frontmatter.img isn't set
+const bgImage = frontmatter.img || '/assets/default-bg.jpg'; 
+---
+
+<Layout title={frontmatter.title}>
+  {bgImage && (
+    <div 
+      class="fixed inset-0 z-0 pointer-events-none opacity-[0.7] grayscale"
+      style={`background-image: url(${bgImage}); background-size: cover; background-position: center;`}
+    ></div>
+  )}
+
+  <div class="crt-noise"></div>
+  <div class="crt-overlay"></div>
+  <div class="scan-line"></div>
+
+  <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+    <defs>
+      <filter id="subtle-aberration" x="-15%" y="-15%" width="130%" height="130%">
+        <feOffset in="SourceGraphic" dx="1.2" dy="0" result="red-shift" />
+        <feOffset in="SourceGraphic" dx="-1.2" dy="0" result="blue-shift" />
+        <feColorMatrix in="red-shift" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0" result="red-fringe"/>
+        <feColorMatrix in="blue-shift" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0.5 0" result="blue-fringe"/>
+        <feGaussianBlur in="red-fringe" stdDeviation="0.2" result="red-blur" />
+        <feGaussianBlur in="blue-fringe" stdDeviation="0.2" result="blue-blur" />
+        <feMerge>
+          <feMergeNode in="red-blur" /><feMergeNode in="blue-blur" /><feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="min-h-screen bg-black/90 text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black">
+    <a href="/" class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors">
+      <span class="chromatic-text tracking-[0.3em] uppercase text-[10px]" data-text="[!] RETURN_TO_ARCHIVE">
+        [!] RETURN_TO_ARCHIVE
+      </span>
+    </a>
+
+    <article class="max-w-4xl relative">
+      <header class="border-b border-zinc-800 pb-10 mb-12">
+        <div class="text-[10px] text-zinc-600 mb-4 font-mono tracking-widest uppercase">
+          LOG_ID: {Astro.params.id} // STATUS: DECLASSIFIED
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 chromatic-text text-white" data-text={frontmatter.title}>
+          {frontmatter.title}
+        </h1>
+        
+        <p class="text-zinc-500 text-xs tracking-[0.4em] uppercase leading-loose">
+          {subtitle}
+        </p>
+      </header>
+
+
+
+      <div class="prose prose-invert prose-zinc max-w-none prose-b:mb-8 prose-p:block
+            prose-headings:font-bold prose-headings:uppercase prose-headings:tracking-tighter
+            prose-h1:text-5xl prose-h2:text-3xl prose-h3:text-xl
+            prose-p:text-zinc-400 prose-p:leading-relaxed prose-p:mb-6
+            prose-li:text-zinc-400
+            prose-strong:text-white
+            prose-hr:border-zinc-800
+            whitespace-pre-wrap
+            prose-headings:text-white prose-headings:font-bold prose-headings:uppercase
+            prose-headings:tracking-tighter prose-headings:mt-12 prose-headings:mb-4
+            prose-p:text-zinc-400 prose-p:mb-8 prose-p:leading-relaxed">
+        <Content />
+      </div>      
+      <footer class="mt-20 pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest">
+        END_OF_FILE // TERMINAL_ID: OSAKA_NODE_01
+      </footer>
+    </article>
+  </div>
+</Layout>
+
+<style is:global>
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    height: auto !important;
+    background-color: #000;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #222;
+  }
+</style>
