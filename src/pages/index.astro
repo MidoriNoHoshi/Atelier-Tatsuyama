@@ -17,17 +17,17 @@ import log3 from "../assets/log3.jpg";
 import log4 from "../assets/log4.png";
 
 const blogEntries = [
-  { id: '001', title: 'Creation', sub: 'The creation of this website', img: log1 },
-  { id: '002', title: 'Memory', sub: 'The memory of what?', img: log2 },
-  { id: '003', title: 'Introspection', sub: 'Looking back', img: log3 },
-  { id: '004', title: 'Hyprland', sub: 'Ricing and minimalism', img: log4 },
+{ id: '001', title: "Creation of this Website", sub: "Why, and how and I made this personal website of mine", img: log1 },
+{ id: '002', title: "Learning Japanese", sub: "Current journey, and how I wish I could have started", img: log2 },
+  { id: '003', title: 'Introspection (Ananda Marga + etc)', sub: "Growing up with Ananda Marga and why I'm so resentful about it", img: log3 },
+  { id: '004', title: 'Linux and Hyprland', sub: 'Ricing, minimalism, and complaints', img: log4 },
 ];
 
 // Grid dimensions
 const cols = 12;
 const rows = 6;
 
-function getRandomPositions(count) {
+function getRandomPositions(count) { // type: ignore
   let cells = [];
   for (let r = 1; r <= rows; r++) {
     for (let c = 1; c <= cols; c++) {
@@ -42,31 +42,43 @@ function getRandomPositions(count) {
 const githubUsername = "MidoriNoHoshi";
 const githubProfile = `https://github.com/${githubUsername}`;
 const email = "nemitatsu@proton.me";
+const instagram = "https://www.instagram.com/tatsu._.yama/";
 
 import projectsBg from "../assets/ProjectsRemoved.png";
+import linuxRice from "../assets/LinuxRice.png";
+import japtoankiExample from "../assets/japtoankiExample.png";
+import japtoankiSampleVid from "../assets/japtoankiSampleVid.mp4";
+import obsidianScreenshot from "../assets/obsidianPlugin.png";
+import kyubiScreenshot from "../assets/kyubiScreenshot.png";
 const projects = [
   {
     id: 'p1',
     title: "JaptoAnki",
     desc: "Japanese OCR to Anki flashcards.",
     github: "https://github.com/MidoriNoHoshi/JaptoAnki",
-    img: log1, // Or a specific project screenshot
-    video: "/videos/japtoanki.mp4" // Optional video path
+    img: japtoankiExample, // Or a specific project screenshot
+    video: japtoankiSampleVid // Optional video path
   },
   {
-    id: 'p2',
-    title: "StowDotfiles",
-    desc: "Minimalistic Hyprland configuration.",
-    github: "https://github.com/MidoriNoHoshi/StowDotfiles_Arch",
-    img: log4,
+  id: "p2",
+  title: "Obsidian Bg plugin",
+  desc: "Custom backgrounds for obsidian md",
+  img: obsidianScreenshot,
   },
   {
     id: 'p3',
+    title: "StowDotfiles",
+    desc: "Minimalistic Hyprland configuration.",
+    github: "https://github.com/MidoriNoHoshi/StowDotfiles_Arch",
+    img: linuxRice,
+  },
+  {
+    id: 'p4',
     title: "Kyubi",
     desc: "Screen aware AI assistant.",
     link: "https://www.kyubi.dev/",
-    img: log2,
-  }
+    img: kyubiScreenshot,
+    }
 ];
 
 // 2. Reuse the Grid Logic
@@ -133,7 +145,8 @@ import contactBg from "../assets/contactBg.png";
                 <a data-slide="0" class="menu-item text-sm font-medium tracking-widest uppercase">Home</a>
                 <a data-slide="1" class="menu-item text-sm font-medium tracking-widest uppercase">Blogs</a>
                 <a data-slide="2" class="menu-item text-sm font-medium tracking-widest uppercase">Projects</a>
-                <a data-slide="3" class="menu-item text-sm font-medium tracking-widest uppercase">Contact</a>
+                <a data-slide="3" class="menu-item text-sm font-medium tracking-widest uppercase">Roadmap</a>
+                <a data-slide="4" class="menu-item text-sm font-medium tracking-widest uppercase">Contact</a>
               </nav>
             </header>
 
@@ -183,7 +196,7 @@ import contactBg from "../assets/contactBg.png";
 
           <section id="blog" class="relative snap-start shrink-0 w-screen h-screen overflow-hidden">
             <div class="absolute inset-0 bg-black z-0"></div>
-            <img src={clearstairs.src} class="clear-stairs absolute inset-0 w-full h-full object-cover opacity-3 z-0"/>
+            <img src={clearstairs.src} class="clear-stairs absolute inset-0 w-full h-full object-cover opacity-5 z-0"/>
 
             <div class="absolute inset-0 z-10 pointer-events-none">
               <img src={dizzystarsLpiece.src} class="stairs-piece left-piece absolute inset-0 w-full h-full object-cover" />
@@ -205,12 +218,12 @@ import contactBg from "../assets/contactBg.png";
                     <img id="preview-img" src={blogEntries[0].img.src} class="w-full h-full object-cover opacity-80 transition-all duration-500 scale-105 group:hover:scale-115"/>
                   </div>
 
-                  <div class="absolute bottom-8 left-8 z-30">
+                  <div class="absolute bottom-8 left-8 z-30 bg-neutral-900 opacity-80">
                     <h2 id="logId" class="text-sm font-black tracking-tighter text-white">
                       Log #{blogEntries[0].id}: 
-                      <span class="text-sm ml-2 font-mono text-zinc-500">{blogEntries[0].title}</span> 
+                      <span class="text-sm ml-2 font-mono text-zinc-100">{blogEntries[0].title}</span> 
                     </h2>
-                    <p id="preview-sub" class="mt-4 text-zinc-400 font-mono text-sm max-w-md">
+                    <p id="preview-sub" class="mt-4 text-zinc-300 font-mono text-sm max-w-md">
                     {blogEntries[0].sub}
                     </p>
                   </div>
@@ -244,84 +257,140 @@ import contactBg from "../assets/contactBg.png";
               </div>
             </div>
           </section>
-<section id="projects" class="relative snap-start shrink-0 w-screen h-screen overflow-hidden">
-  <div class="absolute inset-0 bg-black z-0"></div>
+          <section id="projects" class="relative snap-start shrink-0 w-screen h-screen overflow-hidden">
+            <div class="absolute inset-0 bg-black z-0"></div>
 
-  {/* Using the same background reveal structure as blog */}
-  <div class="projects-reveal-wrapper absolute inset-0 pointer-events-none bg-black">
-    <img id="projects-bg" src={projectsBg.src} class="absolute inset-0 w-full h-full object-cover opacity-48"/>
-    <div id="projects-blur" class="projects-reveal projects-blur-mask"></div>
-    <div id="projects-reveal" class="projects-reveal"></div>
-  </div>
+            <div class="projects-reveal-wrapper absolute inset-0 pointer-events-none bg-black">
+              <img id="projects-bg" src={projectsBg.src} class="absolute inset-0 w-full h-full object-cover opacity-48"/>
+              <div id="projects-blur" class="projects-reveal projects-blur-mask"></div>
+              <div id="projects-reveal" class="projects-reveal"></div>
+            </div>
 
-  <div class="grid-overlay"></div>
+            <div class="grid-overlay"></div>
 
-  <div id="project-portal-container" class="relative z-20 h-screen w-screen overflow-hidden">
-    {projects.map((project) => (
-      <a
-        href={project.github || project.link}
-        target="_blank"
-        class="blog-portal group absolute w-64 h-80 border border-white/20 overflow-hidden cursor-pointer opacity-0 transition-all duration-700 ease-in-out" 
-        data-project-portal
-      >
-        <img 
-          src={project.img.src} 
-          class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700"
-        />
-        <div class="absolute bottom-4 left-4 z-30 text-left">
-          <span class="text-[10px] font-mono text-zinc-100 block uppercase">PROJ_ID: {project.id}</span>
-          <h3 class="text-lg font-bold tracking-tighter uppercase">{project.title}</h3>
-          <h6 class="text-xs font-light tracking-tighter">{project.desc}</h6>
-        </div>
-        <div class="absolute inset-0 border border-black group-hover:border-white transition-all duration-300"></div>
-      </a>
-    ))}
-  </div>
+            <div id="project-portal-container" class="relative z-20 h-screen w-screen overflow-hidden">
+              {projects.map((project) => (
+                <a
+                  href={project.github || project.link}
+                  target="_blank"
+                  class="blog-portal group absolute w-64 h-80 border border-white/20 overflow-hidden cursor-pointer opacity-0 transition-all duration-700 ease-in-out" 
+                  data-project-portal
+                >
+                  <img 
+                    src={project.img.src} 
+                    class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div class="absolute bottom-4 left-4 z-30 text-left bg-neutral-900 opacity-70">
+                    <span class="text-[10px] font-mono text-zinc-100 block uppercase">PROJ_ID: {project.id}</span>
+                    <h3 class="text-lg font-bold tracking-tighter uppercase">{project.title}</h3>
+                    <h6 class="text-xs font-light tracking-tighter">{project.desc}</h6>
+                  </div>
+                  <div class="absolute inset-0 border border-black group-hover:border-white transition-all duration-300"></div>
+                </a>
+              ))}
+            </div>
 
-  <div class="absolute top-36 left-14 z-30 text-left">
-    <span data-text="- SOURCE DIRECTORY" class="text-sm font-mono tracking-widest text-zinc-200 block">
-      - SOURCE DIRECTORY
-    </span>
-    <br>
-    <h2 data-text="PROJECTS" class="text-4xl font-bold tracking-tight">
-      PROJECTS
-    </h2>
-  </div>
-</section>
+            <div class="absolute top-36 left-14 z-30 text-left">
+              <span data-text="- SOURCE DIRECTORY" class="text-sm font-mono tracking-widest text-zinc-200 block">
+                - SOURCE DIRECTORY
+              </span>
+              <br>
+              <h2 data-text="PROJECTS" class="text-4xl font-bold tracking-tight">
+                PROJECTS
+              </h2>
+            </div>
+          </section>
+
+          <section id="roadmap" class="relative snap-start shrink-0 w-screen h-screen bg-black overflow-hidden flex items-center justify-center">
+            <!-- <div class="grid-overlay"></div> -->
+            
+            <div class="relative z-10 w-full max-w-4xl px-10">
+              <div class="border border-white/20 bg-black/60 backdrop-blur-md p-8 md:p-12 relative">
+                
+                <div class="flex items-center gap-4 mb-8">
+                  <div class="w-full h-2px mt-2"></div><span>Future Improvements</span>
+                  <div class="w-4 h-3 bg-yellow-300"></div>
+                  <h2 class="text-3xl font-mono tracking-[0.3em] uppercase text-neutral-100">Website Roadmap</h2>
+                </div>
+
+                <div class="space-y-6 font-mono text-xl md:text-base">
+                  {[
+                    // { task: "Add Roadmap page", status: "DONE!" },
+                    { task: "Add Instagram to Contacts", status: "DONE!" },
+                    { task: "Animate blog list + preview transition", status: "DONE!" },
+                    { task: "Refine home page intro", status: "DOING" },
+                    { task: "Background and images to work with blogs", status: "DOING" },
+                    { task: "Contacts background transition", status: "PLANNED" },
+                    { task: "More tracks (Xomu-Moonfall + etc)", status: "PLANNED" },
+                    { task: "Add more to home page (looks empty)", status: "PLANNED" },
+                    { task: "Auto Subtitles project", status: "PLANNED" },
+                    { task: "Auto scanlation (manga + lightnovels) project", status: "PLANNED" },
+                    { task: "Clean up the code!", status: "PLANNED" },
+                    { task: "Move task-list to markdown file instead", status: "PLANNED" },
+                    { task: "Static electric effect on Contacts", status: "PONDERING" },
+                    { task: "WRITE MORE BLOGS", status: "PONDERING" },
+                    { task: "Japanese + Norwegian toggle for website", status: "PONDERING" },
+                    { task: "DVORAK typing trainer", status: "PONDERING" },
+                  ].map((item) => (
+                    <div class="flex items-start gap-4 group">
+                      <div class="flex-1">
+                          {item.task}
+                      </div>
+                      <span class={`text-[12px] px-2 py-1 border border-current ${item.status === "DOING" ? 'text-yellow-300' : 'text-zinc-500'}`}>
+                        {item.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div class="mt-12 pt-6 border-t border-white/20 flex justify-between items-center text-[14px] font-mono text-zinc-500">
+                  <span>LAST MODIFIED: 2026_03_07</span>
+                </div>
+              </div>
+            </div>
+          </section>
 
           <section id="contact" class="snap-start shrink-0 w-screen h-screen bg-zinc-900 text-white flex items-center justify-center relative overflow-hidden">
             <img id="contactBg" src={contactBg.src} class="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"/>
             
             <div class="relative z-10 text-center flex flex-col items-center gap-8">
               <div class="space-y-2">
-                <span class="text-sm font-mono tracking-[0.5em] text-neutral-200">Let's be friends, here are my contacts</span>
+                <span class="text-sm font-mono tracking-[0.5em] text-zinc-200">Let's be friends, here are my contacts</span>
               </div>
-
               <div class="flex flex-col md:flex-row gap-12 mt-8">
+
                 <a href={`mailto:${email}`} class="group">
-                  <span class="block text-[10px] font-mono text-zinc-500 text-left">EMAIL_ADDRESS</span>
-                  <span class="text-2xl font-light hover:text-zinc-400 transition-colors">{email}</span>
+                  <span class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left">
+                    email address
+                    <svg class="w-5 h-5 transition-colors group-hover:text-zinc-500" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="m15.24 8.998 3.656-3.073v15.81H2.482C1.11 21.735 0 20.609 0 19.223V6.944l7.58 6.38a2.186 2.186 0 0 0 2.871-.042l4.792-4.284h-.003zm-5.456 3.538 1.809-1.616a2.438 2.438 0 0 1-1.178-.533L.905 2.395A.552.552 0 0 0 0 2.826v2.811l8.226 6.923a1.186 1.186 0 0 0 1.558-.024zM23.871 2.463a.551.551 0 0 0-.776-.068l-3.199 2.688v16.653h1.623c1.371 0 2.481-1.127 2.481-2.513V2.824a.551.551 0 0 0-.129-.36z"/>
+                    </svg>
+                  </span>
+                  <span class="text-2xl font-light hover:text-zinc-500 transition-colors">{email}</span>
                 </a>
-                
+
                 <a href={githubProfile} target="_blank" class="group">
-                  <span class="block text-[10px] font-mono text-zinc-500 text-left">GITHUB_PROFILE</span>
-                  <span class="text-2xl font-light hover:text-zinc-400 transition-colors">@{githubUsername}</span>
+                  <span class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left">
+                    github profile
+                    <svg class="w-5 h-5 transition-colors group-hover:text-zinc-500" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C3.42 15.07 1.95 14.7 1.95 14.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                  </span>
+                  <span class="text-2xl font-light hover:text-zinc-500 transition-colors">@{githubUsername}</span>
                 </a>
+
+                <a href={instagram} target="_blank" class="group">
+                  <span class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left">
+                    instagram
+                    <svg class="w-5 h-5 transition-colors group-hover:text-zinc-500" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.01 4 20 5.99 20 7.75v8.5C20 18.01 18.01 20 16.25 20h-8.5C5.99 20 4 18.01 4 16.25v-8.5C4 5.99 5.99 4 7.75 4zm9.5 1.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+                    </svg>
+                  </span>
+                  <span class="text-2xl font-light hover:text-zinc-500 transition-colors">@tatsu._.yama</span>
+                </a>
+
               </div>
             </div>
-            <span class="text-xs font-mono text-neutral-300">Things that need fixing:
-                  fix introductory paragraph (home page is just a bit empty and pointless right  now).
-                  Make backgrounds and images work with the blogs,
-                  write more blogs (fix the current one too),
-                  Instagram and other social media on contact page,
-                  make contact page into contact + need to do page,
-                  Transition on scrolling for archive of logs (only background works rn),
-                  make Contacts background transition,
-                  want to make "electric" effect on contacts page.
-
-                  --Make Japanese version of website--
-            </span>
-
           </section>
         </div>
 
@@ -338,8 +407,8 @@ import contactBg from "../assets/contactBg.png";
         const loadingScreen = document.getElementById('loading-screen');
 
         const homeSection = document.getElementById("home");
-        let hasBeenTriggered = false;
-        const lowerCastle = document.getElementById("lowerCastle")
+        // let hasBeenTriggered = false;
+        // const lowerCastle = document.getElementById("lowerCastle")
         const mainContent = document.getElementById("main-content");
 
 
@@ -348,15 +417,16 @@ import contactBg from "../assets/contactBg.png";
         const previewAnchor = document.getElementById("preview-anchor")
 
         const projectsSection = document.getElementById("projects");
-        const projectsBg = document.getElementById("projects-bg");
+        // const projectsBg = document.getElementById("projects-bg");
+
+        const roadmapSection = document.getElementById("roadmap")
         
         loadingBar.style.width = '100%';
 
         setTimeout(() => {
           loadingScreen.classList.add('hidden');
-          // Show content
           mainContent.classList.remove('opacity-0');
-          mainContent.classList.add('opacity-100'); }, 1000); 
+          mainContent.classList.add('opacity-100'); }, 580); 
 
         document.querySelectorAll(".menu-item").forEach((item) => {
           item.addEventListener("click", () => {
@@ -380,7 +450,7 @@ import contactBg from "../assets/contactBg.png";
 
         homeObserver.observe(homeSection);
 
-        const observer = new IntersectionObserver(
+        const blogobserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
@@ -394,11 +464,12 @@ import contactBg from "../assets/contactBg.png";
                     const uiContainer = document.getElementById("blog-ui-container");
                     uiContainer.classList.remove("opacity-0");
                     uiContainer.classList.add("opacity-100");
-                  }, 800); 
+                  }, 200); 
 
                 } else {
                   blogSection.classList.remove("active");
                   const uiContainer = document.getElementById("blog-ui-container");
+                  uiContainer.classList.remove("opacity-100");
                   uiContainer.classList.add("opacity-0");
                 }
               });
@@ -409,11 +480,11 @@ import contactBg from "../assets/contactBg.png";
           }
         );
 
-        observer.observe(blogSection);
+        blogobserver.observe(blogSection);
         document.addEventListener("keydown", (e) => {
           const slideHeight = window.innerHeight;
           const currentScroll = container.scrollTop;
-          const currentSlide = Math.round(currentScroll / slideHeight);
+          const currentSlide = Math.floor(currentScroll / slideHeight);
           const maxSlides = container.children.length - 1;
           if (e.key === "ArrowDown" && currentSlide < maxSlides) {
             container.scrollTo({
@@ -437,7 +508,7 @@ import contactBg from "../assets/contactBg.png";
 
             document.getElementById('preview-img').src = img;
             document.getElementById('preview-sub').textContent = sub;
-            document.getElementById('logId').innerHTML = `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-500">${title}</span>`;
+            document.getElementById('logId').innerHTML = `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-100">${title}</span>`;
             
             if (previewAnchor) {
               previewAnchor.href = `/blogs/${id}`;
@@ -461,8 +532,8 @@ import contactBg from "../assets/contactBg.png";
                 setTimeout(() => {
                   projectsSection.classList.add("portals-visible");
                   reveal.classList.add("revealed");
-                }, 900); // 900ms matches your blog logic delay
-              } else {
+                }, 200);
+                } else {
                 projectsSection.classList.remove("active", "portals-visible");
                 reveal.classList.remove("revealed");
                 
@@ -474,6 +545,31 @@ import contactBg from "../assets/contactBg.png";
           { root: container, threshold: 0.6 } // Threshold matches blog logic
         );
         projectsObserver.observe(projectsSection);
+
+        // const roadmapObserver = new IntersectionObserver(
+        //   (entries) => {
+        //     entries.forEach((entry) => {
+        //         const grid = roadmapSection.querySelector(".grid-overlay");
+        //
+        //       if (entry.isIntersecting) {
+        //         grid.style.opacity = "1";
+        //         grid.style.transform = "scaleY(1)";
+        //
+        //         } else {
+        //           roadmapSection.classList.remove("active");
+        //           grid.style.opacity = "0";
+        //           grid.style.transform = "scaleY(0)";
+        //         }
+        //       });
+        //   },
+        //   {
+        //     root: container,
+        //     threshold: 0.6, // triggers when 60% visible
+        //   }
+        // );
+        // roadmapObserver.observe(roadmapSection)
+
+
       });
 
     function typeWriter(element, speed, callback) {

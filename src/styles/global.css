@@ -35,7 +35,7 @@ body {
   color: #0000ff;
   transform: translateX(1.5px);
   mix-blend-mode: screen;
-} /* Optional: Make it jitter on hover (Arknights style) */
+}
 .chromatic-text:hover::before {
   animation: glitch-1 0.3s infinite;
 }
@@ -288,7 +288,7 @@ section {
   transform: translateY(
     0
   ); /* Increased duration to 6s to remove the 'hasty' feel */
-  transition: transform 8s cubic-bezier(0.2, 0, 0.2, 1);
+  transition: transform 16s cubic-bezier(0.2, 0, 0.2, 1);
   pointer-events: none;
   z-index: 5;
 }
@@ -317,7 +317,7 @@ section {
 }
 #projects-bg {
   transform: scale(1.1);
-  transition: transform 1s ease-out;
+  transition: transform 3s ease-out;
 }
 #projects.active #projects-bg {
   transform: scale(1);
@@ -470,7 +470,6 @@ section {
   transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 /* Add this to your existing CSS block */
-#blog.portals-visible .blog-portal,
 #projects.portals-visible .blog-portal {
   opacity: 1;
 }
