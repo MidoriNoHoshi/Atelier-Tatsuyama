@@ -1,0 +1,32 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  timestamp: string;
+  src?: any;
+  alt?: string;
+  caption?: string;
+  section?: string;
+}
+
+const { timestamp, src, alt = "", caption, section } = Astro.props;
+---
+
+<div
+  class="timeline-item-container relative pl-4 flex flex-col gap-2 my-6"
+  data-timeline-source
+  data-section={section}
+>
+  <span class="text-[10px] font-mono text-zinc-500">{timestamp}</span>
+
+  {
+    src && (
+      <div class="border border-white/10 p-1">
+        <Image src={src} alt={alt} class="w-full h-auto object-cover" />
+      </div>
+    )
+  }
+
+  {caption && <p class="text-xs font-mono text-zinc-400">{caption}</p>}
+  <slot />
+</div>

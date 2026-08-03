@@ -1,14 +1,15 @@
-@import "tailwindcss"; /* * { */ /* outline: 1px solid red; */ /* } */ /* Base Styles */
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+/* * { */ /* outline: 1px solid red; */ /* } */ /* Base Styles */
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
   background-color: #0a0a0a;
   color: #e5e5e5;
-  overflow: hidden;
-  cursor: crosshair;
+  /* overflow: hidden; */
   height: 100%;
   width: 100vw;
-} /* The base class for any text you want to have this effect */
+}
 .chromatic-text {
   position: relative;
   display: inline-block;
@@ -37,10 +38,10 @@ body {
   mix-blend-mode: screen;
 }
 .chromatic-text:hover::before {
-  animation: glitch-1 0.3s infinite;
+  animation: glitch-1 0.1s infinite;
 }
 .chromatic-text:hover::after {
-  animation: glitch-2 0.3s infinite reverse;
+  animation: glitch-2 0.1s infinite reverse;
 }
 .loading-screen {
   position: fixed;
@@ -193,7 +194,7 @@ body {
   height: 2px;
   background: rgba(255, 255, 255, 0.1);
   z-index: 99;
-  animation: scan 8s linear infinite;
+  animation: scan 12s linear infinite;
   pointer-events: none;
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.24);
 }
@@ -213,30 +214,32 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 #scroll-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  width: 100vw;
-  height: 100vh;
+  /*   height: 100vh; */
+  /*   width: 100vw; */
+  /*   overflow-y: scroll; */
+  /*   overflow-x: hidden; */
+  /*   scroll-snap-type: y mandatory; */
+  /*   scroll-behavior: smooth; */
+  /*   width: 100vw; */
+  /*   height: 100vh; */
 }
-.snap-slide {
-  flex: 0 0 100vh;
-  height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
-section {
-  flex-shrink: 0;
-  width: 100vw;
-  height: 100vh;
-  scroll-snap-align: start;
-}
+/* .snap-slide { */
+/*   flex: 0 0 100vh; */
+/*   height: 100vh; */
+/*   scroll-snap-align: start; */
+/*   scroll-snap-stop: always; */
+/* } */
+/* section { */
+/*   flex-shrink: 0; */
+/*   width: 100vw; */
+/*   height: 100vh; */
+/*   scroll-snap-align: start; */
+/* } */
+
 .stairs-piece {
   transition:
     transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
@@ -462,7 +465,7 @@ section {
 #intro-content,
 #main-bio {
   position: relative;
-  z-index: 10; /* Ensure text is always on top of the image */
+  z-index: 10; /* Ensure text is always on top of the image. Issue, can't scroll unless cursor is hovering over this text? */
 }
 .project-portal {
   opacity: 0;
@@ -499,4 +502,387 @@ section {
 /* Ensure the log list doesn't show a scrollbar but remains scrollable */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+/* ============================================================
+   Blog typography (Tailwind Typography plugin) — themed to match
+   the terminal / CRT aesthetic used everywhere else on the site.
+   ============================================================ */
+.prose-invert {
+  --tw-prose-body: #d4d4d8;
+  --tw-prose-headings: #ffffff;
+  --tw-prose-lead: #a1a1aa;
+  --tw-prose-links: #ffffff;
+  --tw-prose-bold: #ffffff;
+  --tw-prose-counters: #71717a;
+  --tw-prose-bullets: #52525b;
+  --tw-prose-hr: #27272a;
+  --tw-prose-quotes: #e4e4e7;
+  --tw-prose-quote-borders: #3f3f46;
+  --tw-prose-captions: #71717a;
+  --tw-prose-code: #e4e4e7;
+  --tw-prose-pre-code: #d4d4d8;
+  --tw-prose-pre-bg: rgba(255, 255, 255, 0.03);
+  --tw-prose-th-borders: #3f3f46;
+  --tw-prose-td-borders: #27272a;
+  font-family: "JetBrains Mono", "Inter", monospace;
+}
+.prose-invert :where(h1, h2, h3, h4) {
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.prose-invert :where(h2) {
+  border-bottom: 1px solid #27272a;
+  padding-bottom: 0.4em;
+}
+.prose-invert :where(a) {
+  text-decoration-color: #52525b;
+  transition:
+    text-decoration-color 0.2s ease,
+    color 0.2s ease;
+}
+.prose-invert :where(a:hover) {
+  text-decoration-color: #ffffff;
+}
+.prose-invert :where(blockquote) {
+  font-style: normal;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9em;
+}
+.prose-invert :where(code)::before,
+.prose-invert :where(code)::after {
+  content: "";
+}
+.prose-invert :where(code) {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 2px;
+  font-size: 0.85em;
+}
+.prose-invert :where(pre) {
+  border: 1px solid #27272a;
+  border-radius: 2px;
+}
+.prose-invert :where(img) {
+  border: 1px solid #27272a;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px;
+}
+/* On wide screens, float images into a bordered container beside the
+   text column (magazine-style) instead of stacking full-width through
+   the reading flow. Confined to the article's own max-width, so it
+   never overflows the viewport regardless of screen size. */
+@media (min-width: 1024px) {
+  .prose-invert :where(img) {
+    float: right;
+    clear: right;
+    width: min(320px, 34%);
+    margin: 0.25rem -360px 1.5rem 2rem;
+  }
+  .mdx-grid-container > * {
+    grid-column: span 7 / span 7;
+  }
+
+  /* Force Timeline items to occupy the right 5 columns */
+  .mdx-grid-container > .timeline-item-container {
+    display: none;
+    grid-column: span 5 / span 5;
+    grid-column-start: 8;
+  }
+}
+.prose-invert :where(table) {
+  font-size: 0.85em;
+}
+
+/* Obsidian-style callouts, rendered from `> [!type] Title` blockquotes
+   by src/lib/remark-obsidian-callouts.mjs */
+.callout {
+  margin: 1.5em 0;
+  padding: 0.9em 1.2em;
+  border-left: 3px solid var(--callout-color, #71717a);
+  background: color-mix(in srgb, var(--callout-color, #71717a) 8%, transparent);
+  font-size: 0.9em;
+}
+.callout .callout-title {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.8em;
+  color: var(--callout-color, #e4e4e7);
+  margin-bottom: 0.5em;
+}
+.callout > :last-child {
+  margin-bottom: 0;
+}
+.callout-note,
+.callout-info {
+  --callout-color: #60a5fa;
+}
+.callout-tip,
+.callout-success,
+.callout-done {
+  --callout-color: #4ade80;
+}
+.callout-warning {
+  --callout-color: #facc15;
+}
+.callout-danger,
+.callout-error,
+.callout-bug {
+  --callout-color: #f87171;
+}
+.callout-important {
+  --callout-color: #c084fc;
+}
+.callout-question,
+.callout-faq {
+  --callout-color: #fb923c;
+}
+.callout-quote,
+.callout-cite {
+  --callout-color: #a1a1aa;
+}
+.callout-example {
+  --callout-color: #38bdf8;
+}
+.callout-abstract,
+.callout-summary,
+.callout-todo {
+  --callout-color: #2dd4bf;
+}
+
+/* ============================================================
+   Blog page transition — CRT effects "boost" to hide the jump
+   between the home page and a blog entry.
+
+   How it works: clicking a blog link on the home page adds the
+   `.crt-boost` class to the noise/overlay layers and fades in
+   `#transition-burst` *before* the actual navigation happens, so
+   the whole screen is already saturated with static by the time
+   the browser swaps documents. The blog page then starts in that
+   same boosted state and settles back down to normal a moment
+   after it loads, making the two full-page loads read as one
+   continuous "channel change" effect instead of a jarring cut.
+   ============================================================ */
+
+/* Issue with transition burst. Behind the crt noise the rest of the page is still visible. Instead, the current background situation of blog001 should really take over. */
+
+#transition-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      rgba(0, 0, 0, 0.1) 1px,
+
+      transparent 2px,
+      transparent 4px
+    ),
+    radial-gradient(
+      ellipse at center,
+      rgba(255, 255, 255, 0.12),
+      rgba(0, 0, 0, 0.96) 90%
+    );
+  mix-blend-mode: overlay;
+  transition: opacity 2;
+}
+#transition-burst.active {
+  opacity: 1;
+}
+.crt-noise,
+.crt-overlay {
+  transition: opacity 1s ease;
+}
+.crt-noise.crt-boost {
+  opacity: 0.5;
+}
+.crt-noise.crt-boost::before {
+  opacity: 0.7;
+  animation: noiseMove 0.12s infinite steps(2);
+}
+.crt-overlay.crt-boost {
+  animation: flickerBoost 0.08s infinite;
+}
+@keyframes flickerBoost {
+  0% {
+    opacity: 0.95;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.9;
+  }
+}
+
+/* ============================================================
+   SIGNAL TEAR MASK — reusable analog sync-failure overlay.
+   Not a "glitch explosion": mostly still, with rare, brief
+   horizontal slips, like a CRT losing vertical hold or a VHS
+   tape hitting a bad tracking patch.
+
+   Two ways to use the same pattern (kept in one CSS variable so
+   the gradient definition only exists once):
+     1. Fixed full-screen layer: <div class="signal-tear"></div>,
+        toggled with the `.active` modifier (used during page
+        transitions).
+     2. Local hover variant: add `.signal-tear-surface` to any
+        `relative`-friendly element (e.g. a blog link) and its own
+        ::after picks up the tear on :hover — no extra DOM node.
+   ============================================================ */
+:root {
+  --signal-tear-band: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.05) 2px,
+    transparent 2px,
+    transparent 14px,
+    rgba(255, 255, 255, 0.1) 14px,
+    rgba(255, 255, 255, 0.1) 17px,
+    transparent 17px,
+    transparent 38px
+  );
+  --signal-tear-band-size: 76px;
+  --signal-tear-speed: 2.6s;
+}
+.signal-tear {
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  background-image: var(--signal-tear-band);
+  background-size: 100% var(--signal-tear-band-size);
+  animation:
+    signalTearScroll var(--signal-tear-speed) linear infinite,
+    signalTearJitter 5s steps(1) infinite;
+  animation-play-state: paused;
+  transition: opacity 0.45s ease;
+}
+.signal-tear.active {
+  opacity: 0.8;
+  animation-play-state: running;
+}
+@keyframes signalTearScroll {
+  0% {
+    background-position-y: 0;
+  }
+  100% {
+    background-position-y: var(--signal-tear-band-size);
+  }
+}
+@keyframes signalTearJitter {
+  /* Discrete, infrequent horizontal slips — sync failure, not chaos */
+  0%,
+  82%,
+  100% {
+    transform: translateX(0);
+  }
+  84% {
+    transform: translateX(5px);
+  }
+  86% {
+    transform: translateX(-3px);
+  }
+  88% {
+    transform: translateX(0);
+  }
+  91% {
+    transform: translateX(-4px);
+  }
+  93% {
+    transform: translateX(0);
+  }
+}
+.signal-tear-surface {
+  position: relative;
+}
+.signal-tear-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  background-image: var(--signal-tear-band);
+  background-size: 100% var(--signal-tear-band-size);
+  transition: opacity 0.3s ease;
+}
+.signal-tear-surface:hover::after {
+  opacity: 0.7;
+  animation:
+    signalTearScroll var(--signal-tear-speed) linear infinite,
+    signalTearJitter 5s steps(1) infinite;
+}
+
+/* ============================================================
+   SOFT EDGE VIGNETTE — very subtle darkening confined to the
+   extreme edges (~15-20%), centre left untouched. Reads as
+   ambient light falloff, like viewing a monitor in a dark room,
+   rather than another CRT effect layer. Sits below the CRT
+   noise/overlay in z-index so it stacks underneath them.
+   ============================================================ */
+.vignette-soft {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 78%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+/* ============================================================
+   SIGNAL LOST burst text — large, dominates the screen briefly
+   mid-transition. Reuses `.chromatic-text` for the RGB-split
+   ghosting instead of duplicating that logic.
+   ============================================================ */
+.signal-lost-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(1.08);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.signal-lost-wrap.reveal {
+  opacity: 1;
+  transform: scale(1);
+}
+.signal-lost-text {
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(2.5rem, 10vw, 7rem);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #e5e5e5;
+  text-transform: uppercase;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+}
+[data-section] {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+  transition:
+    opacity 0.3s ease,
+    filter 0.3s ease;
+}
+[data-section].timeline-active {
+  opacity: 1;
+  filter: none;
 }

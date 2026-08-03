@@ -1,0 +1,17 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  columns?: number;
+}
+
+const { columns = 2 } = Astro.props;
+---
+
+<div
+  class={`grid gap-4 mt-6 ${
+    columns == 2 ? "grid-cols-2" : columns == 3 ? "grid-cols-3" : "grid-cols-4"
+  }`}
+>
+  <slot />
+</div>

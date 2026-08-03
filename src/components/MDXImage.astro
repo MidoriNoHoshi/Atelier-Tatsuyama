@@ -1,0 +1,33 @@
+---
+// src/components/MDXImage.astro
+interface Props {
+  columns?: number;
+}
+const { columns = 2 } = Astro.props;
+
+const gridColsClass =
+  columns === 3 ? "grid-cols-3" : columns === 4 ? "grid-cols-4" : "grid-cols-2";
+---
+
+<div
+  class={`grid ${gridColsClass} gap-4 my-6 border border-white/10 p-2 bg-black/60 clear-both`}
+>
+  <slot />
+</div>
+
+<style is:global>
+  .lg\:col-span-5 img {
+    transition:
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.3s ease,
+      border-color 0.3s ease;
+    cursor: zoom-in;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .lg\:col-span-5 img:hover {
+    transform: scale(1.1);
+    z-index: 40;
+    position: relative;
+  }
+</style>

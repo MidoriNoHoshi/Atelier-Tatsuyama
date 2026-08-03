@@ -1,113 +1,367 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
 import "../../styles/global.css";
+import AudioVisualizer from "../../components/AudioVisualizer.astro";
+
+import defaultBaseImg from "../../assets/log1.jpg";
+import defaultOverlayImg from "../../assets/cellsbackground.png";
 
 export async function getStaticPaths() {
-  const posts = Object.values(import.meta.glob('../../blogs/*.md', { eager: true }));
-  return posts.map((post: any) => {
-    const filename = post.file.split('/').pop().replace('.md', '');
-    return {
-      params: { id: filename }, 
-      props: { post },
-    };
-  });
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
 }
 
 const { post } = Astro.props;
-const { Content, frontmatter } = post;
+const { Content } = await render(post);
+const { title, sub, description, pubDate, img, overlayImg } = post.data;
 
-const subtitle = frontmatter.sub || frontmatter.description || "NO_DATA_ARCHIVED";
-// Fallback to a default if frontmatter.img isn't set
-const bgImage = frontmatter.img || '/assets/default-bg.jpg'; 
+const subtitle = sub || description || "NO_DATA_ARCHIVED";
+
+// Compact regex to prevent Neovim Tree-sitter parser breakage in frontmatter
+const rawContent = post.body || "";
+const cleanText = rawContent
+  .replace(/import\s+.*?;|<[^>]*>|#+\s+|[*_~`]|>\s+/g, "")
+  .trim();
+
+const calculatedWordCount = cleanText
+  ? cleanText.split(/\s+/).filter(Boolean).length
+  : 0;
+const wordCount = post.data.wordCount ?? calculatedWordCount;
+
+const bgBaseSrc = img ? img.src : defaultBaseImg.src;
+const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
 ---
 
-<Layout title={frontmatter.title}>
-  {bgImage && (
-    <div 
-      class="fixed inset-0 z-0 pointer-events-none opacity-[0.7] grayscale"
-      style={`background-image: url(${bgImage}); background-size: cover; background-position: center;`}
-    ></div>
-  )}
+<Layout title={`${title} — Atelier Tatsuyama`}>
+  <!-- PARALLAX BACKGROUND LAYER -->
+  <div
+    id="parallax-container"
+    class="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+  >
+    <!-- BASE BACKGROUND IMAGE -->
+    <img
+      id="parallax-bg-base"
+      src={bgBaseSrc}
+      alt="Base Background"
+      class="absolute inset-0 w-full h-full object-cover scale-90 opacity-100 brightness-60 transition-transform duration-60 ease-out"
+    />
 
-  <div class="crt-noise"></div>
-  <div class="crt-overlay"></div>
-  <div class="scan-line"></div>
+    <!-- OVERLAY IMAGE (Darkened + Low Opacity) -->
+    <img
+      id="parallax-bg-overlay"
+      src={bgOverlaySrc}
+      alt="Overlay Background"
+      class="absolute inset-0 w-full h-full object-cover opacity-10 brightness-40 contrast-50 mix-blend-screen scale-100"
+    />
 
-  <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
-    <defs>
-      <filter id="subtle-aberration" x="-15%" y="-15%" width="130%" height="130%">
-        <feOffset in="SourceGraphic" dx="1.2" dy="0" result="red-shift" />
-        <feOffset in="SourceGraphic" dx="-1.2" dy="0" result="blue-shift" />
-        <feColorMatrix in="red-shift" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0" result="red-fringe"/>
-        <feColorMatrix in="blue-shift" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0.5 0" result="blue-fringe"/>
-        <feGaussianBlur in="red-fringe" stdDeviation="0.2" result="red-blur" />
-        <feGaussianBlur in="blue-fringe" stdDeviation="0.2" result="blue-blur" />
-        <feMerge>
-          <feMergeNode in="red-blur" /><feMergeNode in="blue-blur" /><feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
-    </defs>
-  </svg>
+    <!-- DARK VIGNETTE OVERLAY -->
+    <div
+      class="absolute inset-0 bg-radial from-black/10 via-black/10 to-black/95 z-1"
+    >
+    </div>
+    <div
+      class="absolute inset-0 bg-radial from-transparent via-black/60 to-black"
+    >
+    </div>
+  </div>
 
-  <div class="min-h-screen bg-black/90 text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black">
-    <a href="/" class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors">
-      <span class="chromatic-text tracking-[0.3em] uppercase text-[10px]" data-text="[!] RETURN_TO_ARCHIVE">
-        [!] RETURN_TO_ARCHIVE
-      </span>
-    </a>
+  <!-- CRT NOISE / TRANSITION EFFECTS -->
+  <div id="transition-burst" class="active z-50">
+    <div id="signal-lost-wrap" class="signal-lost-wrap reveal">
+      <span class="signal-lost-text" data-text="SIGNAL LOST">SIGNAL FOUND</span>
+    </div>
+  </div>
+  <div class="crt-noise crt-boost"></div>
+  <div class="crt-overlay crt-boost"></div>
+  <div id="signal-tear" class="signal-tear active"></div>
+  <div class="vignette-soft"></div>
 
-    <article class="max-w-4xl relative">
-      <header class="border-b border-zinc-800 pb-10 mb-12">
-        <div class="text-[10px] text-zinc-600 mb-4 font-mono tracking-widest uppercase">
-          LOG_ID: {Astro.params.id} // STATUS: DECLASSIFIED
+  <!-- MAIN BLOG CONTENT -->
+  <div
+    class="min-h-screen text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black"
+  >
+    <!-- TOP NAVIGATION BAR -->
+    <div class="w-full flex flex-wrap justify-between items-center gap-4 mb-12">
+      <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
+      <div class="flex items-center gap-4">
+        <AudioVisualizer />
+        <button
+          class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+        >
+          [ LANG: EN ]
+        </button>
+      </div>
+
+      <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
+      <a
+        href="/#blog"
+        class="text-zinc-500 hover:text-white group transition-colors"
+      >
+        <span
+          class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+          data-text="[!] RETURN_TO_ARCHIVE"
+        >
+          [!] RETURN_TO_ARCHIVE
+        </span>
+      </a>
+    </div>
+
+    <!-- ARTICLE CONTAINER -->
+    <article
+      class="w-full relative bg-black/40 backdrop-blur-sm p-8 border border-white/10 rounded-sm"
+    >
+      <header class="border-b border-zinc-800 pb-6 mb-10">
+        <div
+          class="flex flex-col md:flex-row items-start md:items-center gap-6"
+        >
+          <!-- SMALL 300px LOG IMAGE -->
+          {
+            img && (
+              <div class="w-full md:w-75 shrink-0 border border-white/10 p-1 bg-black/60">
+                <img
+                  src={img.src}
+                  alt={title}
+                  class="w-full h-auto max-h-45 object-cover border border-white/5"
+                />
+              </div>
+            )
+          }
+
+          <!-- TITLE & METADATA COLUMN -->
+          <div class="flex-1">
+            <div
+              class="text-[10px] text-zinc-600 mb-3 font-mono tracking-widest uppercase"
+            >
+              LOG_ID: {post.id} // STATUS: OPEN
+            </div>
+
+            <h1
+              class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 chromatic-text text-white"
+              data-text={title}
+            >
+              {title}
+            </h1>
+
+            <p
+              class="text-zinc-500 text-xs tracking-[0.3em] uppercase leading-relaxed"
+            >
+              {subtitle}
+            </p>
+          </div>
         </div>
-        
-        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 chromatic-text text-white" data-text={frontmatter.title}>
-          {frontmatter.title}
-        </h1>
-        
-        <p class="text-zinc-500 text-xs tracking-[0.4em] uppercase leading-loose">
-          {subtitle}
-        </p>
       </header>
 
+      <div>
+        <p class="text-zinc-300 text-xs">
+          UPDATED: {pubDate}
+        </p>
 
-
-      <div class="prose prose-invert prose-zinc max-w-none prose-b:mb-8 prose-p:block
-            prose-headings:font-bold prose-headings:uppercase prose-headings:tracking-tighter
-            prose-h1:text-5xl prose-h2:text-3xl prose-h3:text-xl
-            prose-p:text-zinc-400 prose-p:leading-relaxed prose-p:mb-6
-            prose-li:text-zinc-400
-            prose-strong:text-white
-            prose-hr:border-zinc-800
-            whitespace-pre-wrap
-            prose-headings:text-white prose-headings:font-bold prose-headings:uppercase
-            prose-headings:tracking-tighter prose-headings:mt-12 prose-headings:mb-4
-            prose-p:text-zinc-400 prose-p:mb-8 prose-p:leading-relaxed">
-        <Content />
-      </div>      
-      <footer class="mt-20 pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest">
-        END_OF_FILE // TERMINAL_ID: OSAKA_NODE_01
-      </footer>
+        <p class="text-zinc-300 text-xs">
+          WORDCOUNT: {wordCount}
+        </p>
+      </div>
     </article>
+
+    <div
+      class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative w-full"
+    >
+      <div class="lg:col-span-7 prose prose-invert max-w-none">
+        <Content />
+      </div>
+
+      <aside
+        class="lg:col-span-5 sticky top-12 border-l border-white/10 pl-6 flex flex-col gap-8"
+      >
+        <div
+          class="text-s font-mono text-zinc-500 tracking-widest uppercase border-b border-white/10 pb-2"
+        >
+          // MEDIA_TIMELINE
+        </div>
+        <div id="timeline-target" class="flex flex-col gap-8"></div>
+      </aside>
+    </div>
+
+    <div class="mt-20">
+      <a
+        href="/#blog"
+        class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors"
+      >
+        <span
+          class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+          data-text="[!] RETURN_TO_ARCHIVE"
+        >
+          [!] RETURN_TO_ARCHIVE
+        </span>
+      </a>
+    </div>
+
+    <footer
+      class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest"
+    >
+      END_OF_FILE // TERMINAL_ID: TATSUYAMA_NODE_01
+    </footer>
+  </div>
+
+  <!-- IMAGE LIGHTBOX MODAL -->
+  <div
+    id="image-modal"
+    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 cursor-zoom-out"
+  >
+    <div
+      class="relative max-w-5xl max-h-[90vh] border border-white/20 bg-black p-2 flex flex-col items-center"
+    >
+      <!-- Top Terminal Bar -->
+      <div
+        class="w-full flex justify-between items-center px-4 py-2 border-b border-white/10 text-[10px] font-mono text-zinc-400 mb-2"
+      >
+        <span>[ VIEWPORT_INSPECTOR // ZOOM_MODE ]</span>
+        <span class="text-zinc-600">ESC_OR_CLICK_TO_CLOSE</span>
+      </div>
+
+      <!-- Target Enlarged Image -->
+      <img
+        id="modal-img"
+        src=""
+        alt="Enlarged view"
+        class="max-h-[75vh] w-auto object-contain border border-white/10"
+      />
+
+      <div
+        id="modal-caption"
+        class="mt-3 text-xs font-mono text-zinc-400 text-center tracking-widest uppercase"
+      >
+        <!-- Image src or alt text gets injected here -->
+      </div>
+    </div>
   </div>
 </Layout>
 
-<style is:global>
-  body {
-    overflow-y: auto !important;
-    overflow-x: hidden;
-    height: auto !important;
-    background-color: #000;
-  }
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const bgBase = document.getElementById("parallax-bg-base");
+    const bgOverlay = document.getElementById("parallax-bg-overlay");
 
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #000;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #222;
-  }
-</style>
+    const timelineTarget = document.getElementById("timeline-target");
+    let lastSection = null;
+    document.querySelectorAll("[data-timeline-source]").forEach((item) => {
+      item.removeAttribute("data-timeline-source");
+      const section = item.dataset.section;
+      if (section && section !== lastSection) {
+        const label = document.createElement("div");
+        label.className =
+          "timeline-section-label text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/10 pb-1 mt-2";
+        label.textContent = section;
+        timelineTarget?.appendChild(label);
+        lastSection = section;
+      }
+      timelineTarget?.appendChild(item);
+    });
+
+    // Highlight the timeline group matching whatever heading is in view
+    const headings = document.querySelectorAll(
+      ".prose h1, .prose h2, .prose h3",
+    );
+    const sectionEls = document.querySelectorAll("[data-section]");
+    const headingObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const text = entry.target.textContent.trim();
+          sectionEls.forEach((el) => {
+            el.classList.toggle(
+              "timeline-active",
+              text.startsWith(el.dataset.section || "\0"),
+            );
+          });
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px", threshold: 0 },
+    );
+    headings.forEach((h) => headingObserver.observe(h));
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-img");
+    const modalCaption = document.getElementById("modal-caption");
+
+    const mediaImages = document.querySelectorAll("aside img, .prose img");
+    mediaImages.forEach((img) => {
+      img.classList.add(
+        "cursor-pointer",
+        "hover:opacity-90",
+        "transition-opacity",
+      );
+      img.addEventListener("click", () => {
+        if (!modal || !modalImg) return;
+        modalImg.src = img.src;
+        if (modalCaption) {
+          modalCaption.textContent = img.alt || "IMG_VIEWER_OUTPUT";
+        }
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      });
+    });
+
+    modal?.addEventListener("click", () => {
+      modal.classList.remove("flex");
+      modal.classList.add("hidden");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+        modal.classList.remove("flex");
+        modal.classList.add("hidden");
+      }
+    });
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let scrollY = window.scrollY;
+
+    const MAX_SCROLL_OFFSET_BASE = 40;
+    const MAX_SCROLL_OFFSET_OVERLAY = 60;
+
+    function updateParallax() {
+      const scrollableHeight = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        1,
+      );
+      const scrollFraction = Math.min(scrollY / scrollableHeight, 1);
+
+      if (bgBase) {
+        const yBase = scrollFraction * MAX_SCROLL_OFFSET_BASE;
+        bgBase.style.transform = `translate3d(0px, ${yBase}px, 0) scale(1.10)`;
+      }
+      if (bgOverlay) {
+        const yOverlay = scrollFraction * MAX_SCROLL_OFFSET_OVERLAY;
+        bgOverlay.style.transform = `translate3d(0, ${yOverlay}px, 0) scale(1.15)`;
+      }
+    }
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      requestAnimationFrame(updateParallax);
+    });
+
+    window.addEventListener("scroll", () => {
+      scrollY = window.scrollY;
+      requestAnimationFrame(updateParallax);
+    });
+  });
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      document.getElementById("signal-lost-wrap")?.classList.remove("reveal");
+      document.getElementById("signal-tear")?.classList.remove("active");
+    }, 80);
+    setTimeout(() => {
+      document.getElementById("transition-burst")?.classList.remove("active");
+      document
+        .querySelectorAll(".crt-boost")
+        .forEach((el) => el.classList.remove("crt-boost"));
+    }, 260);
+  });
+</script>
