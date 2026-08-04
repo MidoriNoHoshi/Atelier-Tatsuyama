@@ -1,0 +1,58 @@
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: Arial, sans-serif;
+  color: #eee;
+}
+
+#backgroundCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-color: #1a1a2e;
+  display: block;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  min-height: 200vh;
+  text-align: center;
+}
+
+.content h2 {
+  font-size: 2.5em;
+  margin-top: 40px;
+  margin-bottom: 10px;
+}
+
+/* Centered Slider Container */
+.control-panel {
+  max-width: 500px;
+  margin: 25vh auto 55vh auto; /* Centers slider vertically and pushes text down */
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.count-value {
+  font-weight: bold;
+}
+
+/* Range Input */
+.tech-slider {
+  width: 100%;
+  cursor: pointer;
+}

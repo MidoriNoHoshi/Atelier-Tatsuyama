@@ -199,17 +199,46 @@ import contactBg from "../assets/contactBg.png";
             class="flex items-center justify-between w-full pointer-events-auto"
           >
             <div class="flex flex-col items-start gap-2">
-              <AudioVisualizer />
+              <div class="flex items-center gap-4">
+                <AudioVisualizer />
+                <div class="relative" id="lang-switcher">
+                  <button
+                    id="lang-toggle"
+                    class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+                  >
+                    [ LANG: <span id="lang-current">EN</span> ]
+                  </button>
+                  <div
+                    id="lang-menu"
+                    class="hidden absolute top-full left-0 mt-1 border border-white/10 bg-black/95 backdrop-blur-sm min-w-full z-50"
+                  >
+                    <button
+                      data-lang="EN"
+                      class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                      >EN</button
+                    >
+                    <button
+                      data-lang="JP"
+                      class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                      >JP</button
+                    >
+                    <button
+                      data-lang="NOR"
+                      class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                      >NOR</button
+                    >
+                  </div>
+                </div>
+              </div>
               <div
                 id="playing"
                 class="playing-label hidden opacity-0 transition-all duration-700 ease-out text-xs font-mono tracking-widest text-neutral-300"
               >
                 Now playing: <span class="text-neutral-300 track-title-display"
-                  >Aineth – Till Death Do Us Part</span
+                  >---</span
                 >
               </div>
             </div>
-
             <nav class="z-40 hidden md:flex items-center gap-8 lg:gap-12">
               <a
                 data-slide="0"
@@ -294,7 +323,6 @@ import contactBg from "../assets/contactBg.png";
                   <span class="w-12 h-px bg-gray-500"></span>
                 </div>
               </div>
-
               <div
                 id="cli-music-terminal"
                 class="cli-terminal-container hidden opacity-0 w-full font-mono text-sm text-zinc-400 space-y-4 relative z-20 transition-all duration-1000 ease-out"
@@ -307,33 +335,35 @@ import contactBg from "../assets/contactBg.png";
                 </div>
 
                 <!-- Command 1: Reading Intro File -->
+                <!-- Command 1: Reading Intro File -->
                 <div class="space-y-2">
                   <div class="flex items-center gap-2 text-zinc-300 font-bold">
                     <span class="text-emerald-400">tatsuyama@atelier</span>
                     <span class="text-zinc-600">:</span>
                     <span class="text-blue-400">~/pages</span>
                     <span class="text-zinc-500">$</span>
-                    <span id="cli-cmd-intro" class="text-white">cat intro.txt</span>
+                    <span id="cli-cmd-intro" class="text-white"
+                      >cat intro.txt</span
+                    >
                   </div>
 
                   <div
                     id="cli-intro-output"
-                    class="text-zinc-300 text-sm leading-relaxed space-y-2"
+                    class="text-zinc-300 text-sm leading-relaxed space-y-2 pl-2"
                   >
-                    <span class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider">
+                    <span
+                      class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider"
+                    >
                       [ Entry: Introduction ]
                     </span>
-                    <p id="clean-paragraph" class="m-0">
-                      Current_Location: 大阪(Osaka, Japan)<br />
-                      -<br />
-                      Welcome to my virtual atelier. A central repository for projects, logs, and inspirations.<br />
-                      Click on any track below to change music.
-                    </p>
+                    <!-- Added id="clean-paragraph" and whitespace-pre-wrap -->
+                    <p id="clean-paragraph" class="m-0 whitespace-pre-wrap"></p>
                   </div>
                 </div>
 
                 <!-- Command 2: Music Directory Listing -->
-                <div id="cli-music-section" class="space-y-2 pt-2">
+                <!-- Added opacity-0 cli-listing-section class to keep prompt hidden until sequence starts -->
+                <div id="cli-music-section" class="space-y-2 pt-2 cli-listing">
                   <div class="flex items-center gap-2 text-zinc-300 font-bold">
                     <span class="text-emerald-400">tatsuyama@atelier</span>
                     <span class="text-zinc-400">:</span>
@@ -368,49 +398,18 @@ import contactBg from "../assets/contactBg.png";
                           </span>
                           <div class="flex items-center gap-2">
                             <span class="text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                              >
+                              &gt;
                             </span>
                             <span class="text-zinc-300 group-hover:text-white font-mono group-hover:underline decoration-white/40">
-                              {track.artist}_-_{track.title.replace(/\s+/g, "_")}
-                              .mp3
+                              {track.artist}_-_
+                              {track.title.replace(/\s+/g, "_")}.mp3
                             </span>
                           </div>
                         </div>
                       ))
-                      }
-
-                      <div class="space-y-2">
-                        <div class="flex items-center gap-2 text-zinc-300 font-bold">
-                    <span class="text-emerald-400">tatsuyama@atelier</span>
-                    <span class="text-zinc-600">:</span>
-                    <span class="text-blue-400">~/pages</span>
-                    <span class="text-zinc-500">$</span>
-                    <span id="cli-cmd-intro" class="text-white">cat intro.txt</span>
-                  </div>
-
-                  <div
-                    id="cli-intro-output"
-                    class="text-zinc-300 text-sm leading-relaxed space-y-2"
-                  >
-                    <span class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider">
-                      [ Entry: Introduction ]
-                    </span>
-                    <p id="clean-paragraph" class="m-0">
-                      Current_Location: 大阪(Osaka, Japan)<br />
-                      -<br />
-                      Welcome to my virtual atelier. A central repository for projects, logs, and inspirations.<br />
-                      Click on any track below to change music.
-                    </p>
-                  </div>
-
-
-                      </div>
-
-
-                      
+                    }
                   </div>
                 </div>
-
                 <!-- Next Prompt / Blinking Cursor -->
                 <div
                   id="cli-final-prompt"
@@ -658,7 +657,10 @@ import contactBg from "../assets/contactBg.png";
                         status: "DONE!",
                       },
                       { task: "Switch blog content to MDX", status: "DONE!" },
-                      { task: "Merge Roadmap into Contacts", status: "DONE!" },
+                      {
+                        task: "Merge Roadmap into Contacts",
+                        status: "DONE!",
+                      },
                       { task: "Refine home page intro", status: "DOING" },
                       {
                         task: "Background and images to work with blogs",
@@ -994,21 +996,14 @@ import contactBg from "../assets/contactBg.png";
         projectsObserver.observe(projectsSection);
       });
 
-      function typeWriter(element, speed, callback) {
-        const text = element.innerHTML.trim().replace(/<br\s*\/?>/gi, "\n");
-        element.innerHTML = "";
+      function typeWriter(element, text, speed, callback) {
         element.style.visibility = "visible";
+        element.textContent = "";
 
         let i = 0;
         function type() {
           if (i < text.length) {
-            if (text.charAt(i) === "\n") {
-              if (element.innerHTML.slice(-4) !== "<br>") {
-                element.innerHTML += "<br>";
-              }
-            } else {
-              element.innerHTML += text.charAt(i);
-            }
+            element.textContent += text.charAt(i);
             i++;
             setTimeout(type, speed);
           } else if (callback) {
@@ -1021,38 +1016,74 @@ import contactBg from "../assets/contactBg.png";
       function runTerminalTypewriter() {
         const cmdIntroEl = document.getElementById("cli-cmd-intro");
         const cleanParagraph = document.getElementById("clean-paragraph");
+        const musicSectionEl = document.getElementById("cli-music-section");
         const cmdMusicEl = document.getElementById("cli-command-typed");
         const listingEl = document.getElementById("cli-listing");
         const finalPromptEl = document.getElementById("cli-final-prompt");
 
-        if (!cmdIntroEl) return;
+        if (!cmdIntroEl || !cleanParagraph) return;
 
-        // Sequence 1: Type `cat intro.txt`
-        typeWriter(cmdIntroEl, 30, () => {
-          // Sequence 2: Type paragraph content
+        const introText =
+          "Current_Location: 大阪(Osaka, Japan)\n-\nWelcome to my virtual atelier. A central repository for projects, logs, and inspirations.\n-\nPlease take a look at my journey creating this website:\n-\n--Log:001 Creating the website.mdx\n-\nClick on any track below to change music.";
+
+        // Step 1: Type `cat intro.txt`
+        typeWriter(cmdIntroEl, "cat intro.txt", 30, () => {
+          // Step 2: Type intro text paragraph
           setTimeout(() => {
-            if (cleanParagraph) {
-              typeWriter(cleanParagraph, 10, () => {
-                // Sequence 3: Type `ls -la --sort=time`
-                setTimeout(() => {
-                  if (cmdMusicEl) {
-                    typeWriter(cmdMusicEl, 30, () => {
-                      // Sequence 4: Reveal file items and prompt
-                      setTimeout(() => {
-                        if (listingEl) listingEl.classList.add("cli-part-revealed");
-                      }, 150);
+            typeWriter(cleanParagraph, introText, 8, () => {
+              // Convert log string into interactive anchor element
+              cleanParagraph.innerHTML = cleanParagraph.innerHTML.replace(
+                "--Log:001 Creating the website.mdx",
+                '<a href="/blogs/001" class="text-white underline decoration-dotted underline-offset-4 hover:text-emerald-400 transition-colors cursor-pointer">--Log:001 Creating the website.mdx</a>',
+              );
 
-                      setTimeout(() => {
-                        if (finalPromptEl) finalPromptEl.classList.add("cli-part-revealed");
-                      }, 450);
-                    });
-                  }
-                }, 200);
-              });
-            }
+              // Step 3: Reveal second prompt line and type `ls -la --sort=time`
+              setTimeout(() => {
+                if (musicSectionEl)
+                  musicSectionEl.classList.add("cli-part-revealed");
+                if (!cmdMusicEl) return;
+
+                typeWriter(cmdMusicEl, "ls -la --sort=time", 30, () => {
+                  // Step 4: Reveal file listing and trailing prompt cursor sequentially
+                  setTimeout(() => {
+                    if (listingEl) listingEl.classList.add("cli-part-revealed");
+                  }, 100);
+                  setTimeout(() => {
+                    if (finalPromptEl)
+                      finalPromptEl.classList.add("cli-part-revealed");
+                  }, 300);
+                });
+              }, 200);
+            });
           }, 150);
         });
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("lang-toggle");
+        const menu = document.getElementById("lang-menu");
+        const current = document.getElementById("lang-current");
+        if (!toggle || !menu) return;
+
+        const saved = localStorage.getItem("selected_lang");
+        if (saved && current) current.textContent = saved;
+
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          menu.classList.toggle("hidden");
+        });
+
+        document.querySelectorAll(".lang-option").forEach((opt) => {
+          opt.addEventListener("click", () => {
+            const lang = opt.dataset.lang;
+            if (current) current.textContent = lang;
+            localStorage.setItem("selected_lang", lang);
+            menu.classList.add("hidden");
+          });
+        });
+
+        document.addEventListener("click", () => menu.classList.add("hidden"));
+      });
 
       document.addEventListener("DOMContentLoaded", () => {
         const cliTracks = document.querySelectorAll(".track-cli-item");

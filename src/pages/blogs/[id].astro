@@ -95,11 +95,34 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
         <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
         <div class="flex items-center gap-4">
           <AudioVisualizer />
-          <button
-            class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
-          >
-            [ LANG: EN ]
-          </button>
+          <div class="relative" id="lang-switcher">
+            <button
+              id="lang-toggle"
+              class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+            >
+              [ LANG: <span id="lang-current">EN</span> ]
+            </button>
+            <div
+              id="lang-menu"
+              class="hidden absolute top-full left-0 mt-1 border border-white/10 bg-black/95 backdrop-blur-sm min-w-full z-50"
+            >
+              <button
+                data-lang="EN"
+                class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                >EN</button
+              >
+              <button
+                data-lang="JP"
+                class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                >JP</button
+              >
+              <button
+                data-lang="NOR"
+                class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                >NOR</button
+              >
+            </div>
+          </div>
         </div>
 
         <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
@@ -180,7 +203,8 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
         </div>
 
         <aside
-          class="lg:col-span-5 sticky top-12 border-l border-white/10 pl-6 flex flex-col gap-8"
+          id="timeline-aside"
+          class="lg:col-span-5 sticky top-12 self-start max-h-[calc(100vh-6rem)] overflow-y-auto border-l border-white/10 pl-6 flex flex-col gap-8"
         >
           <div
             class="text-s font-mono text-zinc-500 tracking-widest uppercase border-b border-white/10 pb-2"
@@ -253,6 +277,9 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
     const bgOverlay = document.getElementById("parallax-bg-overlay");
 
     const timelineTarget = document.getElementById("timeline-target");
+    const timelineAside = document.getElementById("timeline-aside");
+    const sectionLabels = new Map(); // section name -> label element
+
     let lastSection = null;
     document.querySelectorAll("[data-timeline-source]").forEach((item) => {
       item.removeAttribute("data-timeline-source");
@@ -263,27 +290,47 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
           "timeline-section-label text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/10 pb-1 mt-2";
         label.textContent = section;
         timelineTarget?.appendChild(label);
+        sectionLabels.set(section, label);
         lastSection = section;
       }
       timelineTarget?.appendChild(item);
     });
 
-    // Highlight the timeline group matching whatever heading is in view
     const headings = document.querySelectorAll(
       ".prose h1, .prose h2, .prose h3",
     );
     const sectionEls = document.querySelectorAll("[data-section]");
+    let activeSection = null;
+
     const headingObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           const text = entry.target.textContent.trim();
+
           sectionEls.forEach((el) => {
             el.classList.toggle(
               "timeline-active",
               text.startsWith(el.dataset.section || "\0"),
             );
           });
+
+          const matchedSection = [...sectionLabels.keys()].find((s) =>
+            text.startsWith(s),
+          );
+          if (
+            matchedSection &&
+            matchedSection !== activeSection &&
+            timelineAside
+          ) {
+            activeSection = matchedSection;
+            const label = sectionLabels.get(matchedSection);
+            const targetTop =
+              label.getBoundingClientRect().top -
+              timelineAside.getBoundingClientRect().top +
+              timelineAside.scrollTop;
+            timelineAside.scrollTo({ top: targetTop, behavior: "smooth" });
+          }
         });
       },
       { rootMargin: "-20% 0px -70% 0px", threshold: 0 },

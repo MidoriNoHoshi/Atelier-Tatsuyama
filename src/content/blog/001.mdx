@@ -11,8 +11,9 @@ import { Image } from "astro:assets";
 import ImageGroup from "../../components/MDXImage.astro";
 import Gallery from "../../components/gallery.astro";
 import TimelineItem from "../../components/timelineItems.astro";
+import IFrameDemo from "../../components/IFrameDemo.astro";
 
-import tomorrowArknights from "../../assets/01CreationBlog/Tomorrow Arknights 720P.mp4";
+import tomorrowArknights from "../../assets/01CreationBlog/tomorrowArknights.gif";
 import smallChenRain from "../../assets/01CreationBlog/theory-chen-koschei-and-chixiao-the-sword-of-kings-v0-9fjr6kv1etx41.webp";
 import burningCityPenguin from "../../assets/01CreationBlog/2026-08-03-230120_hyprshot.png";
 import burningroad from "../../assets/01CreationBlog/2026-08-03-230147_hyprshot.png";
@@ -30,7 +31,7 @@ import cellsbackgroundUnedited from "../../assets/01CreationBlog/cells_backgroun
 import EarlyPlan from "../../assets/01CreationBlog/EarlyPlan.JPG";
 import EarlyPlan1 from "../../assets/01CreationBlog/EarlyPlan1.JPG";
 import EarlyPlan2 from "../../assets/01CreationBlog/EarlyPlan2.JPG";
-import sideScroller from "../../assets/01CreationBlog/sideScroller.mp4";
+import sideScroller from "../../assets/01CreationBlog/sideScroller.gif";
 import MSRBlog from "../../assets/01CreationBlog/MonsterSirenRecordsBlogInspiration.png";
 import MSRMusic from "../../assets/01CreationBlog/MonsterSirenRecordsMusicPlayer.png";
 import ZZZLoading from "../../assets/01CreationBlog/ZZZcrttransitionLoading.png";
@@ -53,18 +54,17 @@ import contactsBG from "../../assets/01CreationBlog/homepage_pictures/contactBg.
 
 ## Motivation
 
-The inception of this "atelier" website traces back to a minor dispute I had with my father, whom had made a personal portfolio style website to display his projects.
+The inception of this "atelier" website traces back to a minor dispute I had with my father, whom had made a personal portfolio style website to display his projects.\
 I found his website to be quite plain and generally visually uninspiring, and gave him my criticisms plainly, to which he replied with his usual "It's sooo~ easy to ciritise" and of course what he's really saying is:
 
 > _but it is so much harder to actually do_
 
 Essentially challenging me to create a website of my own, to which I accacpted and promised I would create a cooler website.
-
 During this time, I was a fan of Arknights and I had been itching to create something inspired by that style, so the idea came about that I shall imitate the dark, grungy, tech-look of Arknights.
 
 <TimelineItem section="Motivation">
   <Gallery columns={4}>
-    <video src={tomorrowArknights} class="w-full h-auto object-cover border border-white/10" controls autoplay muted playsinline/>
+    <Image src={tomorrowArknights} alt="Rain and grime" quality="high" />
     <Image src={smallChenRain} alt="Rain and grime" quality="high" />
     <Image src={burningCityPenguin} alt="Feirce Storms" quality="high" />
     <Image src={burningroad} alt="Misery and choas" quality="high" />
@@ -82,11 +82,12 @@ During this time, I was a fan of Arknights and I had been itching to create some
 <TimelineItem section="Aesthetics">
   <Image src={MSRMusic} alt="MSR Music Player" quality="high" />
 
-  <Gallery columns={2}>
-    <Image src={MSRBlog} alt="MSR Blog page layout" quality="high" />
-    <Image src={ZZZLoading} alt="Crt loading" quality="high" />
-    <Image src={zzz_tv_mode} alt="ZZZ crt array" quality="high" />
-  </Gallery>
+<Gallery columns={2}>
+  <Image src={MSRBlog} alt="MSR Blog page layout" quality="high" />
+  <Image src={ZZZLoading} alt="Crt loading" quality="high" />
+</Gallery>
+<Image src={zzz_tv_mode} alt="ZZZ crt array" quality="high" />
+
 </TimelineItem>
 
 Arknights (Hypergryph) and Zenless Zone Zero (MiHoYo) have some of the coolest visual language and style I have ever seen. Zenless Zone Zero much less so, but the CRT monitor / arrays are specifically what I fell in love with.
@@ -130,25 +131,40 @@ Arknights (Hypergryph) and Zenless Zone Zero (MiHoYo) have some of the coolest v
   </Gallery>
 </TimelineItem>
 
-<TimelineItem>
-  <video
-    src={sideScroller}
-    class="w-full h-auto object-cover border border-white/10"
-    controls
-    autoplay
-    playsinline
-  />
-</TimelineItem>
+These brainstorms on the right are all that remain from my first day of building my website.\
+I was aware of "Reactbits" already, and was fully intending on relying on their components as cornerstones of my website.
 
-These brainstorms on the right are all that remains from my first day of building my website. I was aware of "Reactbits" already, and was fully intending on relying on their components as cornerstones of my website.
-I love clean digital spaces, and initially I was intending to make a simple and clean personal website as well.\
-However, my favourite website that I frequented often was Monster-Siren-Records (An Arknights Radio essentially), as Arknights despite being a mere mobile game has produced so much amazing music in pretty much every genre, I'm always curious to hear what their new tracks are. In terms of art style and aesthetics it's also incredible so I started looking more into it as I took HTML and CSS courses online.
+I love clean digital spaces, and initially I was intending to make a simple and clean personal website as well. However, my favourite website that I frequented often was Monster-Siren-Records (An Arknights Radio essentially), which is heavy with dynamic and visual elements reflecting the artstyle of the game.
 
-After finishing the HTML + Javascript and CSS online beginner lessons I made: "Version1", ""
+Arknights despite being a mere mobile game has produced so much amazing music in pretty much every genre, I'm always curious to hear what their new tracks are. In terms of art style and aesthetics it's also incredible so I started looking more into it as I took HTML and CSS courses online.
 
-So at this point that I thought I would go steal as many elements from the Hypergryph Monster Siren website as I could, so it started out as a black background with side-scrolling.
-On the Hypergryph website, they somehow made it seem like the input of scrolling with the mouse is jacked and it actually scrolls to the side and in my attempt to copy this I wasted _many, many_ hours. Eventually I did manage to make it work _most of the time_ by jacking the scrolling input into horizontal scrolling, but this breaks horizontal swiping. So in the end I removed it, as not being able to have proper scrolling feels like grinding my mind's dick through a wood-chipper.
-I also wanted to have an audio visualiser on the top left just like Monster-Siren-Records, which I left entirely up to Claude.
+---
+
+After finishing the HTML + Javascript and CSS online beginner lessons I made version1:
+
+<IFrameDemo
+  src="/demos/Version1/index.html"
+  title="Version 1 - Local Static Build"
+  height="480px"
+/>
+
+---
+
+So at this point that I thought I would go steal as many elements from the Hypergryph Monster Siren website as I could, so it started out as a black background with side-scrolling.\
+On the Hypergryph website, they somehow made it seem like the input of scrolling with the mouse is jacked and it actually scrolls to the side and in my attempt to copy this I wasted _many, many_ hours.\
+Eventually I did manage to make it work _most of the time_ by jacking the scrolling input into horizontal scrolling, but this breaks horizontal swiping. So in the end I removed it, as not being able to have proper scrolling feels like grinding my mind's dick through a wood-chipper.
+
+It would have been amazing if I still had that website attempt lying around somewhere, but all I have is my side-scroller animation mimicking Monster-Siren-Records.
+
+<Image
+  src={sideScroller}
+  alt="Side scroller demo"
+  class="not-timeline h-auto my-4 border border-white/10"
+  width={780}
+/>
+
+I also wanted to have an audio visualiser on the top left just like
+Monster-Siren-Records, which I left entirely up to Claude.
 
 From here, I only then somehow found out about the huggingface Deepsite AI website (makes you a website with a single prompt). So of course I immediately waste all my free tokens trying to make it copy the Monster-Siren-Records.
 And the website it produced was cool and clean though not really what I was looking for, so I salvaged it, stealing the scan-line, crosshair cursor, menu-items, and the logic behind the wobble for the "Hello Friend" text. Now that I have seen many websites and personal portfolios, the issue I find with AI websites is that they ALL look so generic they actually become the most ugly, this includes those with 3D animation.
@@ -160,17 +176,8 @@ The CRT monitor array / navigation with the bangboo was such a cool and amazing 
 
 <TimelineItem section="Photography -> Assets">
   <Gallery columns={2}>
-    <Image src={homeOriginal} alt="Osaka Castle" quality="high" />
-    <Image src={homeEdited} alt="Partial opacity" quality="high" />
-  </Gallery>
-  <Gallery columns={2}>
     <Image src={dBoulevard_original} alt="1st Photo" quality="high" />
     <Image src={cBoulevard} alt="2nd night's photo" quality="high" />
-  </Gallery>
-  <Gallery columns={3}>
-    <Image src={dBoulevardL} alt="Left-side" quality="high" />
-    <Image src={dBoulevardC} alt="Centre" quality="high" />
-    <Image src={dBoulevardR} alt="Right-side" quality="high" />
   </Gallery>
 </TimelineItem>
 <TimelineItem section="Photography -> Assets">
@@ -204,5 +211,24 @@ Embracing the whims of my camera, I knew that I wanted to use this blurry stairw
 But it just kept on looking weird, and I have so little experience with GIMP.
 So in an attempt to comprimise, I split the photo into 3 parts and used them for the unique transition animation.
 
+<Gallery columns={3} class="not-timeline">
+  <Image src={dBoulevardL} alt="Left-side" quality="high" />
+  <Image src={dBoulevardC} alt="Centre" quality="high" />
+  <Image src={dBoulevardR} alt="Right-side" quality="high" />
+</Gallery>
+
 For the Home section, I was originally planning on having a wireframe of some buildings in Osaka, or a Arknights Stylised picture of the Osaka Castle, and I even tried getting Gemini Nano Banana to produce something. So I gave up, and wrote this kind of introductory paragraph.
 And then, only after moving it to the side did I realise that a clean Osaka castle picture taken by me would probably look best anyway.
+
+<Image
+  src={homeOriginal}
+  alt="Osaka Castle"
+  class="not-timeline h-auto my-4 border border-white/10"
+  quality="high"
+/>
+<Image
+  src={homeEdited}
+  alt="Partial opacity"
+  class="not-timeline border border-white/10"
+  quality="high"
+/>

@@ -118,7 +118,7 @@ import LonesomeComet from "../assets/Music/The Infinite Sky, A Lonesome Comet An
       if (audio.paused) {
         try {
           await audio.play();
-          if (toggleStatus) toggleStatus.textContent = "Audio: ON";
+          if (toggleStatus) toggleStatus.textContent = "Audio: ON_";
           if (playingLabel) {
             playingLabel.classList.remove("hidden");
             playingLabel.classList.add("active");

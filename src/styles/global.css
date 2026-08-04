@@ -580,7 +580,7 @@ body {
    the reading flow. Confined to the article's own max-width, so it
    never overflows the viewport regardless of screen size. */
 @media (min-width: 1024px) {
-  .prose-invert :where(img) {
+  .prose-invert :where(img:not(.not-timeline)) {
     float: right;
     clear: right;
     width: min(320px, 34%);
@@ -884,35 +884,41 @@ body {
    is kept as an alias so either name works. Previously only ".revealed"
    was styled here, so the ".triggered" class JS actually adds did
    nothing and the terminal just silently never appeared. */
+
+/* Hide typed content until typeWriter() reveals it, so the terminal
+   doesn't flash its static text before the typing animation starts. */
+/* Hide typed content target nodes prior to execution */
+#cli-cmd-intro,
+#clean-paragraph,
+#cli-command-typed {
+  visibility: hidden;
+}
+
 .cli-terminal-container {
   display: none;
   opacity: 0;
   transform: translateY(16px);
   transition:
-    opacity 1s ease-out,
-    transform 1s ease-out;
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
 }
 
-.cli-terminal-container.revealed,
 .cli-terminal-container.triggered {
   display: block;
   opacity: 1;
   transform: translateY(0);
 }
-
-/* Sub-parts of the terminal that get typed in sequence, after the bio
-   paragraph finishes (see runTerminalTypewriter() in index.astro).
-   Hidden until their own reveal class lands, so the block doesn't just
-   pop in all at once. */
 .cli-listing,
 .cli-final-prompt {
   opacity: 0;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.4s ease-out;
 }
+
 .cli-listing.cli-part-revealed,
 .cli-final-prompt.cli-part-revealed {
   opacity: 1;
 }
+
 .cli-typing-cursor {
   display: inline-block;
   width: 6px;
@@ -922,6 +928,7 @@ body {
   background: rgba(255, 255, 255, 0.8);
   animation: cliCursorBlink 0.9s steps(1) infinite;
 }
+
 @keyframes cliCursorBlink {
   0%,
   49% {
