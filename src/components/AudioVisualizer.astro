@@ -1,17 +1,29 @@
 ---
-import AinethTillDeathDoUsPart from '../assets/Music/AinethTillDeathDoUsPart.mp3'
+import AinethTillDeathDoUsPart from "../assets/Music/AinethTillDeathDoUsPart.mp3";
+import Moonfall from "../assets/Music/Xomu - Moonfall VIP.mp3";
+import LonesomeComet from "../assets/Music/The Infinite Sky, A Lonesome Comet And The Decaying Civilization [1373662963].opus";
 ---
 
 <div class="flex items-center gap-4 h-8">
   <div class="relative group">
-    <canvas id="visualizer" class="w-80 h-8 opacity-60 transition-opacity group-hover:opacity-100"></canvas>
+    <canvas
+      id="visualizer"
+      class="w-80 h-8 opacity-60 transition-opacity group-hover:opacity-100"
+    ></canvas>
   </div>
 
-  <button id="audio-toggle" class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300">
+  <button
+    id="audio-toggle"
+    class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+  >
     <span id="toggle-status">Audio: OFF</span>
   </button>
 
-  <audio id="bg-audio" src={AinethTillDeathDoUsPart} loop crossorigin="anonymous"></audio>
+  <audio
+    id="bg-audio"
+    src={AinethTillDeathDoUsPart}
+    loop
+    crossorigin="anonymous"></audio>
 </div>
 
 <script is:inline>
@@ -26,7 +38,14 @@ import AinethTillDeathDoUsPart from '../assets/Music/AinethTillDeathDoUsPart.mp3
     const ctx = canvas.getContext("2d");
     const toggleBtn = document.getElementById("audio-toggle");
 
+    // Load saved track or default
+    const savedTrack = localStorage.getItem("selected_track_src");
+    if (savedTrack && audio) {
+      audio.src = savedTrack;
+    }
+
     function setupCanvas() {
+      if (!canvas || !ctx) return;
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -36,7 +55,7 @@ import AinethTillDeathDoUsPart from '../assets/Music/AinethTillDeathDoUsPart.mp3
     }
 
     function connectAudio() {
-      if (started) return;
+      if (started || !audio) return;
       started = true;
 
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -46,20 +65,17 @@ import AinethTillDeathDoUsPart from '../assets/Music/AinethTillDeathDoUsPart.mp3
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
-      // canvasWidth = rect.width;
-      // canvasHeight = rect.height;
-      //
-      // draw();
     }
 
-function draw() {
+    function draw() {
       requestAnimationFrame(draw);
+      if (!canvas || !ctx) return;
 
       const rect = canvas.getBoundingClientRect();
       const displayWidth = rect.width;
       const displayHeight = rect.height;
       const centerY = displayHeight / 2;
-      
+
       ctx.clearRect(0, 0, displayWidth, displayHeight);
 
       const bufferLength = analyser ? analyser.frequencyBinCount : 128;
@@ -74,54 +90,25 @@ function draw() {
       const totalBarWidth = barWidth + gap;
       const visibleBars = Math.floor(displayWidth / totalBarWidth);
 
-      // FIX 1: Ensure x is defined
-      let x = 0; 
-
+      let x = 0;
       for (let i = 0; i < visibleBars; i++) {
         const value = analyser ? dataArray[i] / 255 : 0;
-        
-        // FIX 2: Use displayHeight (the CSS height) for the math
-        const barHeight = (value * (displayHeight / 2)) + 1;
+        const barHeight = value * (displayHeight / 2) + 1;
 
         ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + value * 0.7})`;
-
-        // Top half
         ctx.fillRect(x, centerY - barHeight, barWidth, barHeight);
-        // Bottom half (mirrored)
         ctx.fillRect(x, centerY, barWidth, barHeight);
-        
         x += totalBarWidth;
       }
     }
-    setupCanvas();
-    draw();
 
-    // function draw() {
-    //   if (!analyser) return;
-    //   requestAnimationFrame(draw);
-    //
-    //   const bufferLength = analyser.frequencyBinCount;
-    //   const dataArray = new Uint8Array(bufferLength);
-    //   analyser.getByteFrequencyData(dataArray);
-    //
-    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //   const barWidth = (canvas.width / bufferLength) * 2;
-    //   let x = 0;
-    //
-    //   for (let i = 0; i < bufferLength; i++) {
-    //     const barHeight = (dataArray[i] / 255) * canvas.height;
-    //     ctx.fillStyle = `rgba(255,255,255,${0.2 + dataArray[i] / 255})`;
-    //     ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
-    //     x += barWidth;
-    //   }
-    // }
-    
-    window.addEventListener('resize', setupCanvas);
+    setupCanvas();
+    window.addEventListener("resize", setupCanvas);
 
     async function startAudio() {
       connectAudio();
 
-      if (audioCtx.state === "suspended") {
+      if (audioCtx && audioCtx.state === "suspended") {
         await audioCtx.resume();
       }
 
@@ -131,19 +118,47 @@ function draw() {
       if (audio.paused) {
         try {
           await audio.play();
-          toggleStatus.textContent = "Audio: ON";
-          playingLabel.classList.remove("hidden");
-          playingLabel.classList.add("active");
+          if (toggleStatus) toggleStatus.textContent = "Audio: ON";
+          if (playingLabel) {
+            playingLabel.classList.remove("hidden");
+            playingLabel.classList.add("active");
+          }
         } catch (err) {
           console.error("Playback blocked:", err);
         }
       } else {
         audio.pause();
-        toggleStatus.textContent = "Audio: OFF";
-        playingLabel.classList.remove("active");
+        if (toggleStatus) toggleStatus.textContent = "Audio: OFF";
+        if (playingLabel) playingLabel.classList.remove("active");
       }
     }
-    toggleBtn.addEventListener("click", startAudio);
+
+    // Global helper function to switch tracks from anywhere on the site
+    window.changeTrack = async function (src, title, artist) {
+      localStorage.setItem("selected_track_src", src);
+      localStorage.setItem("selected_track_title", title);
+      localStorage.setItem("selected_track_artist", artist);
+
+      if (audio) {
+        const wasPlaying = !audio.paused;
+        audio.src = src;
+
+        // Update now playing UI text
+        const titleEls = document.querySelectorAll(".track-title-display");
+        titleEls.forEach((el) => (el.textContent = `${artist} – ${title}`));
+
+        if (wasPlaying || started) {
+          connectAudio();
+          if (audioCtx && audioCtx.state === "suspended")
+            await audioCtx.resume();
+          audio.play();
+          const toggleStatus = document.getElementById("toggle-status");
+          if (toggleStatus) toggleStatus.textContent = "Audio: ON";
+        }
+      }
+    };
+
+    if (toggleBtn) toggleBtn.addEventListener("click", startAudio);
     window.startBackgroundAudio = startAudio;
   });
 </script>

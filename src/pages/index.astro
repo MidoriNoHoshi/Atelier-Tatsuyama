@@ -11,46 +11,36 @@ const blogEntries = posts
     img: post.data.img,
   }));
 
-// import ScrollIndicator from "../components/ScrollIndicator.jsx";
 import "../styles/global.css";
 import AudioVisualizer from "../components/AudioVisualizer.astro";
 
-import defaultImg from "../assets/default.jpg";
+import AinethTillDeath from "../assets/Music/AinethTillDeathDoUsPart.mp3";
+import XomuMoonfall from "../assets/Music/Xomu - Moonfall VIP.mp3";
+import KurokoteiTheInfiniteSky from "../assets/Music/The Infinite Sky, A Lonesome Comet And The Decaying Civilization [1373662963].opus";
 
+const playlist = [
+  {
+    id: "01",
+    title: "Till Death Do Us Part",
+    artist: "Aineth",
+    src: AinethTillDeath,
+  },
+  { id: "02", title: "Moonfall VIP", artist: "Xomu", src: XomuMoonfall },
+  {
+    id: "03",
+    title: "The Infinite Sky, A... ",
+    artist: "Kurokotei",
+    src: KurokoteiTheInfiniteSky,
+  },
+];
+
+import defaultImg from "../assets/default.jpg";
 import homeLower from "../assets/Home(Lower)Gradient2.png";
 
 import dizzystarsLpiece from "../assets/dizzystairsLpiece.png";
 import dizzystarsRpiece from "../assets/dizzystairsRpiece.png";
 import dizzystarsMpiece from "../assets/dizzystairsMpiece.png";
 import clearstairs from "../assets/clearstairs.jpg";
-import log1 from "../assets/log1.jpg";
-import log2 from "../assets/log2.jpg";
-import log3 from "../assets/log3.jpg";
-import log4 from "../assets/log4.png";
-
-// const blogEntries = [
-// { id: '001', title: "Creation of this Website", sub: "Why, and how and I made this personal website of mine", img: log1 },
-// { id: '002', title: "Learning Japanese", sub: "Current journey, and how I wish I could have started", img: log2 },
-//   { id: '003', title: 'Introspection (Ananda Marga + etc)', sub: "Growing up with Ananda Marga and why I'm so resentful about it", img: log3 },
-//   { id: '004', title: 'Linux and Hyprland', sub: 'Ricing, minimalism, and complaints', img: log4 },
-// ];
-
-// Grid dimensions
-const cols = 12;
-const rows = 6;
-
-function getRandomPositions(count) {
-  // type: ignore
-  let cells = [];
-  for (let r = 1; r <= rows; r++) {
-    for (let c = 1; c <= cols; c++) {
-      cells.push({ row: r, col: c });
-    }
-  }
-  // Shuffle and pick the first 'count' cells
-  return cells.sort(() => Math.random() - 0.5).slice(0, count);
-}
-// const positions = getRandomPositions(blogEntries.length);
 
 const githubUsername = "MidoriNoHoshi";
 const githubProfile = `https://github.com/${githubUsername}`;
@@ -58,24 +48,28 @@ const email = "nemitatsu@proton.me";
 const instagram = "https://www.instagram.com/tatsu._.yama/";
 
 import projectsBg from "../assets/ProjectsRemoved.png";
+import projectsImageDefault from "../assets/default.jpg";
 import linuxRice from "../assets/LinuxRice.png";
 import japtoankiExample from "../assets/japtoankiExample.png";
 import japtoankiSampleVid from "../assets/japtoankiSampleVid.mp4";
 import obsidianScreenshot from "../assets/obsidianPlugin.png";
 import kyubiScreenshot from "../assets/kyubiScreenshot.png";
+import wayInfoScreenshot from "../assets/wayInfoHyprshot.png";
+
 const projects = [
   {
     id: "p1",
     title: "JaptoAnki",
     desc: "Japanese OCR to Anki flashcards.",
     github: "https://github.com/MidoriNoHoshi/JaptoAnki",
-    img: japtoankiExample, // Or a specific project screenshot
-    video: japtoankiSampleVid, // Optional video path
+    img: japtoankiExample,
+    video: japtoankiSampleVid,
   },
   {
     id: "p2",
-    title: "Obsidian Bg plugin",
+    title: "Obsidian Bg plugin (1st project)",
     desc: "Custom backgrounds for obsidian md",
+    github: "https://github.com/MidoriNoHoshi/Obsidian-Custom-Backgrounds",
     img: obsidianScreenshot,
   },
   {
@@ -87,16 +81,26 @@ const projects = [
   },
   {
     id: "p4",
-    title: "Kyubi",
+    title: "WayInfo",
+    desc: "Alternative to information bars",
+    link: "https://github.com/MidoriNoHoshi/wayInfo",
+    img: wayInfoScreenshot,
+  },
+  {
+    id: "p5",
+    title: "Kyubi (Deprecated)",
     desc: "Screen aware AI assistant.",
     link: "https://www.kyubi.dev/",
     img: kyubiScreenshot,
   },
+  {
+    id: "p6",
+    title: "Atelier Tatsuyama",
+    desc: "Personal Archive / Website",
+    link: "https://github.com/MidoriNoHoshi/Atelier-Tatsuyama",
+    img: projectsImageDefault,
+  },
 ];
-
-// 2. Reuse the Grid Logic
-const projectCols = 5;
-const projectRows = 3;
 
 import contactBg from "../assets/contactBg.png";
 ---
@@ -110,10 +114,10 @@ import contactBg from "../assets/contactBg.png";
   <body>
     <div id="loading-screen" class="loading-screen">
       <div
-        data-text="ようこそう！"
+        data-text="ようこそ！"
         class="chromatic-text loading-text tracking-[2rem] text-zinc-500 uppercase text-9xl"
       >
-        ようこそう！
+        ようこそ！
       </div>
       <div class="loading-bar-container">
         <div id="loading-bar" class="loading-bar"></div>
@@ -156,7 +160,6 @@ import contactBg from "../assets/contactBg.png";
           </feMerge>
 
           <feMerge>
-            <!-- <feMergeNode in="red-fringe" /> <feMergeNode in="blue-fringe"/> -->
             <feMergeNode in="fringe-combined"></feMergeNode>
             <feMergeNode in="SourceGraphic"></feMergeNode>
           </feMerge>
@@ -190,7 +193,7 @@ import contactBg from "../assets/contactBg.png";
 
         <div class="scan-line"></div>
         <div
-          class="fixed inset-0 pointer-events-none z-20 flex flex-col justify-between p-6 md:p-12"
+          class="fixed inset-0 pointer-events-none z-40 flex flex-col justify-between p-6 md:p-12"
         >
           <header
             class="flex items-center justify-between w-full pointer-events-auto"
@@ -201,33 +204,32 @@ import contactBg from "../assets/contactBg.png";
                 id="playing"
                 class="playing-label hidden opacity-0 transition-all duration-700 ease-out text-xs font-mono tracking-widest text-neutral-300"
               >
-                Now playing: <span class="text-neutral-300"
+                Now playing: <span class="text-neutral-300 track-title-display"
                   >Aineth – Till Death Do Us Part</span
                 >
               </div>
             </div>
 
-            <!-- Major issue with these menu buttons. Sometimes can't click them because there's some other overlay (probably the vignette) that stopping clickthrough. Most noticeable in blog section -->
-            <nav class="hidden md:flex items-center gap-8 lg:gap-12">
+            <nav class="z-40 hidden md:flex items-center gap-8 lg:gap-12">
               <a
                 data-slide="0"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
               >
                 Home
               </a>
               <a
                 data-slide="1"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
                 >Blogs</a
               >
               <a
                 data-slide="2"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
                 >Projects</a
               >
               <a
                 data-slide="3"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
                 >Contact</a
               >
             </nav>
@@ -250,7 +252,7 @@ import contactBg from "../assets/contactBg.png";
         >
           <section
             id="home"
-            class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center"
+            class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center relative overflow-hidden"
           >
             <img
               id="lowerCastle"
@@ -262,10 +264,16 @@ import contactBg from "../assets/contactBg.png";
               class="absolute inset-0 bg-black z-5 pointer-events-none transition-opacity duration-2000 ease-in-out"
             >
             </div>
-            <div class="relative z-10 max-w-4xl mx-auto px-6">
+
+            <!-- Terminal Container (Centered Focus) -->
+            <div
+              id="home-layout-container"
+              class="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center justify-center"
+            >
+              <!-- Initial Glitch Overlay -->
               <div
                 id="intro-content"
-                class="transition-all duration-1000 ease-in-out"
+                class="transition-all duration-1000 ease-in-out text-center"
               >
                 <div
                   data-text="Atelier Tatsuyama"
@@ -273,43 +281,146 @@ import contactBg from "../assets/contactBg.png";
                 >
                   <h1
                     data-text="Atelier Tatsuyama"
-                    class="glitch-text chromatic-text text-[9rem] md:text-[9xl] text-center font-black leading-none mb-4 select-none"
+                    class="glitch-text chromatic-text text-[5rem] lg:text-[8rem] text-center font-black leading-none mb-4 select-none"
                   >
                     Atelier Tatsuyama
                   </h1>
                 </div>
-
                 <div
                   class="flex items-center justify-center gap-4 text-xs font-mono text-gray-400 tracking-[0.3em] uppercase"
                 >
                   <span class="w-12 h-px bg-gray-500"></span>
-                  <span data-text="Click anywhere" class="">Click anywhere</span
-                  >
+                  <span data-text="Click anywhere">Click anywhere</span>
                   <span class="w-12 h-px bg-gray-500"></span>
                 </div>
               </div>
+
               <div
-                id="main-bio"
-                class="hidden opacity-0 transform translate-y-4 transition-all duration-100 ease-out"
+                id="cli-music-terminal"
+                class="cli-terminal-container hidden opacity-0 w-full font-mono text-sm text-zinc-400 space-y-4 relative z-20 transition-all duration-1000 ease-out"
               >
                 <div
-                  id="bio-move-container"
-                  class="relative text-left flex flex-col gap-0 transition-all duration-1000 ease-in-out mx-auto max-w-3xl"
+                  class="text-zinc-400 text-[12px] tracking-widest uppercase border-b border-white/10 pb-2 flex justify-between"
                 >
-                  <span
-                    class="text-neutral-200 font-mono text-[10px] block mb-0.1 tracking-tighter leading-none"
-                    >[ Entry: Introduction ]</span
+                  <span>[ TERMINAL_SESSION // TTY1 ]</span>
+                  <span>FRAMEWORK: VERCEL</span>
+                </div>
+
+                <!-- Command 1: Reading Intro File -->
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 text-zinc-300 font-bold">
+                    <span class="text-emerald-400">tatsuyama@atelier</span>
+                    <span class="text-zinc-600">:</span>
+                    <span class="text-blue-400">~/pages</span>
+                    <span class="text-zinc-500">$</span>
+                    <span id="cli-cmd-intro" class="text-white">cat intro.txt</span>
+                  </div>
+
+                  <div
+                    id="cli-intro-output"
+                    class="text-zinc-300 text-sm leading-relaxed space-y-2"
                   >
-                  <div class="bio-margin-line"></div>
-                  <p
-                    id="clean-paragraph"
-                    class="relative z-10 text-sm md:text-2xl font-light leading-snug md:leading-relaxed tracking-wide text-gray-300 m-0 mt-0"
+                    <span class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider">
+                      [ Entry: Introduction ]
+                    </span>
+                    <p id="clean-paragraph" class="m-0">
+                      Current_Location: 大阪(Osaka, Japan)<br />
+                      -<br />
+                      Welcome to my virtual atelier. A central repository for projects, logs, and inspirations.<br />
+                      Click on any track below to change music.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Command 2: Music Directory Listing -->
+                <div id="cli-music-section" class="space-y-2 pt-2">
+                  <div class="flex items-center gap-2 text-zinc-300 font-bold">
+                    <span class="text-emerald-400">tatsuyama@atelier</span>
+                    <span class="text-zinc-400">:</span>
+                    <span class="text-blue-400">~/assets/music</span>
+                    <span class="text-zinc-400">$</span>
+                    <span id="cli-command-typed" class="text-white"
+                      >ls -la --sort=time</span
+                    >
+                  </div>
+
+                  <div
+                    id="cli-listing"
+                    class="cli-listing border-y border-white/10 py-3 my-2 space-y-1.5"
                   >
-                    Location: 大阪(Osaka, Japan)<br />
-                    -<br />
-                    Welcome to my virtual atelier. A central repository for projects,
-                    logs, and inspirations.
-                  </p>
+                    <div
+                      class="text-[10px] text-zinc-400 flex justify-between font-bold uppercase tracking-wider mb-2 px-1"
+                    >
+                      <span>PERM</span>
+                      <span>FILENAME</span>
+                    </div>
+
+                    {
+                      playlist.map((track) => (
+                        <div
+                          class="track-cli-item group flex items-center justify-between py-1 px-1 -mx-1 hover:bg-white/10 transition-colors cursor-pointer"
+                          data-src={track.src}
+                          data-title={track.title}
+                          data-artist={track.artist}
+                        >
+                          <span class="text-[14px] text-zinc-400 font-mono group-hover:text-zinc-400">
+                            -rw-r--r--
+                          </span>
+                          <div class="flex items-center gap-2">
+                            <span class="text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                              >
+                            </span>
+                            <span class="text-zinc-300 group-hover:text-white font-mono group-hover:underline decoration-white/40">
+                              {track.artist}_-_{track.title.replace(/\s+/g, "_")}
+                              .mp3
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                      }
+
+                      <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-zinc-300 font-bold">
+                    <span class="text-emerald-400">tatsuyama@atelier</span>
+                    <span class="text-zinc-600">:</span>
+                    <span class="text-blue-400">~/pages</span>
+                    <span class="text-zinc-500">$</span>
+                    <span id="cli-cmd-intro" class="text-white">cat intro.txt</span>
+                  </div>
+
+                  <div
+                    id="cli-intro-output"
+                    class="text-zinc-300 text-sm leading-relaxed space-y-2"
+                  >
+                    <span class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider">
+                      [ Entry: Introduction ]
+                    </span>
+                    <p id="clean-paragraph" class="m-0">
+                      Current_Location: 大阪(Osaka, Japan)<br />
+                      -<br />
+                      Welcome to my virtual atelier. A central repository for projects, logs, and inspirations.<br />
+                      Click on any track below to change music.
+                    </p>
+                  </div>
+
+
+                      </div>
+
+
+                      
+                  </div>
+                </div>
+
+                <!-- Next Prompt / Blinking Cursor -->
+                <div
+                  id="cli-final-prompt"
+                  class="cli-final-prompt flex items-center gap-2 text-zinc-300 pt-1"
+                >
+                  <span class="text-emerald-400">tatsuyama@atelier</span>
+                  <span class="text-zinc-600">:</span>
+                  <span class="text-blue-400">~/assets/music</span>
+                  <span class="text-zinc-500">$</span>
+                  <span class="cli-typing-cursor"></span>
                 </div>
               </div>
             </div>
@@ -436,6 +547,7 @@ import contactBg from "../assets/contactBg.png";
               </div>
             </div>
           </section>
+
           <section
             id="projects"
             class="relative snap-start shrink-0 w-screen h-screen overflow-hidden"
@@ -523,7 +635,6 @@ import contactBg from "../assets/contactBg.png";
             <div
               class="relative z-10 w-full max-w-6xl px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
             >
-              <!-- Roadmap (left column) -->
               <div
                 class="border border-white/20 bg-black/60 backdrop-blur-md p-8 md:p-10 relative"
               >
@@ -601,7 +712,6 @@ import contactBg from "../assets/contactBg.png";
                 </div>
               </div>
 
-              <!-- Contacts (right column) -->
               <div class="flex flex-col items-start gap-8 text-left">
                 <span class="text-sm font-mono tracking-[0.5em] text-zinc-200"
                   >Let's be friends, here are my contacts</span
@@ -675,22 +785,15 @@ import contactBg from "../assets/contactBg.png";
             </div>
           </section>
         </div>
-
-        <!-- <div class="fixed bottom-10 right-10 z-50"> -->
-        <!--   <ScrollIndicator client:load /> -->
-        <!-- </div> -->
       </main>
     </div>
     <script is:inline>
-      // Using 'load' ensures all assets are ready
       window.addEventListener("load", () => {
         const container = document.getElementById("scroll-container");
         const loadingBar = document.getElementById("loading-bar");
         const loadingScreen = document.getElementById("loading-screen");
 
         const homeSection = document.getElementById("home");
-        // let hasBeenTriggered = false;
-        // const lowerCastle = document.getElementById("lowerCastle")
         const mainContent = document.getElementById("main-content");
 
         const blogSection = document.getElementById("blog");
@@ -698,9 +801,6 @@ import contactBg from "../assets/contactBg.png";
         const previewAnchor = document.getElementById("preview-anchor");
 
         const projectsSection = document.getElementById("projects");
-        // const projectsBg = document.getElementById("projects-bg");
-
-        const roadmapSection = document.getElementById("roadmap");
 
         loadingBar.style.width = "100%";
 
@@ -762,7 +862,7 @@ import contactBg from "../assets/contactBg.png";
           },
           {
             root: container,
-            threshold: 0.6, // triggers when 60% visible
+            threshold: 0.6,
           },
         );
 
@@ -803,10 +903,6 @@ import contactBg from "../assets/contactBg.png";
           });
         });
 
-        // Boost the CRT static right before navigating to a blog entry, so
-        // the burst covers the hard page-transition cut. [id].astro starts
-        // in this same boosted state and settles back down after it loads,
-        // making the two page loads read as one continuous effect.
         function navigateWithCrtBurst(e, href) {
           if (!href) return;
           e.preventDefault();
@@ -814,20 +910,14 @@ import contactBg from "../assets/contactBg.png";
           const tear = document.getElementById("signal-tear");
           const lostWrap = document.getElementById("signal-lost-wrap");
 
-          // Stage 1: noise ramps up immediately, burst fades in
           document.getElementById("transition-burst")?.classList.add("active");
           document
             .querySelectorAll(".crt-noise, .crt-overlay")
             .forEach((el) => el.classList.add("crt-boost"));
 
-          // Stage 2: signal tear (horizontal sync failure) fades in
           window.setTimeout(() => tear?.classList.add("active"), 90);
-
-          // Stage 3: noise has fully ramped, "SIGNAL LOST" dominates the screen
           window.setTimeout(() => lostWrap?.classList.add("reveal"), 220);
 
-          // Stage 4: the actual page swap happens while the screen is
-          // still saturated with interference, hiding the hard cut
           window.setTimeout(() => {
             window.location.href = href;
           }, 420);
@@ -872,6 +962,7 @@ import contactBg from "../assets/contactBg.png";
             navigateWithCrtBurst(e, previewAnchor.getAttribute("href")),
           );
         }
+
         const projectsObserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
@@ -898,36 +989,13 @@ import contactBg from "../assets/contactBg.png";
               }
             });
           },
-          { root: container, threshold: 0.6 }, // Threshold matches blog logic
+          { root: container, threshold: 0.6 },
         );
         projectsObserver.observe(projectsSection);
-
-        // const roadmapObserver = new IntersectionObserver(
-        //   (entries) => {
-        //     entries.forEach((entry) => {
-        //         const grid = roadmapSection.querySelector(".grid-overlay");
-        //
-        //       if (entry.isIntersecting) {
-        //         grid.style.opacity = "1";
-        //         grid.style.transform = "scaleY(1)";
-        //
-        //         } else {
-        //           roadmapSection.classList.remove("active");
-        //           grid.style.opacity = "0";
-        //           grid.style.transform = "scaleY(0)";
-        //         }
-        //       });
-        //   },
-        //   {
-        //     root: container,
-        //     threshold: 0.6, // triggers when 60% visible
-        //   }
-        // );
-        // roadmapObserver.observe(roadmapSection)
       });
 
       function typeWriter(element, speed, callback) {
-        const text = element.innerHTML.trim().replace(/<br\s*\/?>/gi, "\n"); // Preserve line breaks
+        const text = element.innerHTML.trim().replace(/<br\s*\/?>/gi, "\n");
         element.innerHTML = "";
         element.style.visibility = "visible";
 
@@ -944,37 +1012,63 @@ import contactBg from "../assets/contactBg.png";
             i++;
             setTimeout(type, speed);
           } else if (callback) {
-            callback(); // Run glitch effect logic after typing
+            callback();
           }
         }
         type();
       }
 
-      // function shufflePortals() {
-      //   const portals = document.querySelectorAll('[data-portal]');
-      //   const cols = 5;
-      //   const rows = 3;
-      //
-      //   let cells = [];
-      //   for (let r = 1; r <= rows; r++) {
-      //     for (let c = 1; c <= cols; c++) {
-      //       cells.push({ row: r, col: c });
-      //     }
-      //   }
-      //   const shuffledCells = cells.sort(() => Math.random() - 0.5);
-      //
-      //   portals.forEach((portal, index) => {
-      //     const cell = shuffledCells[index];
-      //     // Use the center-point math
-      //     const left = (cell.col - 1) * 20 + 10;
-      //     const top = (cell.row - 1) * 33.33 + 16.66;
-      //
-      //     // Apply new coordinates
-      //     portal.style.left = `${left}%`;
-      //     portal.style.top = `${top}%`;
-      //     portal.style.transform = 'translate(-50%, -50%)';
-      //   });
-      // }
+      function runTerminalTypewriter() {
+        const cmdIntroEl = document.getElementById("cli-cmd-intro");
+        const cleanParagraph = document.getElementById("clean-paragraph");
+        const cmdMusicEl = document.getElementById("cli-command-typed");
+        const listingEl = document.getElementById("cli-listing");
+        const finalPromptEl = document.getElementById("cli-final-prompt");
+
+        if (!cmdIntroEl) return;
+
+        // Sequence 1: Type `cat intro.txt`
+        typeWriter(cmdIntroEl, 30, () => {
+          // Sequence 2: Type paragraph content
+          setTimeout(() => {
+            if (cleanParagraph) {
+              typeWriter(cleanParagraph, 10, () => {
+                // Sequence 3: Type `ls -la --sort=time`
+                setTimeout(() => {
+                  if (cmdMusicEl) {
+                    typeWriter(cmdMusicEl, 30, () => {
+                      // Sequence 4: Reveal file items and prompt
+                      setTimeout(() => {
+                        if (listingEl) listingEl.classList.add("cli-part-revealed");
+                      }, 150);
+
+                      setTimeout(() => {
+                        if (finalPromptEl) finalPromptEl.classList.add("cli-part-revealed");
+                      }, 450);
+                    });
+                  }
+                }, 200);
+              });
+            }
+          }, 150);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cliTracks = document.querySelectorAll(".track-cli-item");
+        cliTracks.forEach((item) => {
+          item.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const src = item.getAttribute("data-src");
+            const title = item.getAttribute("data-title");
+            const artist = item.getAttribute("data-artist");
+
+            if (window.changeTrack) {
+              window.changeTrack(src, title, artist);
+            }
+          });
+        });
+      });
 
       function shuffleProjectPortals() {
         const portals = document.querySelectorAll("[data-project-portal]");
@@ -991,7 +1085,6 @@ import contactBg from "../assets/contactBg.png";
 
         portals.forEach((portal, index) => {
           const cell = shuffledCells[index];
-          // EXACT MATH FROM BLOG LOGIC
           const left = (cell.col - 1) * 20 + 10;
           const top = (cell.row - 1) * 33.33 + 16.66;
 
@@ -1000,6 +1093,7 @@ import contactBg from "../assets/contactBg.png";
           portal.style.transform = "translate(-50%, -50%)";
         });
       }
+
       let audioStarted = false;
 
       function trigger() {
@@ -1008,70 +1102,30 @@ import contactBg from "../assets/contactBg.png";
           window.startBackgroundAudio();
         }
         const intro = document.getElementById("intro-content");
-        const bio = document.getElementById("main-bio");
-        const cleanParagraph = document.getElementById("clean-paragraph");
-        const bioLine = document.querySelector(".bio-margin-line");
-        // const bioContainer = document.getElementById("bio-move-container");
+        const terminal = document.getElementById("cli-music-terminal");
+        const homeSection = document.getElementById("home");
+        const veil = document.getElementById("castleVeil");
 
-        intro.classList.add("opacity-0", "pointer-events-none");
-
-        // if (intro && bio) {
-        //   intro.classList.add('opacity-0', 'pointer-events-none');
-        //
-        //   if (playing) {
-        //     playing.classList.remove('hidden');
-        //     setTimeout(() => playing.classList.add('opacity-100'), 100);
-        //   }
-        //
-        //   setTimeout(() => {
-        //     intro.classList.add('hidden');
-        //     bio.classList.remove('hidden');
-        //     requestAnimationFrame(() => {
-        //       bio.classList.remove('opacity-0', 'translate-y-4');
-        //       bio.classList.add('opacity-100', 'translate-y-0');
-        //     });
-        //   }, 1000) // duration-1000 transition
-        // }
-        if (intro && bio) {
+        if (intro && terminal) {
           intro.classList.add("opacity-0", "pointer-events-none");
+
           setTimeout(() => {
             intro.classList.add("hidden");
-            bio.classList.remove("hidden");
+            terminal.classList.remove("hidden");
 
             requestAnimationFrame(() => {
-              bio.classList.remove("opacity-0", "translate-y-4");
-              bio.classList.add("opacity-100", "translate-y-0");
-              typeWriter(
-                cleanParagraph,
-                1,
-                () => {
-                  const homeSection = document.getElementById("home");
-                  const veil = document.getElementById("castleVeil");
-                  const bioContainer =
-                    document.getElementById("bio-move-container");
-                  hasBeenTriggered = true;
-                  if (bioContainer) bioContainer.classList.add("bio-shifted");
-                  if (veil) {
-                    veil.classList.add("hidden-veil");
-                  }
-                  if (homeSection) {
-                    homeSection.classList.add("triggered");
-                  }
-                  if (bioLine) {
-                    bioLine.classList.add("line-draw");
-                  }
-                },
-                100,
-              );
+              terminal.classList.remove("opacity-0");
+              terminal.classList.add("opacity-100", "triggered");
+
+              if (veil) veil.classList.add("hidden-veil");
+              if (homeSection) homeSection.classList.add("triggered");
+
+              runTerminalTypewriter();
             });
-          }, 1000);
-          setTimeout(() => {
-            bioLine.style.height = "80%"; // This one alone controls bioLine height
-          }, 200);
+          }, 600);
         }
       }
 
-      // On any first click, start music (like in the Hypergryph website)
       window.addEventListener(
         "click",
         () => {

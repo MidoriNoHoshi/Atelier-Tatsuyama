@@ -1,6 +1,9 @@
 # build output
 dist/
 
+.repomixignore
+repomix-output.xml
+
 # generated types
 .astro/
 

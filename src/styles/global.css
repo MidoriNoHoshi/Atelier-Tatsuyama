@@ -1,20 +1,29 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 /* * { */ /* outline: 1px solid red; */ /* } */ /* Base Styles */
+html {
+  height: 100%;
+  /* The single #scroll-container inside is the only thing that should
+     scroll. Without this, the document itself can also grow/scroll
+     (e.g. once the terminal made #home taller), fighting the internal
+     snap-scroll container and making scroll input feel inconsistent. */
+  overflow: hidden;
+}
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
   background-color: #0a0a0a;
   color: #e5e5e5;
-  /* overflow: hidden; */
+  overflow: hidden;
   height: 100%;
   width: 100vw;
 }
+
 .chromatic-text {
   position: relative;
   display: inline-block;
-  color: inherit; /* Respects your text-zinc-500 or low opacity classes */
-} /* Creating the Red and Blue "Ghost" layers */
+  color: inherit; /* Respects text-zinc-500 or low opacity classes */
+} /* Creating the Red and Blue chromatic layers */
 .chromatic-text::before,
 .chromatic-text::after {
   content: attr(data-text);
@@ -215,30 +224,27 @@ body {
   scrollbar-width: none;
 }
 
+/* These are also expressed as Tailwind classes directly on the element,
+   but declared explicitly here too so scrolling doesn't silently break
+   if a class gets dropped/purged — this is the ONLY element that should
+   ever scroll. */
 #scroll-container {
   display: flex;
   flex-direction: column;
-  /*   height: 100vh; */
-  /*   width: 100vw; */
-  /*   overflow-y: scroll; */
-  /*   overflow-x: hidden; */
-  /*   scroll-snap-type: y mandatory; */
-  /*   scroll-behavior: smooth; */
-  /*   width: 100vw; */
-  /*   height: 100vh; */
+  height: 100vh;
+  width: 100vw;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
 }
-/* .snap-slide { */
-/*   flex: 0 0 100vh; */
-/*   height: 100vh; */
-/*   scroll-snap-align: start; */
-/*   scroll-snap-stop: always; */
-/* } */
-/* section { */
-/*   flex-shrink: 0; */
-/*   width: 100vw; */
-/*   height: 100vh; */
-/*   scroll-snap-align: start; */
-/* } */
+#scroll-container > section {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
 
 .stairs-piece {
   transition:
@@ -358,7 +364,7 @@ body {
 }
 .bio-shifted {
   /* transform: translateX(-80px); */
-  transform: translateX(-64%);
+  transform: translateX(-32%);
 }
 .bio-margin-line {
   position: absolute;
@@ -596,7 +602,7 @@ body {
 }
 
 /* Obsidian-style callouts, rendered from `> [!type] Title` blockquotes
-   by src/lib/remark-obsidian-callouts.mjs */
+   by src/lib/remark-obsidian-callouts.mjs. . . might be a bit excessive but who cares? */
 .callout {
   margin: 1.5em 0;
   padding: 0.9em 1.2em;
@@ -652,22 +658,6 @@ body {
 .callout-todo {
   --callout-color: #2dd4bf;
 }
-
-/* ============================================================
-   Blog page transition — CRT effects "boost" to hide the jump
-   between the home page and a blog entry.
-
-   How it works: clicking a blog link on the home page adds the
-   `.crt-boost` class to the noise/overlay layers and fades in
-   `#transition-burst` *before* the actual navigation happens, so
-   the whole screen is already saturated with static by the time
-   the browser swaps documents. The blog page then starts in that
-   same boosted state and settles back down to normal a moment
-   after it loads, making the two full-page loads read as one
-   continuous "channel change" effect instead of a jarring cut.
-   ============================================================ */
-
-/* Issue with transition burst. Behind the crt noise the rest of the page is still visible. Instead, the current background situation of blog001 should really take over. */
 
 #transition-burst {
   position: fixed;
@@ -832,6 +822,8 @@ body {
    rather than another CRT effect layer. Sits below the CRT
    noise/overlay in z-index so it stacks underneath them.
    ============================================================ */
+/* This may need to be changed to be less subtle? Overall the website should probably be a little brighter. But the corners absolutely need to be more noticeable */
+
 .vignette-soft {
   position: fixed;
   inset: 0;
@@ -885,4 +877,58 @@ body {
 [data-section].timeline-active {
   opacity: 1;
   filter: none;
+}
+
+/* Terminal initial state and reveal transition.
+   JS toggles ".triggered" (see trigger() in index.astro) — ".revealed"
+   is kept as an alias so either name works. Previously only ".revealed"
+   was styled here, so the ".triggered" class JS actually adds did
+   nothing and the terminal just silently never appeared. */
+.cli-terminal-container {
+  display: none;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 1s ease-out,
+    transform 1s ease-out;
+}
+
+.cli-terminal-container.revealed,
+.cli-terminal-container.triggered {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Sub-parts of the terminal that get typed in sequence, after the bio
+   paragraph finishes (see runTerminalTypewriter() in index.astro).
+   Hidden until their own reveal class lands, so the block doesn't just
+   pop in all at once. */
+.cli-listing,
+.cli-final-prompt {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+.cli-listing.cli-part-revealed,
+.cli-final-prompt.cli-part-revealed {
+  opacity: 1;
+}
+.cli-typing-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: rgba(255, 255, 255, 0.8);
+  animation: cliCursorBlink 0.9s steps(1) infinite;
+}
+@keyframes cliCursorBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }

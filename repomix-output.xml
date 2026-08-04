@@ -42,7 +42,7 @@ The content is organized as follows:
 <directory_structure>
 public/
   favicon.ico
-  favicon.svg
+  Thought-Plan.png
 src/
   assets/
     01CreationBlog/
@@ -84,8 +84,7 @@ src/
       AinethTillDeathDoUsPart.mp3
       The Infinite Sky, A Lonesome Comet And The Decaying Civilization [1373662963].opus
       Xomu - Moonfall VIP.mp3
-    astro.svg
-    background.svg
+    Atelier_Screenshot.png
     cellsbackground.png
     clearstairs.jpg
     contactBg.png
@@ -106,6 +105,7 @@ src/
     obsidianPlugin.png
     Projects.JPG
     ProjectsRemoved.png
+    wayInfoHyprshot.png
   blogs/
     .obsidian/
       app.json
@@ -118,10 +118,6 @@ src/
     MDXImage.astro
     ScrollIndicator.jsx
     timelineItems.astro
-    Welcome.astro
-  content/
-    blog/
-      001.mdx
   layouts/
     Layout.astro
   lib/
@@ -130,10 +126,9 @@ src/
     blogs/
       [id].astro
     index.astro
-  styles/
-    global.css
   content.config.ts
 .gitignore
+.repomixignore
 astro.config.mjs
 package.json
 README.md
@@ -142,6 +137,226 @@ tsconfig.json
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path=".repomixignore">
+*.svg
+src/styles/**
+src/content/**
+</file>
+
+<file path="src/blogs/.obsidian/app.json">
+{}
+</file>
+
+<file path="src/blogs/.obsidian/appearance.json">
+{
+  "theme": "obsidian",
+  "accentColor": "#3b4e4b"
+}
+</file>
+
+<file path="src/blogs/.obsidian/core-plugins.json">
+{
+  "file-explorer": true,
+  "global-search": true,
+  "switcher": true,
+  "graph": true,
+  "backlink": true,
+  "canvas": true,
+  "outgoing-link": true,
+  "tag-pane": true,
+  "footnotes": false,
+  "properties": true,
+  "page-preview": true,
+  "daily-notes": true,
+  "templates": true,
+  "note-composer": true,
+  "command-palette": true,
+  "slash-command": false,
+  "editor-status": true,
+  "bookmarks": true,
+  "markdown-importer": false,
+  "zk-prefixer": false,
+  "random-note": false,
+  "outline": true,
+  "word-count": true,
+  "slides": false,
+  "audio-recorder": false,
+  "workspaces": false,
+  "file-recovery": true,
+  "publish": false,
+  "sync": true,
+  "bases": true,
+  "webviewer": false
+}
+</file>
+
+<file path="src/components/AudioVisualizer.astro">
+---
+import AinethTillDeathDoUsPart from "../assets/Music/AinethTillDeathDoUsPart.mp3";
+import Moonfall from "../assets/Music/Xomu - Moonfall VIP.mp3";
+import LonesomeComet from "../assets/Music/The Infinite Sky, A Lonesome Comet And The Decaying Civilization [1373662963].opus";
+---
+
+<div class="flex items-center gap-4 h-8">
+  <div class="relative group">
+    <canvas
+      id="visualizer"
+      class="w-80 h-8 opacity-60 transition-opacity group-hover:opacity-100"
+    ></canvas>
+  </div>
+
+  <button
+    id="audio-toggle"
+    class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+  >
+    <span id="toggle-status">Audio: OFF</span>
+  </button>
+
+  <audio
+    id="bg-audio"
+    src={AinethTillDeathDoUsPart}
+    loop
+    crossorigin="anonymous"></audio>
+</div>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    let audioCtx = null;
+    let analyser = null;
+    let source = null;
+    let started = false;
+
+    const audio = document.getElementById("bg-audio");
+    const canvas = document.getElementById("visualizer");
+    const ctx = canvas.getContext("2d");
+    const toggleBtn = document.getElementById("audio-toggle");
+
+    // Load saved track or default
+    const savedTrack = localStorage.getItem("selected_track_src");
+    if (savedTrack && audio) {
+      audio.src = savedTrack;
+    }
+
+    function setupCanvas() {
+      if (!canvas || !ctx) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      draw();
+    }
+
+    function connectAudio() {
+      if (started || !audio) return;
+      started = true;
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+    }
+
+    function draw() {
+      requestAnimationFrame(draw);
+      if (!canvas || !ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const displayWidth = rect.width;
+      const displayHeight = rect.height;
+      const centerY = displayHeight / 2;
+
+      ctx.clearRect(0, 0, displayWidth, displayHeight);
+
+      const bufferLength = analyser ? analyser.frequencyBinCount : 128;
+      const dataArray = new Uint8Array(bufferLength);
+
+      if (analyser) {
+        analyser.getByteFrequencyData(dataArray);
+      }
+
+      const barWidth = 2;
+      const gap = 3;
+      const totalBarWidth = barWidth + gap;
+      const visibleBars = Math.floor(displayWidth / totalBarWidth);
+
+      let x = 0;
+      for (let i = 0; i < visibleBars; i++) {
+        const value = analyser ? dataArray[i] / 255 : 0;
+        const barHeight = value * (displayHeight / 2) + 1;
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + value * 0.7})`;
+        ctx.fillRect(x, centerY - barHeight, barWidth, barHeight);
+        ctx.fillRect(x, centerY, barWidth, barHeight);
+        x += totalBarWidth;
+      }
+    }
+
+    setupCanvas();
+    window.addEventListener("resize", setupCanvas);
+
+    async function startAudio() {
+      connectAudio();
+
+      if (audioCtx && audioCtx.state === "suspended") {
+        await audioCtx.resume();
+      }
+
+      const playingLabel = document.getElementById("playing");
+      const toggleStatus = document.getElementById("toggle-status");
+
+      if (audio.paused) {
+        try {
+          await audio.play();
+          if (toggleStatus) toggleStatus.textContent = "Audio: ON";
+          if (playingLabel) {
+            playingLabel.classList.remove("hidden");
+            playingLabel.classList.add("active");
+          }
+        } catch (err) {
+          console.error("Playback blocked:", err);
+        }
+      } else {
+        audio.pause();
+        if (toggleStatus) toggleStatus.textContent = "Audio: OFF";
+        if (playingLabel) playingLabel.classList.remove("active");
+      }
+    }
+
+    // Global helper function to switch tracks from anywhere on the site
+    window.changeTrack = async function (src, title, artist) {
+      localStorage.setItem("selected_track_src", src);
+      localStorage.setItem("selected_track_title", title);
+      localStorage.setItem("selected_track_artist", artist);
+
+      if (audio) {
+        const wasPlaying = !audio.paused;
+        audio.src = src;
+
+        // Update now playing UI text
+        const titleEls = document.querySelectorAll(".track-title-display");
+        titleEls.forEach((el) => (el.textContent = `${artist} – ${title}`));
+
+        if (wasPlaying || started) {
+          connectAudio();
+          if (audioCtx && audioCtx.state === "suspended")
+            await audioCtx.resume();
+          audio.play();
+          const toggleStatus = document.getElementById("toggle-status");
+          if (toggleStatus) toggleStatus.textContent = "Audio: ON";
+        }
+      }
+    };
+
+    if (toggleBtn) toggleBtn.addEventListener("click", startAudio);
+    window.startBackgroundAudio = startAudio;
+  });
+</script>
+</file>
 
 <file path="src/components/gallery.astro">
 ---
@@ -199,6 +414,86 @@ const gridColsClass =
 </style>
 </file>
 
+<file path="src/components/ScrollIndicator.jsx">
+const ScrollIndicator = () => {
+  const text = "SCROLL";
+
+  return (
+    <div className="relative flex items-center select-none group">
+      {/* THE MOVING UNIT */}
+      <div className="flex items-center gap-6 animate-group-glide-right">
+        {/* CHROMATIC WRAPPER FOR SHAPES + TEXT */}
+        <div className="relative flex items-center gap-6">
+          {/* 1. THE RED GHOST (Left Shift) */}
+          <div className="absolute inset-0 flex items-center gap-6 pointer-events-none opacity-60 mix-blend-screen text-red-600 translate-x-[-1.5px] filter blur-[0.3px]">
+            <div className="h-4 w-12 bg-current" />
+            <span className="text-[18px] tracking-[0.5em] font-bold">
+              {text}
+            </span>
+            <Arrows />
+          </div>
+
+          {/* 2. THE BLUE GHOST (Right Shift) */}
+          <div className="absolute inset-0 flex items-center gap-6 pointer-events-none opacity-60 mix-blend-screen text-blue-600 translate-x-[1.5px] filter blur-[0.3px]">
+            <div className="h-4 w-12 bg-current" />
+            <span className="text-[18px] tracking-[0.5em] font-bold">
+              {text}
+            </span>
+            <Arrows />
+          </div>
+
+          {/* 3. THE MAIN CONTENT (The "White" core) */}
+          <div className="relative z-10 flex items-center gap-6">
+            <div className="h-4 w-12 bg-white opacity-90 shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+            <span className="text-[18px] tracking-[0.5em] font-bold text-white opacity-80">
+              {text}
+            </span>
+            <Arrows />
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes group-glide-right {
+          0% { transform: translateX(-20vw); opacity: 0; }
+          20% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { transform: translateX(0vw); opacity: 0; }
+        }
+        .animate-group-glide-right {
+          animation: group-glide-right 3.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+        }
+@keyframes jitter {
+  0% { transform: translateX(-1.5px) translateY(0); }
+  50% { transform: translateX(-1px) translateY(0.5px); }
+  100% { transform: translateX(-1.5px) translateY(0); }
+}
+/* Apply to the Red/Blue Ghost divs */
+      `}</style>
+    </div>
+  );
+};
+
+// Helper component to keep the SVG logic clean
+const Arrows = () => (
+  <div className="flex gap-2">
+    {[0, 1, 2].map((i) => (
+      <div key={i}>
+        <svg className="w-3.5 h-3.5" viewBox="0 0 11 13" fill="none">
+          <path
+            stroke="currentColor"
+            strokeWidth="2.0"
+            d="M3.249 1.105 L8.644 6.500 L3.249 11.895"
+          />
+        </svg>
+      </div>
+    ))}
+  </div>
+);
+
+export default ScrollIndicator;
+</file>
+
 <file path="src/components/timelineItems.astro">
 ---
 import { Image } from "astro:assets";
@@ -232,204 +527,6 @@ const { timestamp, src, alt = "", caption, section } = Astro.props;
   {caption && <p class="text-xs font-mono text-zinc-400">{caption}</p>}
   <slot />
 </div>
-</file>
-
-<file path="src/content/blog/001.mdx">
----
-title: Creating the Website
-sub: Process in which this website was created.
-description: Process in which this website was created.
-pubDate: 2026-08-03
-img: ../../assets/log1.jpg
-overlayImg: ../../assets/cellsbackground.png
----
-
-import { Image } from "astro:assets";
-import ImageGroup from "../../components/MDXImage.astro";
-import Gallery from "../../components/gallery.astro";
-import TimelineItem from "../../components/timelineItems.astro";
-
-import tomorrowArknights from "../../assets/01CreationBlog/Tomorrow Arknights 720P.mp4";
-import smallChenRain from "../../assets/01CreationBlog/theory-chen-koschei-and-chixiao-the-sword-of-kings-v0-9fjr6kv1etx41.webp";
-import burningCityPenguin from "../../assets/01CreationBlog/2026-08-03-230120_hyprshot.png";
-import burningroad from "../../assets/01CreationBlog/2026-08-03-230147_hyprshot.png";
-import undertides from "../../assets/01CreationBlog/maxresdefault.jpg";
-import lightUndertides from "../../assets/01CreationBlog/Ac18_14.png";
-import emperorBlade from "../../assets/01CreationBlog/118011335_p0.jpg";
-import collapsingBlade from "../../assets/01CreationBlog/118011335_p1.jpg";
-
-import frameworkBrainstorm from "../../assets/01CreationBlog/Framework_Brainstorm.JPG";
-import initialBrainstorm from "../../assets/01CreationBlog/Initial_Brainstorm.JPG";
-
-import cellsbackground from "../../assets/01CreationBlog/cells_background.png";
-import cellsbackgroundUnedited from "../../assets/01CreationBlog/cells_background_unedited.jpg";
-
-import EarlyPlan from "../../assets/01CreationBlog/EarlyPlan.JPG";
-import EarlyPlan1 from "../../assets/01CreationBlog/EarlyPlan1.JPG";
-import EarlyPlan2 from "../../assets/01CreationBlog/EarlyPlan2.JPG";
-import MSRBlog from "../../assets/01CreationBlog/MonsterSirenRecordsBlogInspiration.png";
-import MSRMusic from "../../assets/01CreationBlog/MonsterSirenRecordsMusicPlayer.png";
-import ZZZLoading from "../../assets/01CreationBlog/ZZZcrttransitionLoading.png";
-import zzz_tv_mode from "../../assets/01CreationBlog/zzz_tv_mode.jpg";
-
-import homeOriginal from "../../assets/01CreationBlog/homepage_pictures/HomeOriginal.JPG";
-import homeEdited from "../../assets/01CreationBlog/homepage_pictures/Home(Lower)Gradient2.png";
-
-import cBoulevard from "../../assets/01CreationBlog/homepage_pictures/ClearBoulevard.JPG";
-import dBoulevard_original from "../../assets/01CreationBlog/homepage_pictures/DizzyBoulebard_original.JPG";
-import dBoulevardL from "../../assets/01CreationBlog/homepage_pictures/DizzyBoulevardStepsLeft.png";
-import dBoulevardC from "../../assets/01CreationBlog/homepage_pictures/DizzyBoulevardStepsMiddle.png";
-import dBoulevardR from "../../assets/01CreationBlog/homepage_pictures/DizzyBoulevardStepsRight.png";
-import projectsOriginal from "../../assets/01CreationBlog/homepage_pictures/Projects.JPG";
-import projectsE from "../../assets/01CreationBlog/homepage_pictures/ProjectsRemoved.png";
-
-import log2img from "../../assets/log2.jpg";
-import log3img from "../../assets/log3.jpg";
-import contactsBG from "../../assets/01CreationBlog/homepage_pictures/contactBg.png";
-
-## Motivation
-
-The inception of this "atelier" website traces back to a minor dispute I had with my father, whom had made a personal portfolio style website to display his projects.
-I found his website to be quite plain and generally visually uninspiring, and gave him my criticisms plainly, to which he replied with his usual "It's sooo~ easy to ciritise" and of course what he's really saying is: _but it is so much harder to actually do_. Challenging me to create a website of my own, to which I promised I would create a cooler website.
-
-During this time, I was a fan of Arknights and I had been itching to create something inspired by that style, so the idea came about that I shall imitate the dark, grungy, tech-look of Arknights.
-
-<TimelineItem section="Motivation">
-  <Gallery columns={4}>
-    <video src={tomorrowArknights} class="w-full h-auto object-cover border border-white/10" controls autoplay muted playsinline/>
-    <Image src={smallChenRain} alt="Rain and grime" quality="high" />
-    <Image src={burningCityPenguin} alt="Feirce Storms" quality="high" />
-    <Image src={burningroad} alt="Misery and choas" quality="high" />
-    <Image src={undertides} alt="Undertides art" quality="high" />
-    <Image src={lightUndertides} alt="Arknight's massive structures are so cool" quality="high" />
-    <Image src={emperorBlade} alt="Ashy and menacing" quality="high" />
-    <Image src={collapsingBlade} alt="Invokes a sense of dread" quality="high" />
-
-  </Gallery>
-  Arknights art.
-</TimelineItem>
-
-## Aesthetics
-
-<TimelineItem section="Aesthetics">
-  <Image src={MSRMusic} alt="MSR Music Player" quality="high" />
-
-  <Gallery columns={2}>
-    <Image src={MSRBlog} alt="MSR Blog page layout" quality="high" />
-    <Image src={ZZZLoading} alt="Crt loading" quality="high" />
-    <Image src={zzz_tv_mode} alt="ZZZ crt array" quality="high" />
-  </Gallery>
-</TimelineItem>
-
-Arknights (Hypergryph) and Zenless Zone Zero (MiHoYo) have some of the coolest visual language and style I have ever seen. Zenless Zone Zero much less so, but the CRT monitor / arrays are specifically what I fell in love with.
-
-> [!info] I visited and used these three websites from Arknights / Hypergryph extensively:
->
-> - [https://monster-siren.hypergryph.com/](https://monster-siren.hypergryph.com/)
-> - [https://www.gryphline.com/en-us/home](https://www.gryphline.com/en-us/home)
-> - [https://www.arknights.jp/](https://www.arknights.jp/)
-> - [https://zenless.hoyoverse.com/en-us/...](https://zenless.hoyoverse.com/en-us/main?utm_source=web&utm_medium=landingpage&utm_campaign=logo)>
-
-| Design Element                    | Primary Reference                  | Target Execution                                                      |
-| :-------------------------------- | :--------------------------------- | :-------------------------------------------------------------------- |
-| **Grid & Spatial Layout**         | Monster-Siren-Records + Hypergryph | dark + interesting backgrounds, thin border grids, high contrast text |
-| **Viewport Post-Processing**      | Zenless Zone Zero                  | Analog CRT scanlines, flicker transitions, subtle noise overlays      |
-| **UI Components**                 | Arknights (Game)                   | Custom cursors, glowing status indicators, monospaced metadata        |
-| **Loading Screen + Music Player** | Monster-Siren-Records              |                                                                       |
-
-## Architecture + Iteration
-
-<TimelineItem section="Architecture + Iteration">
-  <Gallery columns={3}>
-    <Image
-      src={initialBrainstorm}
-      alt="Messy brainstorming I know"
-      quality="high"
-    />
-    <Image src={EarlyPlan} alt="EarlyPlan" quality="high" />
-    <Image src={EarlyPlan2} alt="EarlyPlan" quality="high" />
-
-  </Gallery>
-  The initial brainstorming in the Library
-</TimelineItem>
-
-<TimelineItem section="Architecture + Iteration">
-  <Gallery columns={3}>
-    <Image
-      src={frameworkBrainstorm}
-      alt="Framework Brainstorming"
-      quality="high"
-    />
-    <Image src={EarlyPlan1} alt="EarlyPlan" quality="high" />
-  </Gallery>
-</TimelineItem>
-
-These brainstorms on the right are all that remains from my first day of building my website. I was aware of "Reactbits" already, and was fully intending on relying on their components as cornerstones of my website.
-As can be seen from my Arch Rice, I love a clean digital space, and initially I was intending to make a simple and clean personal website as well.
-However, my favourite website that I frequented often was Monster-Siren-Records (An Arknights Radio essentially), as Arknights despite being a mere mobile game has produced so much amazing music in pretty much every genre, I'm always curious to hear what their new tracks are. In terms of art style and aesthetics it's also incredible so I started looking more into it as I took HTML and CSS courses online.
-
-After finishing the HTML + Javascript and CSS online beginner lessons I made: "Version1", ""
-
-So at this point that I thought I would go steal as many elements from the Hypergryph Monster Siren website as I could, so it started out as a black background with side-scrolling.
-On the Hypergryph website, they somehow made it seem like the input of scrolling with the mouse is jacked and it actually scrolls to the side and in my attempt to copy this I wasted _many, many_ hours. Eventually I did manage to make it work _most of the time_ by jacking the scrolling input into horizontal scrolling, but this breaks horizontal swiping. So in the end I removed it, as not being able to have proper scrolling feels like grinding my mind's dick through a wood-chipper.
-I also wanted to have an audio visualiser on the top left just like Monster-Siren-Records, which I left entirely up to Claude.
-
-From here, I only then somehow found out about the huggingface Deepsite AI website (makes you a website with a single prompt). So of course I immediately waste all my free tokens trying to make it copy the Monster-Siren-Records.
-And the website it produced was cool and clean though not really what I was looking for, so I salvaged it, stealing the scan-line, crosshair cursor, menu-items, and the logic behind the wobble for the "Hello Friend" text. Now that I have seen many websites and personal portfolios, the issue I find with AI websites is that they ALL look so generic they actually become the most ugly, this includes those with 3D animation.
-
-So after a good many months after I started trying to make my website, Zenless Zone Zero came out and I would have had 0 interest in the game had I not seen how they mixed distortion and cuteness in their advertisements.
-The CRT monitor array / navigation with the bangboo was such a cool and amazing idea to me that I became determined to incorporate something like it in my project. Together with the release of Balatro (which has amazing CRT effects) I fell in love with CRT distortions (I even started using Cool Retro Term).
-
-## Photography -> Assets
-
-<TimelineItem section="Photography -> Assets">
-  <Gallery columns={2}>
-    <Image src={homeOriginal} alt="Osaka Castle" quality="high" />
-    <Image src={homeEdited} alt="Partial opacity" quality="high" />
-  </Gallery>
-  <Gallery columns={2}>
-    <Image src={dBoulevard_original} alt="1st Photo" quality="high" />
-    <Image src={cBoulevard} alt="2nd night's photo" quality="high" />
-  </Gallery>
-  <Gallery columns={3}>
-    <Image src={dBoulevardL} alt="Left-side" quality="high" />
-    <Image src={dBoulevardC} alt="Centre" quality="high" />
-    <Image src={dBoulevardR} alt="Right-side" quality="high" />
-  </Gallery>
-</TimelineItem>
-<TimelineItem section="Photography -> Assets">
-  <Gallery columns={2}>
-    <Image src={projectsOriginal} alt="TeamLab Borderless" quality="high" />
-    <Image src={projectsE} alt="Removed Friends" quality="high" />
-  </Gallery>
-  <Gallery columns={3}>
-    <Image src={log2img} alt="002Log image" quality="high" />
-    <Image src={log3img} alt="003Log image" quality="high" />
-    <Image src={contactsBG} alt="Contacts Background" quality="high" />
-  </Gallery>
-  <Gallery columns={2}>
-    <Image
-      src={cellsbackgroundUnedited}
-      alt="Solar Panel Cells"
-      quality="high"
-    />
-    <Image src={cellsbackground} alt="Blogs Background Layer" quality="high" />
-  </Gallery>
-</TimelineItem>
-
-All the images (backgrounds) where taken by me with my wonderfully amazing unreliable phone camera. I use a Acquos Sense 9 btw.
-This piece of shit, I mean incredibly artistic piece of kit has _transformed_ so many of my photos that i've almost come to embrace this _"feature"_.
-You see, at certain, seemingly random times when I wish to take a picture, the phone will show that the photo has been taken (with the thumbnail in the corner and everything), while hiding the fact that the sensor is still exposed. So when I go to check the photo, _moving the camera_ the photo takes a couple of seconds to "load" (shutting the apeture) and I see a complete mess that looks nothing like the thumbnail I was shown!
-What an absolute nightmare.
-
-So I knew from before hand that I wanted to use this blurry stairway picture I took for the blogs section. The original idea was to just edit out the walls, skew them, and apply an opacity gradient on them to make it look like they go on forever, fading out, leaving a middle section 1/2rd the width of the viewport to have the blog portals.
-But it just kept on looking weird, I have so little experience with GIMP. Anyway, that's the reason you can see I have the picture split into 3 in the transition animation:
-
-The other crt effects like the noise, flicker and shitty chromatic aberration were pretty much the last thing I did to the styling of the website by recommendation of ChatGPT. But ChatGPT's implementations completely sucked (and it tried adding the fish-eye effect of CRT monitors and so on), so I deleted all the difficult elements including the chromatic aberration to keep it simple.
-
-For the Home section, I was originally planning on having a wireframe of some buildings in Osaka, or a Arknights Stylised picture of the Osaka Castle, and I even tried getting Gemini Nano Banana to produce something. So I gave up, and wrote this kind of introductory paragraph.
-And then, only after moving it to the side did I realise that a clean Osaka castle picture taken by me would probably look best anyway.
-The typewriter effect was shockingly simple thankfully.
 </file>
 
 <file path="src/lib/remark-obsidian-callouts.mjs">
@@ -552,922 +649,6 @@ const blog = defineCollection({
 });
 
 export const collections = { blog };
-</file>
-
-<file path="public/favicon.svg">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128">
-    <path d="M50.4 78.5a75.1 75.1 0 0 0-28.5 6.9l24.2-65.7c.7-2 1.9-3.2 3.4-3.2h29c1.5 0 2.7 1.2 3.4 3.2l24.2 65.7s-11.6-7-28.5-7L67 45.5c-.4-1.7-1.6-2.8-2.9-2.8-1.3 0-2.5 1.1-2.9 2.7L50.4 78.5Zm-1.1 28.2Zm-4.2-20.2c-2 6.6-.6 15.8 4.2 20.2a17.5 17.5 0 0 1 .2-.7 5.5 5.5 0 0 1 5.7-4.5c2.8.1 4.3 1.5 4.7 4.7.2 1.1.2 2.3.2 3.5v.4c0 2.7.7 5.2 2.2 7.4a13 13 0 0 0 5.7 4.9v-.3l-.2-.3c-1.8-5.6-.5-9.5 4.4-12.8l1.5-1a73 73 0 0 0 3.2-2.2 16 16 0 0 0 6.8-11.4c.3-2 .1-4-.6-6l-.8.6-1.6 1a37 37 0 0 1-22.4 2.7c-5-.7-9.7-2-13.2-6.2Z" />
-    <style>
-        path { fill: #000; }
-        @media (prefers-color-scheme: dark) {
-            path { fill: #FFF; }
-        }
-    </style>
-</svg>
-</file>
-
-<file path="src/assets/astro.svg">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="115" height="48"><path fill="#17191E" d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"/><path fill="url(#a)" d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"/><path fill="#17191E" d="M.02 30.31s4.02-1.95 8.05-1.95l3.04-9.4c.11-.45.44-.76.82-.76.37 0 .7.31.82.76l3.04 9.4c4.77 0 8.05 1.95 8.05 1.95L17 11.71c-.2-.56-.53-.91-.98-.91H7.83c-.44 0-.76.35-.97.9L.02 30.31Zm42.37-5.97c0 1.64-2.05 2.62-4.88 2.62-1.85 0-2.5-.45-2.5-1.41 0-1 .8-1.49 2.65-1.49 1.67 0 3.09.03 4.73.23v.05Zm.03-2.04a21.37 21.37 0 0 0-4.37-.36c-5.32 0-7.82 1.25-7.82 4.18 0 3.04 1.71 4.2 5.68 4.2 3.35 0 5.63-.84 6.46-2.92h.14c-.03.5-.05 1-.05 1.4 0 1.07.18 1.16 1.06 1.16h4.15a16.9 16.9 0 0 1-.36-4c0-1.67.06-2.93.06-4.62 0-3.45-2.07-5.64-8.56-5.64-2.8 0-5.9.48-8.26 1.19.22.93.54 2.83.7 4.06 2.04-.96 4.95-1.37 7.2-1.37 3.11 0 3.97.71 3.97 2.15v.57Zm11.37 3c-.56.07-1.33.07-2.12.07-.83 0-1.6-.03-2.12-.1l-.02.58c0 2.85 1.87 4.52 8.45 4.52 6.2 0 8.2-1.64 8.2-4.55 0-2.74-1.33-4.09-7.2-4.39-4.58-.2-4.99-.7-4.99-1.28 0-.66.59-1 3.65-1 3.18 0 4.03.43 4.03 1.35v.2a46.13 46.13 0 0 1 4.24.03l.02-.55c0-3.36-2.8-4.46-8.2-4.46-6.08 0-8.13 1.49-8.13 4.39 0 2.6 1.64 4.23 7.48 4.48 4.3.14 4.77.62 4.77 1.28 0 .7-.7 1.03-3.71 1.03-3.47 0-4.35-.48-4.35-1.47v-.13Zm19.82-12.05a17.5 17.5 0 0 1-6.24 3.48c.03.84.03 2.4.03 3.24l1.5.02c-.02 1.63-.04 3.6-.04 4.9 0 3.04 1.6 5.32 6.58 5.32 2.1 0 3.5-.23 5.23-.6a43.77 43.77 0 0 1-.46-4.13c-1.03.34-2.34.53-3.78.53-2 0-2.82-.55-2.82-2.13 0-1.37 0-2.65.03-3.84 2.57.02 5.13.07 6.64.11-.02-1.18.03-2.9.1-4.04-2.2.04-4.65.07-6.68.07l.07-2.93h-.16Zm13.46 6.04a767.33 767.33 0 0 1 .07-3.18H82.6c.07 1.96.07 3.98.07 6.92 0 2.95-.03 4.99-.07 6.93h5.18c-.09-1.37-.11-3.68-.11-5.65 0-3.1 1.26-4 4.12-4 1.33 0 2.28.16 3.1.46.03-1.16.26-3.43.4-4.43-.86-.25-1.81-.41-2.96-.41-2.46-.03-4.26.98-5.1 3.38l-.17-.02Zm22.55 3.65c0 2.5-1.8 3.66-4.64 3.66-2.81 0-4.61-1.1-4.61-3.66s1.82-3.52 4.61-3.52c2.82 0 4.64 1.03 4.64 3.52Zm4.71-.11c0-4.96-3.87-7.18-9.35-7.18-5.5 0-9.23 2.22-9.23 7.18 0 4.94 3.49 7.59 9.21 7.59 5.77 0 9.37-2.65 9.37-7.6Z"/><defs><linearGradient id="a" x1="6.33" x2="19.43" y1="40.8" y2="34.6" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient></defs></svg>
-</file>
-
-<file path="src/assets/background.svg">
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" fill="none"><path fill="url(#a)" fill-rule="evenodd" d="M-217.58 475.75c91.82-72.02 225.52-29.38 341.2-44.74C240 415.56 372.33 315.14 466.77 384.9c102.9 76.02 44.74 246.76 90.31 366.31 29.83 78.24 90.48 136.14 129.48 210.23 57.92 109.99 169.67 208.23 155.9 331.77-13.52 121.26-103.42 264.33-224.23 281.37-141.96 20.03-232.72-220.96-374.06-196.99-151.7 25.73-172.68 330.24-325.85 315.72-128.6-12.2-110.9-230.73-128.15-358.76-12.16-90.14 65.87-176.25 44.1-264.57-26.42-107.2-167.12-163.46-176.72-273.45-10.15-116.29 33.01-248.75 124.87-320.79Z" clip-rule="evenodd" style="opacity:.154"/><path fill="url(#b)" fill-rule="evenodd" d="M1103.43 115.43c146.42-19.45 275.33-155.84 413.5-103.59 188.09 71.13 409 212.64 407.06 413.88-1.94 201.25-259.28 278.6-414.96 405.96-130 106.35-240.24 294.39-405.6 265.3-163.7-28.8-161.93-274.12-284.34-386.66-134.95-124.06-436-101.46-445.82-284.6-9.68-180.38 247.41-246.3 413.54-316.9 101.01-42.93 207.83 21.06 316.62 6.61Z" clip-rule="evenodd" style="opacity:.154"/><defs><linearGradient id="b" x1="373" x2="1995.44" y1="1100" y2="118.03" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient><linearGradient id="a" x1="107.37" x2="1130.66" y1="1993.35" y2="1026.31" gradientUnits="userSpaceOnUse"><stop stop-color="#3245FF"/><stop offset="1" stop-color="#BC52EE"/></linearGradient></defs></svg>
-</file>
-
-<file path="src/blogs/.obsidian/app.json">
-{}
-</file>
-
-<file path="src/blogs/.obsidian/appearance.json">
-{
-  "theme": "obsidian",
-  "accentColor": "#3b4e4b"
-}
-</file>
-
-<file path="src/blogs/.obsidian/core-plugins.json">
-{
-  "file-explorer": true,
-  "global-search": true,
-  "switcher": true,
-  "graph": true,
-  "backlink": true,
-  "canvas": true,
-  "outgoing-link": true,
-  "tag-pane": true,
-  "footnotes": false,
-  "properties": true,
-  "page-preview": true,
-  "daily-notes": true,
-  "templates": true,
-  "note-composer": true,
-  "command-palette": true,
-  "slash-command": false,
-  "editor-status": true,
-  "bookmarks": true,
-  "markdown-importer": false,
-  "zk-prefixer": false,
-  "random-note": false,
-  "outline": true,
-  "word-count": true,
-  "slides": false,
-  "audio-recorder": false,
-  "workspaces": false,
-  "file-recovery": true,
-  "publish": false,
-  "sync": true,
-  "bases": true,
-  "webviewer": false
-}
-</file>
-
-<file path="src/components/AudioVisualizer.astro">
----
-import AinethTillDeathDoUsPart from '../assets/Music/AinethTillDeathDoUsPart.mp3'
----
-
-<div class="flex items-center gap-4 h-8">
-  <div class="relative group">
-    <canvas id="visualizer" class="w-80 h-8 opacity-60 transition-opacity group-hover:opacity-100"></canvas>
-  </div>
-
-  <button id="audio-toggle" class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300">
-    <span id="toggle-status">Audio: OFF</span>
-  </button>
-
-  <audio id="bg-audio" src={AinethTillDeathDoUsPart} loop crossorigin="anonymous"></audio>
-</div>
-
-<script is:inline>
-  document.addEventListener("DOMContentLoaded", () => {
-    let audioCtx = null;
-    let analyser = null;
-    let source = null;
-    let started = false;
-
-    const audio = document.getElementById("bg-audio");
-    const canvas = document.getElementById("visualizer");
-    const ctx = canvas.getContext("2d");
-    const toggleBtn = document.getElementById("audio-toggle");
-
-    function setupCanvas() {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-      draw();
-    }
-
-    function connectAudio() {
-      if (started) return;
-      started = true;
-
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 512;
-
-      source = audioCtx.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
-      // canvasWidth = rect.width;
-      // canvasHeight = rect.height;
-      //
-      // draw();
-    }
-
-function draw() {
-      requestAnimationFrame(draw);
-
-      const rect = canvas.getBoundingClientRect();
-      const displayWidth = rect.width;
-      const displayHeight = rect.height;
-      const centerY = displayHeight / 2;
-      
-      ctx.clearRect(0, 0, displayWidth, displayHeight);
-
-      const bufferLength = analyser ? analyser.frequencyBinCount : 128;
-      const dataArray = new Uint8Array(bufferLength);
-
-      if (analyser) {
-        analyser.getByteFrequencyData(dataArray);
-      }
-
-      const barWidth = 2;
-      const gap = 3;
-      const totalBarWidth = barWidth + gap;
-      const visibleBars = Math.floor(displayWidth / totalBarWidth);
-
-      // FIX 1: Ensure x is defined
-      let x = 0; 
-
-      for (let i = 0; i < visibleBars; i++) {
-        const value = analyser ? dataArray[i] / 255 : 0;
-        
-        // FIX 2: Use displayHeight (the CSS height) for the math
-        const barHeight = (value * (displayHeight / 2)) + 1;
-
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + value * 0.7})`;
-
-        // Top half
-        ctx.fillRect(x, centerY - barHeight, barWidth, barHeight);
-        // Bottom half (mirrored)
-        ctx.fillRect(x, centerY, barWidth, barHeight);
-        
-        x += totalBarWidth;
-      }
-    }
-    setupCanvas();
-    draw();
-
-    // function draw() {
-    //   if (!analyser) return;
-    //   requestAnimationFrame(draw);
-    //
-    //   const bufferLength = analyser.frequencyBinCount;
-    //   const dataArray = new Uint8Array(bufferLength);
-    //   analyser.getByteFrequencyData(dataArray);
-    //
-    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //   const barWidth = (canvas.width / bufferLength) * 2;
-    //   let x = 0;
-    //
-    //   for (let i = 0; i < bufferLength; i++) {
-    //     const barHeight = (dataArray[i] / 255) * canvas.height;
-    //     ctx.fillStyle = `rgba(255,255,255,${0.2 + dataArray[i] / 255})`;
-    //     ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
-    //     x += barWidth;
-    //   }
-    // }
-    
-    window.addEventListener('resize', setupCanvas);
-
-    async function startAudio() {
-      connectAudio();
-
-      if (audioCtx.state === "suspended") {
-        await audioCtx.resume();
-      }
-
-      const playingLabel = document.getElementById("playing");
-      const toggleStatus = document.getElementById("toggle-status");
-
-      if (audio.paused) {
-        try {
-          await audio.play();
-          toggleStatus.textContent = "Audio: ON";
-          playingLabel.classList.remove("hidden");
-          playingLabel.classList.add("active");
-        } catch (err) {
-          console.error("Playback blocked:", err);
-        }
-      } else {
-        audio.pause();
-        toggleStatus.textContent = "Audio: OFF";
-        playingLabel.classList.remove("active");
-      }
-    }
-    toggleBtn.addEventListener("click", startAudio);
-    window.startBackgroundAudio = startAudio;
-  });
-</script>
-</file>
-
-<file path="src/components/ScrollIndicator.jsx">
-const ScrollIndicator = () => {
-  const text = "SCROLL";
-
-  return (
-    <div className="relative flex items-center select-none group">
-      {/* THE MOVING UNIT */}
-      <div className="flex items-center gap-6 animate-group-glide-right">
-        {/* CHROMATIC WRAPPER FOR SHAPES + TEXT */}
-        <div className="relative flex items-center gap-6">
-          {/* 1. THE RED GHOST (Left Shift) */}
-          <div className="absolute inset-0 flex items-center gap-6 pointer-events-none opacity-60 mix-blend-screen text-red-600 translate-x-[-1.5px] filter blur-[0.3px]">
-            <div className="h-4 w-12 bg-current" />
-            <span className="text-[18px] tracking-[0.5em] font-bold">
-              {text}
-            </span>
-            <Arrows />
-          </div>
-
-          {/* 2. THE BLUE GHOST (Right Shift) */}
-          <div className="absolute inset-0 flex items-center gap-6 pointer-events-none opacity-60 mix-blend-screen text-blue-600 translate-x-[1.5px] filter blur-[0.3px]">
-            <div className="h-4 w-12 bg-current" />
-            <span className="text-[18px] tracking-[0.5em] font-bold">
-              {text}
-            </span>
-            <Arrows />
-          </div>
-
-          {/* 3. THE MAIN CONTENT (The "White" core) */}
-          <div className="relative z-10 flex items-center gap-6">
-            <div className="h-4 w-12 bg-white opacity-90 shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
-            <span className="text-[18px] tracking-[0.5em] font-bold text-white opacity-80">
-              {text}
-            </span>
-            <Arrows />
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes group-glide-right {
-          0% { transform: translateX(-20vw); opacity: 0; }
-          20% { opacity: 1; }
-          80% { opacity: 1; }
-          100% { transform: translateX(0vw); opacity: 0; }
-        }
-        .animate-group-glide-right {
-          animation: group-glide-right 3.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
-        }
-@keyframes jitter {
-  0% { transform: translateX(-1.5px) translateY(0); }
-  50% { transform: translateX(-1px) translateY(0.5px); }
-  100% { transform: translateX(-1.5px) translateY(0); }
-}
-/* Apply to the Red/Blue Ghost divs */
-      `}</style>
-    </div>
-  );
-};
-
-// Helper component to keep the SVG logic clean
-const Arrows = () => (
-  <div className="flex gap-2">
-    {[0, 1, 2].map((i) => (
-      <div key={i}>
-        <svg className="w-3.5 h-3.5" viewBox="0 0 11 13" fill="none">
-          <path
-            stroke="currentColor"
-            strokeWidth="2.0"
-            d="M3.249 1.105 L8.644 6.500 L3.249 11.895"
-          />
-        </svg>
-      </div>
-    ))}
-  </div>
-);
-
-export default ScrollIndicator;
-</file>
-
-<file path="src/components/Welcome.astro">
----
-import astroLogo from '../assets/astro.svg';
-import background from '../assets/background.svg';
----
-
-<div id="container">
-	<img id="background" src={background.src} alt="" fetchpriority="high" />
-	<main>
-		<section id="hero">
-			<a href="https://astro.build"
-				><img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" /></a
-			>
-			<h1>
-				To get started, open the <code><pre>src/pages</pre></code> directory in your project.
-			</h1>
-			<section id="links">
-				<a class="button" href="https://docs.astro.build">Read our docs</a>
-				<a href="https://astro.build/chat"
-					>Join our Discord <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36"
-						><path
-							fill="currentColor"
-							d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"
-						></path></svg
-					>
-				</a>
-			</section>
-		</section>
-	</main>
-
-	<a href="https://astro.build/blog/astro-5/" id="news" class="box">
-		<svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg"
-			><path
-				d="M24.667 12c1.333 1.414 2 3.192 2 5.334 0 4.62-4.934 5.7-7.334 12C18.444 28.567 18 27.456 18 26c0-4.642 6.667-7.053 6.667-14Zm-5.334-5.333c1.6 1.65 2.4 3.43 2.4 5.333 0 6.602-8.06 7.59-6.4 17.334C13.111 27.787 12 25.564 12 22.666c0-4.434 7.333-8 7.333-16Zm-6-5.333C15.111 3.555 16 5.556 16 7.333c0 8.333-11.333 10.962-5.333 22-3.488-.774-6-4-6-8 0-8.667 8.666-10 8.666-20Z"
-				fill="#111827"></path></svg
-		>
-		<h2>What's New in Astro 5.0?</h2>
-		<p>
-			From content layers to server islands, click to learn more about the new features and
-			improvements in Astro 5.0
-		</p>
-	</a>
-</div>
-
-<style>
-	#background {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: -1;
-		filter: blur(100px);
-	}
-
-	#container {
-		font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
-		height: 100%;
-	}
-
-	main {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-	}
-
-	#hero {
-		display: flex;
-		align-items: start;
-		flex-direction: column;
-		justify-content: center;
-		padding: 16px;
-	}
-
-	h1 {
-		font-size: 22px;
-		margin-top: 0.25em;
-	}
-
-	#links {
-		display: flex;
-		gap: 16px;
-	}
-
-	#links a {
-		display: flex;
-		align-items: center;
-		padding: 10px 12px;
-		color: #111827;
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-
-	#links a:hover {
-		color: rgb(78, 80, 86);
-	}
-
-	#links a svg {
-		height: 1em;
-		margin-left: 8px;
-	}
-
-	#links a.button {
-		color: white;
-		background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
-		box-shadow:
-			inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-			inset 0 -2px 0 rgba(0, 0, 0, 0.24);
-		border-radius: 10px;
-	}
-
-	#links a.button:hover {
-		color: rgb(230, 230, 230);
-		box-shadow: none;
-	}
-
-	pre {
-		font-family:
-			ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
-			monospace;
-		font-weight: normal;
-		background: linear-gradient(14deg, #d83333 0%, #f041ff 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-		margin: 0;
-	}
-
-	h2 {
-		margin: 0 0 1em;
-		font-weight: normal;
-		color: #111827;
-		font-size: 20px;
-	}
-
-	p {
-		color: #4b5563;
-		font-size: 16px;
-		line-height: 24px;
-		letter-spacing: -0.006em;
-		margin: 0;
-	}
-
-	code {
-		display: inline-block;
-		background:
-			linear-gradient(66.77deg, #f3cddd 0%, #f5cee7 100%) padding-box,
-			linear-gradient(155deg, #d83333 0%, #f041ff 18%, #f5cee7 45%) border-box;
-		border-radius: 8px;
-		border: 1px solid transparent;
-		padding: 6px 8px;
-	}
-
-	.box {
-		padding: 16px;
-		background: rgba(255, 255, 255, 1);
-		border-radius: 16px;
-		border: 1px solid white;
-	}
-
-	#news {
-		position: absolute;
-		bottom: 16px;
-		right: 16px;
-		max-width: 300px;
-		text-decoration: none;
-		transition: background 0.2s;
-		backdrop-filter: blur(50px);
-	}
-
-	#news:hover {
-		background: rgba(255, 255, 255, 0.55);
-	}
-
-	@media screen and (max-height: 368px) {
-		#news {
-			display: none;
-		}
-	}
-
-	@media screen and (max-width: 768px) {
-		#container {
-			display: flex;
-			flex-direction: column;
-		}
-
-		#hero {
-			display: block;
-			padding-top: 10%;
-		}
-
-		#links {
-			flex-wrap: wrap;
-		}
-
-		#links a.button {
-			padding: 14px 18px;
-		}
-
-		#news {
-			right: 16px;
-			left: 16px;
-			bottom: 2.5rem;
-			max-width: 100%;
-		}
-
-		h1 {
-			line-height: 1.5;
-		}
-	}
-</style>
-</file>
-
-<file path="src/layouts/Layout.astro">
----
-interface Props {
-  title?: string;
-}
-
-const { title = "Atelier Tatsuyama" } = Astro.props;
----
-
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
-</file>
-
-<file path="src/pages/blogs/[id].astro">
----
-import { getCollection, render } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import "../../styles/global.css";
-import AudioVisualizer from "../../components/AudioVisualizer.astro";
-
-import defaultBaseImg from "../../assets/log1.jpg";
-import defaultOverlayImg from "../../assets/cellsbackground.png";
-
-export async function getStaticPaths() {
-  const posts = await getCollection("blog");
-  return posts.map((post) => ({
-    params: { id: post.id },
-    props: { post },
-  }));
-}
-
-const { post } = Astro.props;
-const { Content } = await render(post);
-const { title, sub, description, pubDate, img, overlayImg } = post.data;
-
-const subtitle = sub || description || "NO_DATA_ARCHIVED";
-
-// Compact regex to prevent Neovim Tree-sitter parser breakage in frontmatter
-const rawContent = post.body || "";
-const cleanText = rawContent
-  .replace(/import\s+.*?;|<[^>]*>|#+\s+|[*_~`]|>\s+/g, "")
-  .trim();
-
-const calculatedWordCount = cleanText
-  ? cleanText.split(/\s+/).filter(Boolean).length
-  : 0;
-const wordCount = post.data.wordCount ?? calculatedWordCount;
-
-const bgBaseSrc = img ? img.src : defaultBaseImg.src;
-const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
----
-
-<Layout title={`${title} — Atelier Tatsuyama`}>
-  <!-- PARALLAX BACKGROUND LAYER -->
-  <div
-    id="parallax-container"
-    class="fixed inset-0 pointer-events-none z-0 overflow-hidden"
-  >
-    <!-- BASE BACKGROUND IMAGE -->
-    <img
-      id="parallax-bg-base"
-      src={bgBaseSrc}
-      alt="Base Background"
-      class="absolute inset-0 w-full h-full object-cover scale-90 opacity-100 brightness-60 transition-transform duration-60 ease-out"
-    />
-
-    <!-- OVERLAY IMAGE (Darkened + Low Opacity) -->
-    <img
-      id="parallax-bg-overlay"
-      src={bgOverlaySrc}
-      alt="Overlay Background"
-      class="absolute inset-0 w-full h-full object-cover opacity-10 brightness-40 contrast-50 mix-blend-screen scale-100"
-    />
-
-    <!-- DARK VIGNETTE OVERLAY -->
-    <div
-      class="absolute inset-0 bg-radial from-black/10 via-black/10 to-black/95 z-1"
-    >
-    </div>
-    <div
-      class="absolute inset-0 bg-radial from-transparent via-black/60 to-black"
-    >
-    </div>
-  </div>
-
-  <!-- CRT NOISE / TRANSITION EFFECTS -->
-  <div id="transition-burst" class="active z-50">
-    <div id="signal-lost-wrap" class="signal-lost-wrap reveal">
-      <span class="signal-lost-text" data-text="SIGNAL LOST">SIGNAL FOUND</span>
-    </div>
-  </div>
-  <div class="crt-noise crt-boost"></div>
-  <div class="crt-overlay crt-boost"></div>
-  <div id="signal-tear" class="signal-tear active"></div>
-  <div class="vignette-soft"></div>
-
-  <!-- MAIN BLOG CONTENT -->
-  <div
-    class="min-h-screen text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black"
-  >
-    <!-- TOP NAVIGATION BAR -->
-    <div class="w-full flex flex-wrap justify-between items-center gap-4 mb-12">
-      <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
-      <div class="flex items-center gap-4">
-        <AudioVisualizer />
-        <button
-          class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
-        >
-          [ LANG: EN ]
-        </button>
-      </div>
-
-      <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
-      <a
-        href="/#blog"
-        class="text-zinc-500 hover:text-white group transition-colors"
-      >
-        <span
-          class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
-          data-text="[!] RETURN_TO_ARCHIVE"
-        >
-          [!] RETURN_TO_ARCHIVE
-        </span>
-      </a>
-    </div>
-
-    <!-- ARTICLE CONTAINER -->
-    <article
-      class="w-full relative bg-black/40 backdrop-blur-sm p-8 border border-white/10 rounded-sm"
-    >
-      <header class="border-b border-zinc-800 pb-6 mb-10">
-        <div
-          class="flex flex-col md:flex-row items-start md:items-center gap-6"
-        >
-          <!-- SMALL 300px LOG IMAGE -->
-          {
-            img && (
-              <div class="w-full md:w-75 shrink-0 border border-white/10 p-1 bg-black/60">
-                <img
-                  src={img.src}
-                  alt={title}
-                  class="w-full h-auto max-h-45 object-cover border border-white/5"
-                />
-              </div>
-            )
-          }
-
-          <!-- TITLE & METADATA COLUMN -->
-          <div class="flex-1">
-            <div
-              class="text-[10px] text-zinc-600 mb-3 font-mono tracking-widest uppercase"
-            >
-              LOG_ID: {post.id} // STATUS: OPEN
-            </div>
-
-            <h1
-              class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 chromatic-text text-white"
-              data-text={title}
-            >
-              {title}
-            </h1>
-
-            <p
-              class="text-zinc-500 text-xs tracking-[0.3em] uppercase leading-relaxed"
-            >
-              {subtitle}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <div>
-        <p class="text-zinc-300 text-xs">
-          UPDATED: {pubDate}
-        </p>
-
-        <p class="text-zinc-300 text-xs">
-          WORDCOUNT: {wordCount}
-        </p>
-      </div>
-    </article>
-
-    <div
-      class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative w-full"
-    >
-      <div class="lg:col-span-7 prose prose-invert max-w-none">
-        <Content />
-      </div>
-
-      <aside
-        class="lg:col-span-5 sticky top-12 border-l border-white/10 pl-6 flex flex-col gap-8"
-      >
-        <div
-          class="text-s font-mono text-zinc-500 tracking-widest uppercase border-b border-white/10 pb-2"
-        >
-          // MEDIA_TIMELINE
-        </div>
-        <div id="timeline-target" class="flex flex-col gap-8"></div>
-      </aside>
-    </div>
-
-    <div class="mt-20">
-      <a
-        href="/#blog"
-        class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors"
-      >
-        <span
-          class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
-          data-text="[!] RETURN_TO_ARCHIVE"
-        >
-          [!] RETURN_TO_ARCHIVE
-        </span>
-      </a>
-    </div>
-
-    <footer
-      class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest"
-    >
-      END_OF_FILE // TERMINAL_ID: TATSUYAMA_NODE_01
-    </footer>
-  </div>
-
-  <!-- IMAGE LIGHTBOX MODAL -->
-  <div
-    id="image-modal"
-    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 cursor-zoom-out"
-  >
-    <div
-      class="relative max-w-5xl max-h-[90vh] border border-white/20 bg-black p-2 flex flex-col items-center"
-    >
-      <!-- Top Terminal Bar -->
-      <div
-        class="w-full flex justify-between items-center px-4 py-2 border-b border-white/10 text-[10px] font-mono text-zinc-400 mb-2"
-      >
-        <span>[ VIEWPORT_INSPECTOR // ZOOM_MODE ]</span>
-        <span class="text-zinc-600">ESC_OR_CLICK_TO_CLOSE</span>
-      </div>
-
-      <!-- Target Enlarged Image -->
-      <img
-        id="modal-img"
-        src=""
-        alt="Enlarged view"
-        class="max-h-[75vh] w-auto object-contain border border-white/10"
-      />
-
-      <div
-        id="modal-caption"
-        class="mt-3 text-xs font-mono text-zinc-400 text-center tracking-widest uppercase"
-      >
-        <!-- Image src or alt text gets injected here -->
-      </div>
-    </div>
-  </div>
-</Layout>
-
-<script is:inline>
-  document.addEventListener("DOMContentLoaded", () => {
-    const bgBase = document.getElementById("parallax-bg-base");
-    const bgOverlay = document.getElementById("parallax-bg-overlay");
-
-    const timelineTarget = document.getElementById("timeline-target");
-    let lastSection = null;
-    document.querySelectorAll("[data-timeline-source]").forEach((item) => {
-      item.removeAttribute("data-timeline-source");
-      const section = item.dataset.section;
-      if (section && section !== lastSection) {
-        const label = document.createElement("div");
-        label.className =
-          "timeline-section-label text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/10 pb-1 mt-2";
-        label.textContent = section;
-        timelineTarget?.appendChild(label);
-        lastSection = section;
-      }
-      timelineTarget?.appendChild(item);
-    });
-
-    // Highlight the timeline group matching whatever heading is in view
-    const headings = document.querySelectorAll(
-      ".prose h1, .prose h2, .prose h3",
-    );
-    const sectionEls = document.querySelectorAll("[data-section]");
-    const headingObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const text = entry.target.textContent.trim();
-          sectionEls.forEach((el) => {
-            el.classList.toggle(
-              "timeline-active",
-              text.startsWith(el.dataset.section || "\0"),
-            );
-          });
-        });
-      },
-      { rootMargin: "-20% 0px -70% 0px", threshold: 0 },
-    );
-    headings.forEach((h) => headingObserver.observe(h));
-    const modal = document.getElementById("image-modal");
-    const modalImg = document.getElementById("modal-img");
-    const modalCaption = document.getElementById("modal-caption");
-
-    const mediaImages = document.querySelectorAll("aside img, .prose img");
-    mediaImages.forEach((img) => {
-      img.classList.add(
-        "cursor-pointer",
-        "hover:opacity-90",
-        "transition-opacity",
-      );
-      img.addEventListener("click", () => {
-        if (!modal || !modalImg) return;
-        modalImg.src = img.src;
-        if (modalCaption) {
-          modalCaption.textContent = img.alt || "IMG_VIEWER_OUTPUT";
-        }
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
-      });
-    });
-
-    modal?.addEventListener("click", () => {
-      modal.classList.remove("flex");
-      modal.classList.add("hidden");
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
-        modal.classList.remove("flex");
-        modal.classList.add("hidden");
-      }
-    });
-
-    let mouseX = 0;
-    let mouseY = 0;
-    let scrollY = window.scrollY;
-
-    const MAX_SCROLL_OFFSET_BASE = 40;
-    const MAX_SCROLL_OFFSET_OVERLAY = 60;
-
-    function updateParallax() {
-      const scrollableHeight = Math.max(
-        document.documentElement.scrollHeight - window.innerHeight,
-        1,
-      );
-      const scrollFraction = Math.min(scrollY / scrollableHeight, 1);
-
-      if (bgBase) {
-        const yBase = scrollFraction * MAX_SCROLL_OFFSET_BASE;
-        bgBase.style.transform = `translate3d(0px, ${yBase}px, 0) scale(1.10)`;
-      }
-      if (bgOverlay) {
-        const yOverlay = scrollFraction * MAX_SCROLL_OFFSET_OVERLAY;
-        bgOverlay.style.transform = `translate3d(0, ${yOverlay}px, 0) scale(1.15)`;
-      }
-    }
-
-    window.addEventListener("mousemove", (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-      requestAnimationFrame(updateParallax);
-    });
-
-    window.addEventListener("scroll", () => {
-      scrollY = window.scrollY;
-      requestAnimationFrame(updateParallax);
-    });
-  });
-
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      document.getElementById("signal-lost-wrap")?.classList.remove("reveal");
-      document.getElementById("signal-tear")?.classList.remove("active");
-    }, 80);
-    setTimeout(() => {
-      document.getElementById("transition-burst")?.classList.remove("active");
-      document
-        .querySelectorAll(".crt-boost")
-        .forEach((el) => el.classList.remove("crt-boost"));
-    }, 260);
-  });
-</script>
 </file>
 
 <file path=".gitignore">
@@ -1690,894 +871,461 @@ pnpm-debug.log*
 }
 </file>
 
-<file path="src/styles/global.css">
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
-/* * { */ /* outline: 1px solid red; */ /* } */ /* Base Styles */
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background-color: #0a0a0a;
-  color: #e5e5e5;
-  /* overflow: hidden; */
-  height: 100%;
-  width: 100vw;
-}
-.chromatic-text {
-  position: relative;
-  display: inline-block;
-  color: inherit; /* Respects your text-zinc-500 or low opacity classes */
-} /* Creating the Red and Blue "Ghost" layers */
-.chromatic-text::before,
-.chromatic-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.6; /* Keeps it subtle */
-  z-index: -1;
-} /* The Red Shift */
-.chromatic-text::before {
-  color: #ff0000;
-  transform: translateX(-1.5px);
-  mix-blend-mode: screen; /* Blends colors back to white where they overlap */
-} /* The Blue Shift */
-.chromatic-text::after {
-  color: #0000ff;
-  transform: translateX(1.5px);
-  mix-blend-mode: screen;
-}
-.chromatic-text:hover::before {
-  animation: glitch-1 0.1s infinite;
-}
-.chromatic-text:hover::after {
-  animation: glitch-2 0.1s infinite reverse;
-}
-.loading-screen {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition:
-    opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    visibility 0.8s;
-}
-.loading-screen.hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-.loading-text {
-  font-family: "JetBrains Mono", monospace; /* font-size: 0.875rem; */
-  font-size: 1.8rem;
-  letter-spacing: 0.4em;
-  color: #ddd;
-  margin-bottom: 24px;
-  text-transform: uppercase;
-}
-.loading-bar-container {
-  width: 800px;
-  height: 1px;
-  background: #222;
-  position: relative;
-  overflow: hidden;
-  margin-top: 20px;
-}
-.loading-bar {
-  height: 100%;
-  background: #fff;
-  width: 0%; /* transition: width 0.5s ease-out; */
-  animation: loadProgress 0.8s ease-out forwards;
-  box-shadow: 0 0 50px rgba(255, 255, 255, 0.6);
-}
-@keyframes loadProgress {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: 100%;
-  }
-}
-.crt-noise {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.3;
-  overflow: hidden;
-}
-.crt-noise::before {
-  content: "";
-  position: absolute;
-  inset: -100%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.12;
-  mix-blend-mode: overlay;
-  animation: noiseMove 0.5s infinite steps(2);
-}
-@keyframes noiseMove {
-  0% {
-    transform: translate(0, 0);
-  }
-  10% {
-    transform: translate(-5%, -10%);
-  }
-  20% {
-    transform: translate(-15%, 5%);
-  }
-  30% {
-    transform: translate(7%, -25%);
-  }
-  40% {
-    transform: translate(-5%, 25%);
-  }
-  50% {
-    transform: translate(-15%, 10%);
-  }
-  60% {
-    transform: translate(15%, 0%);
-  }
-  70% {
-    transform: translate(0%, 15%);
-  }
-  80% {
-    transform: translate(3%, 35%);
-  }
-  90% {
-    transform: translate(-10%, 10%);
-  }
-  100% {
-    transform: translate(0, 0);
-  }
-}
-.crt-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10000;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.03) 0px,
-    rgba(255, 255, 255, 0.03) 1px,
-    transparent 6px,
-    /* crt line fineness. (how noticable the crt lines are) */ transparent 6px
-  );
-  animation: flicker 0.2s infinite;
-}
-@keyframes flicker {
-  0% {
-    opacity: 0.45;
-  }
-  5% {
-    opacity: 0.32;
-  }
-  10% {
-    opacity: 0.78;
-  }
-  15% {
-    opacity: 0.23;
-  }
-  20% {
-    opacity: 0.67;
-  }
-  50% {
-    opacity: 0.34;
-  }
-  80% {
-    opacity: 0.99;
-  }
-  100% {
-    opacity: 0.45;
-  }
-}
-.scan-line {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  z-index: 99;
-  animation: scan 12s linear infinite;
-  pointer-events: none;
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.24);
-}
-@keyframes scan {
-  /* Horizontal scan-lines */
-  0% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+<file path="src/layouts/Layout.astro">
+---
+interface Props {
+  title?: string;
 }
 
-#scroll-container {
-  display: flex;
-  flex-direction: column;
-  /*   height: 100vh; */
-  /*   width: 100vw; */
-  /*   overflow-y: scroll; */
-  /*   overflow-x: hidden; */
-  /*   scroll-snap-type: y mandatory; */
-  /*   scroll-behavior: smooth; */
-  /*   width: 100vw; */
-  /*   height: 100vh; */
-}
-/* .snap-slide { */
-/*   flex: 0 0 100vh; */
-/*   height: 100vh; */
-/*   scroll-snap-align: start; */
-/*   scroll-snap-stop: always; */
-/* } */
-/* section { */
-/*   flex-shrink: 0; */
-/*   width: 100vw; */
-/*   height: 100vh; */
-/*   scroll-snap-align: start; */
-/* } */
+const { title = "Atelier Tatsuyama" } = Astro.props;
+---
 
-.stairs-piece {
-  transition:
-    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 3s ease;
-  opacity: 1;
-  pointer-events: none;
-  z-index: 10;
-}
-.left-piece {
-  transform: translateX(18%) translateY(50px);
-}
-.middle-piece {
-  transform: translateX(0%) translateY(-15px);
-}
-.right-piece {
-  transform: translateX(-18%) translateY(50px);
-} /* When blog section becomes active */
-#blog.active .stairs-piece {
-  transform: translateX(0) translateY(0);
-  opacity: 0.24; /* This one alone controls opacity */
-}
-.clear-stairs {
-  opacity: 1;
-  transition: opacity 1s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-#blog.active .clear-stairs {
-  opacity: 0.01;
-}
-.projects-reveal-wrapper {
-  position: absolute;
-  inset: 0;
-  overflow: hidden; /* Essential to hide the mask as it slides away */
-  pointer-events: none;
-}
-.projects-reveal {
-  position: absolute; /* Start the div offset upwards so the transparent bottom is already sitting over the image */
-  top: -150vh;
-  left: 0;
-  width: 100%;
-  height: 250vh;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 1) 80%,
-    rgba(0, 0, 0, 1) 100% /* BOTTOM: Long, soft transparency leads the reveal */
-  ); /* Movement is still downward */
-  transform: translateY(
-    0
-  ); /* Increased duration to 6s to remove the 'hasty' feel */
-  transition: transform 16s cubic-bezier(0.2, 0, 0.2, 1);
-  pointer-events: none;
-  z-index: 5;
-}
-.projects-blur-mask {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(4px); /* Strength of the blur */
-  -webkit-mask-image: linear-gradient(
-    /* How do I get a blur gradient? 4px blur strength at the top, 40px blur strength at the bottom or something like that */
-    to bottom,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 1) 80%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 1) 80%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  z-index: 2;
-}
-.projects-reveal.revealed {
-  /* Move down to clear the screen */
-  transform: translateY(250vh);
-}
-#projects-bg {
-  transform: scale(1.1);
-  transition: transform 3s ease-out;
-}
-#projects.active #projects-bg {
-  transform: scale(1);
-}
-.playing-label {
-  opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-}
-.playing-label.active {
-  opacity: 1;
-}
-.menu-item {
-  position: relative;
-  transition: color 0.3s ease;
-}
-@keyframes textBlink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.1;
-  }
-}
-.menu-item:hover {
-  color: #ffffff; /* color: transparent; */
-  text-shadow: 0 0 24px rgba(255, 255, 255, 1);
-  animation: textBlink 0.01s steps(2, start) infinite; /* Flickering (glitchy?) look for menu-items by blinking super fast */
-  cursor: pointer;
-  filter: url(#chromatic-aberration) drop-shadow(0 0 2px rgba(255, 255, 255, 1));
-}
-.main-bio {
-  transition: transition 1.2s;
-  z-index: 10;
-}
-.bio-shifted {
-  /* transform: translateX(-80px); */
-  transform: translateX(-64%);
-}
-.bio-margin-line {
-  position: absolute;
-  left: -38px;
-  top: 64px;
-  width: 1px;
-  height: 100%; /* Doesn't control height */
-  background: #ddd;
-  transform-origin: top;
-  transform: scaleY(0);
-  transition: transform 1.2s ease;
-}
-.line-draw {
-  transform: scaleY(1);
-}
-.glitch-text {
-  position: relative;
-  display: inline-block; /* inline-block, inline-flex. What the fuck is the difference */ /* text-align: center; */
-  color: #444444;
-}
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%; /* opacity: 0; */
-  background: black;
-  display: none; /* align-items: center; */ /* text-align: center; */
-}
-.glitch-text:hover::before {
-  animation: glitch-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
-  color: #fff;
-  z-index: 1;
-  opacity: 0.8;
-  display: block;
-}
-.glitch-text:hover::after {
-  animation: glitch-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both
-    infinite;
-  color: #fff;
-  z-index: 2;
-  opacity: 0.8;
-  display: block;
-}
-@keyframes glitch-1 {
-  0% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-2px, 2px);
-  }
-  40% {
-    transform: translate(-2px, -2px);
-  }
-  60% {
-    transform: translate(2px, 2px);
-  }
-  80% {
-    transform: translate(2px, -2px);
-  }
-  100% {
-    transform: translate(0);
-  }
-}
-@keyframes glitch-2 {
-  0% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(2px, -2px);
-  }
-  40% {
-    transform: translate(2px, 2px);
-  }
-  60% {
-    transform: translate(-2px, -2px);
-  }
-  80% {
-    transform: translate(-2px, 2px);
-  }
-  100% {
-    transform: translate(0);
-  }
-}
-#home {
-  position: relative;
-  background-color: black; /* Ensure this is the base */
-} /* By default, hide the castle when we aren't looking at Home */
-#lowerCastle {
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-} /* Only show it if the home section has the 'triggered' class AND is visible */
-#home.triggered.active #lowerCastle {
-  opacity: 0.2;
-}
-#castleVeil {
-  opacity: 1;
-}
-#castleVeil.hidden-veil {
-  opacity: 0;
-}
-#intro-content,
-#main-bio {
-  position: relative;
-  z-index: 10; /* Ensure text is always on top of the image. Issue, can't scroll unless cursor is hovering over this text? */
-}
-.project-portal {
-  opacity: 0;
-  transform: scale(0.85);
-  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-/* Add this to your existing CSS block */
-#projects.portals-visible .blog-portal {
-  opacity: 1;
-}
-.grid-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 15;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 20% 33.33%;
-  opacity: 0;
-  transform: scaleY(0);
-  transform-origin: top;
-  transition:
-    transform 1.2s ease,
-    opacity 0.8s ease;
-}
-/* Add this to keep the preview image clean during swaps */
-#preview-img {
-  transition:
-    opacity 0.3s ease-in-out,
-    transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+</file>
+
+<file path="src/pages/blogs/[id].astro">
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/global.css";
+import AudioVisualizer from "../../components/AudioVisualizer.astro";
+
+import defaultBaseImg from "../../assets/log1.jpg";
+import defaultOverlayImg from "../../assets/cellsbackground.png";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
 }
 
-/* Ensure the log list doesn't show a scrollbar but remains scrollable */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-/* ============================================================
-   Blog typography (Tailwind Typography plugin) — themed to match
-   the terminal / CRT aesthetic used everywhere else on the site.
-   ============================================================ */
-.prose-invert {
-  --tw-prose-body: #d4d4d8;
-  --tw-prose-headings: #ffffff;
-  --tw-prose-lead: #a1a1aa;
-  --tw-prose-links: #ffffff;
-  --tw-prose-bold: #ffffff;
-  --tw-prose-counters: #71717a;
-  --tw-prose-bullets: #52525b;
-  --tw-prose-hr: #27272a;
-  --tw-prose-quotes: #e4e4e7;
-  --tw-prose-quote-borders: #3f3f46;
-  --tw-prose-captions: #71717a;
-  --tw-prose-code: #e4e4e7;
-  --tw-prose-pre-code: #d4d4d8;
-  --tw-prose-pre-bg: rgba(255, 255, 255, 0.03);
-  --tw-prose-th-borders: #3f3f46;
-  --tw-prose-td-borders: #27272a;
-  font-family: "JetBrains Mono", "Inter", monospace;
-}
-.prose-invert :where(h1, h2, h3, h4) {
-  font-family: "JetBrains Mono", monospace;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-weight: 900;
-}
-.prose-invert :where(h2) {
-  border-bottom: 1px solid #27272a;
-  padding-bottom: 0.4em;
-}
-.prose-invert :where(a) {
-  text-decoration-color: #52525b;
-  transition:
-    text-decoration-color 0.2s ease,
-    color 0.2s ease;
-}
-.prose-invert :where(a:hover) {
-  text-decoration-color: #ffffff;
-}
-.prose-invert :where(blockquote) {
-  font-style: normal;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.9em;
-}
-.prose-invert :where(code)::before,
-.prose-invert :where(code)::after {
-  content: "";
-}
-.prose-invert :where(code) {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 0.15em 0.4em;
-  border-radius: 2px;
-  font-size: 0.85em;
-}
-.prose-invert :where(pre) {
-  border: 1px solid #27272a;
-  border-radius: 2px;
-}
-.prose-invert :where(img) {
-  border: 1px solid #27272a;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 4px;
-}
-/* On wide screens, float images into a bordered container beside the
-   text column (magazine-style) instead of stacking full-width through
-   the reading flow. Confined to the article's own max-width, so it
-   never overflows the viewport regardless of screen size. */
-@media (min-width: 1024px) {
-  .prose-invert :where(img) {
-    float: right;
-    clear: right;
-    width: min(320px, 34%);
-    margin: 0.25rem -360px 1.5rem 2rem;
-  }
-  .mdx-grid-container > * {
-    grid-column: span 7 / span 7;
-  }
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, sub, description, pubDate, img, overlayImg } = post.data;
 
-  /* Force Timeline items to occupy the right 5 columns */
-  .mdx-grid-container > .timeline-item-container {
-    display: none;
-    grid-column: span 5 / span 5;
-    grid-column-start: 8;
-  }
-}
-.prose-invert :where(table) {
-  font-size: 0.85em;
-}
+const subtitle = sub || description || "NO_DATA_ARCHIVED";
 
-/* Obsidian-style callouts, rendered from `> [!type] Title` blockquotes
-   by src/lib/remark-obsidian-callouts.mjs */
-.callout {
-  margin: 1.5em 0;
-  padding: 0.9em 1.2em;
-  border-left: 3px solid var(--callout-color, #71717a);
-  background: color-mix(in srgb, var(--callout-color, #71717a) 8%, transparent);
-  font-size: 0.9em;
-}
-.callout .callout-title {
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 0.8em;
-  color: var(--callout-color, #e4e4e7);
-  margin-bottom: 0.5em;
-}
-.callout > :last-child {
-  margin-bottom: 0;
-}
-.callout-note,
-.callout-info {
-  --callout-color: #60a5fa;
-}
-.callout-tip,
-.callout-success,
-.callout-done {
-  --callout-color: #4ade80;
-}
-.callout-warning {
-  --callout-color: #facc15;
-}
-.callout-danger,
-.callout-error,
-.callout-bug {
-  --callout-color: #f87171;
-}
-.callout-important {
-  --callout-color: #c084fc;
-}
-.callout-question,
-.callout-faq {
-  --callout-color: #fb923c;
-}
-.callout-quote,
-.callout-cite {
-  --callout-color: #a1a1aa;
-}
-.callout-example {
-  --callout-color: #38bdf8;
-}
-.callout-abstract,
-.callout-summary,
-.callout-todo {
-  --callout-color: #2dd4bf;
-}
+// Compact regex to prevent Neovim Tree-sitter parser breakage in frontmatter
+const rawContent = post.body || "";
+const cleanText = rawContent
+  .replace(/import\s+.*?;|<[^>]*>|#+\s+|[*_~`]|>\s+/g, "")
+  .trim();
 
-/* ============================================================
-   Blog page transition — CRT effects "boost" to hide the jump
-   between the home page and a blog entry.
+const calculatedWordCount = cleanText
+  ? cleanText.split(/\s+/).filter(Boolean).length
+  : 0;
+const wordCount = post.data.wordCount ?? calculatedWordCount;
 
-   How it works: clicking a blog link on the home page adds the
-   `.crt-boost` class to the noise/overlay layers and fades in
-   `#transition-burst` *before* the actual navigation happens, so
-   the whole screen is already saturated with static by the time
-   the browser swaps documents. The blog page then starts in that
-   same boosted state and settles back down to normal a moment
-   after it loads, making the two full-page loads read as one
-   continuous "channel change" effect instead of a jarring cut.
-   ============================================================ */
+const bgBaseSrc = img ? img.src : defaultBaseImg.src;
+const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
+---
 
-/* Issue with transition burst. Behind the crt noise the rest of the page is still visible. Instead, the current background situation of blog001 should really take over. */
+<Layout title={`${title} — Atelier Tatsuyama`}>
+  <!-- PARALLAX BACKGROUND LAYER -->
+  <div
+    id="parallax-container"
+    class="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+  >
+    <!-- BASE BACKGROUND IMAGE -->
+    <img
+      id="parallax-bg-base"
+      src={bgBaseSrc}
+      alt="Base Background"
+      class="absolute inset-0 w-full h-full object-cover scale-90 opacity-100 brightness-60 transition-transform duration-60 ease-out"
+    />
 
-#transition-burst {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  pointer-events: none;
-  opacity: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.1) 0px,
-      rgba(0, 0, 0, 0.1) 1px,
+    <!-- OVERLAY IMAGE (Darkened + Low Opacity) -->
+    <img
+      id="parallax-bg-overlay"
+      src={bgOverlaySrc}
+      alt="Overlay Background"
+      class="absolute inset-0 w-full h-full object-cover opacity-10 brightness-40 contrast-50 mix-blend-screen scale-100"
+    />
 
-      transparent 2px,
-      transparent 4px
-    ),
-    radial-gradient(
-      ellipse at center,
-      rgba(255, 255, 255, 0.12),
-      rgba(0, 0, 0, 0.96) 90%
+    <!-- DARK VIGNETTE OVERLAY -->
+    <div
+      class="absolute inset-0 bg-radial from-black/10 via-black/10 to-black/95 z-1"
+    >
+    </div>
+    <div
+      class="absolute inset-0 bg-radial from-transparent via-black/60 to-black"
+    >
+    </div>
+  </div>
+
+  <!-- CRT NOISE / TRANSITION EFFECTS -->
+  <div id="transition-burst" class="active z-50">
+    <div id="signal-lost-wrap" class="signal-lost-wrap reveal">
+      <span class="signal-lost-text" data-text="SIGNAL LOST">SIGNAL FOUND</span>
+    </div>
+  </div>
+  <div class="crt-noise crt-boost"></div>
+  <div class="crt-overlay crt-boost"></div>
+  <div id="signal-tear" class="signal-tear active"></div>
+  <div class="vignette-soft"></div>
+
+  <!-- MAIN BLOG CONTENT <-->
+  <div
+    id="scroll-container"
+    class="relative z-10 h-screen w-screen overflow-y-auto overflow-x-hidden"
+  >
+    <div
+      class="min-h-screen text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black"
+    >
+      <!-- TOP NAVIGATION BAR -->
+      <div
+        class="w-full flex flex-wrap justify-between items-center gap-4 mb-12"
+      >
+        <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
+        <div class="flex items-center gap-4">
+          <AudioVisualizer />
+          <button
+            class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+          >
+            [ LANG: EN ]
+          </button>
+        </div>
+
+        <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
+        <a
+          href="/#blog"
+          class="text-zinc-500 hover:text-white group transition-colors"
+        >
+          <span
+            class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+            data-text="[!] RETURN_TO_ARCHIVE"
+          >
+            [!] RETURN_TO_ARCHIVE
+          </span>
+        </a>
+      </div>
+
+      <!-- ARTICLE CONTAINER -->
+      <article
+        class="w-full relative bg-black/40 backdrop-blur-sm p-8 border border-white/10 rounded-sm"
+      >
+        <header class="border-b border-zinc-800 pb-6 mb-10">
+          <div
+            class="flex flex-col md:flex-row items-start md:items-center gap-6"
+          >
+            <!-- SMALL 300px LOG IMAGE -->
+            {
+              img && (
+                <div class="w-full md:w-75 shrink-0 border border-white/10 p-1 bg-black/60">
+                  <img
+                    src={img.src}
+                    alt={title}
+                    class="w-full h-auto max-h-45 object-cover border border-white/5"
+                  />
+                </div>
+              )
+            }
+
+            <!-- TITLE & METADATA COLUMN -->
+            <div class="flex-1">
+              <div
+                class="text-[10px] text-zinc-600 mb-3 font-mono tracking-widest uppercase"
+              >
+                LOG_ID: {post.id} // STATUS: OPEN
+              </div>
+
+              <h1
+                class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 chromatic-text text-white"
+                data-text={title}
+              >
+                {title}
+              </h1>
+
+              <p
+                class="text-zinc-500 text-xs tracking-[0.3em] uppercase leading-relaxed"
+              >
+                {subtitle}
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <div>
+          <p class="text-zinc-300 text-xs">
+            UPDATED: {pubDate}
+          </p>
+
+          <p class="text-zinc-300 text-xs">
+            WORDCOUNT: {wordCount}
+          </p>
+        </div>
+      </article>
+
+      <div
+        class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative w-full"
+      >
+        <div class="lg:col-span-7 prose prose-invert max-w-none">
+          <Content />
+        </div>
+
+        <aside
+          class="lg:col-span-5 sticky top-12 border-l border-white/10 pl-6 flex flex-col gap-8"
+        >
+          <div
+            class="text-s font-mono text-zinc-500 tracking-widest uppercase border-b border-white/10 pb-2"
+          >
+            // MEDIA_TIMELINE
+          </div>
+          <div id="timeline-target" class="flex flex-col gap-8"></div>
+        </aside>
+      </div>
+
+      <div class="mt-20">
+        <a
+          href="/#blog"
+          class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors"
+        >
+          <span
+            class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+            data-text="[!] RETURN_TO_ARCHIVE"
+          >
+            [!] RETURN_TO_ARCHIVE
+          </span>
+        </a>
+      </div>
+
+      <footer
+        class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest"
+      >
+        END_OF_FILE // TERMINAL_ID: TATSUYAMA_NODE_01
+      </footer>
+    </div>
+
+    <!-- IMAGE LIGHTBOX MODAL -->
+    <div
+      id="image-modal"
+      class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 cursor-zoom-out"
+    >
+      <div
+        class="relative max-w-5xl max-h-[90vh] border border-white/20 bg-black p-2 flex flex-col items-center"
+      >
+        <!-- Top Terminal Bar -->
+        <div
+          class="w-full flex justify-between items-center px-4 py-2 border-b border-white/10 text-[10px] font-mono text-zinc-400 mb-2"
+        >
+          <span>[ VIEWPORT_INSPECTOR // ZOOM_MODE ]</span>
+          <span class="text-zinc-600">ESC_OR_CLICK_TO_CLOSE</span>
+        </div>
+
+        <!-- Target Enlarged Image -->
+        <img
+          id="modal-img"
+          src=""
+          alt="Enlarged view"
+          class="max-h-[75vh] w-auto object-contain border border-white/10"
+        />
+
+        <div
+          id="modal-caption"
+          class="mt-3 text-xs font-mono text-zinc-400 text-center tracking-widest uppercase"
+        >
+          <!-- Image src or alt text gets injected here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const bgBase = document.getElementById("parallax-bg-base");
+    const bgOverlay = document.getElementById("parallax-bg-overlay");
+
+    const timelineTarget = document.getElementById("timeline-target");
+    let lastSection = null;
+    document.querySelectorAll("[data-timeline-source]").forEach((item) => {
+      item.removeAttribute("data-timeline-source");
+      const section = item.dataset.section;
+      if (section && section !== lastSection) {
+        const label = document.createElement("div");
+        label.className =
+          "timeline-section-label text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-white/10 pb-1 mt-2";
+        label.textContent = section;
+        timelineTarget?.appendChild(label);
+        lastSection = section;
+      }
+      timelineTarget?.appendChild(item);
+    });
+
+    // Highlight the timeline group matching whatever heading is in view
+    const headings = document.querySelectorAll(
+      ".prose h1, .prose h2, .prose h3",
     );
-  mix-blend-mode: overlay;
-  transition: opacity 2;
-}
-#transition-burst.active {
-  opacity: 1;
-}
-.crt-noise,
-.crt-overlay {
-  transition: opacity 1s ease;
-}
-.crt-noise.crt-boost {
-  opacity: 0.5;
-}
-.crt-noise.crt-boost::before {
-  opacity: 0.7;
-  animation: noiseMove 0.12s infinite steps(2);
-}
-.crt-overlay.crt-boost {
-  animation: flickerBoost 0.08s infinite;
-}
-@keyframes flickerBoost {
-  0% {
-    opacity: 0.95;
-  }
-  40% {
-    opacity: 0.5;
-  }
-  70% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.9;
-  }
-}
+    const sectionEls = document.querySelectorAll("[data-section]");
+    const headingObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const text = entry.target.textContent.trim();
+          sectionEls.forEach((el) => {
+            el.classList.toggle(
+              "timeline-active",
+              text.startsWith(el.dataset.section || "\0"),
+            );
+          });
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px", threshold: 0 },
+    );
+    headings.forEach((h) => headingObserver.observe(h));
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-img");
+    const modalCaption = document.getElementById("modal-caption");
 
-/* ============================================================
-   SIGNAL TEAR MASK — reusable analog sync-failure overlay.
-   Not a "glitch explosion": mostly still, with rare, brief
-   horizontal slips, like a CRT losing vertical hold or a VHS
-   tape hitting a bad tracking patch.
+    const mediaImages = document.querySelectorAll("aside img, .prose img");
+    mediaImages.forEach((img) => {
+      img.classList.add(
+        "cursor-pointer",
+        "hover:opacity-90",
+        "transition-opacity",
+      );
+      img.addEventListener("click", () => {
+        if (!modal || !modalImg) return;
+        modalImg.src = img.src;
+        if (modalCaption) {
+          modalCaption.textContent = img.alt || "IMG_VIEWER_OUTPUT";
+        }
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      });
+    });
 
-   Two ways to use the same pattern (kept in one CSS variable so
-   the gradient definition only exists once):
-     1. Fixed full-screen layer: <div class="signal-tear"></div>,
-        toggled with the `.active` modifier (used during page
-        transitions).
-     2. Local hover variant: add `.signal-tear-surface` to any
-        `relative`-friendly element (e.g. a blog link) and its own
-        ::after picks up the tear on :hover — no extra DOM node.
-   ============================================================ */
-:root {
-  --signal-tear-band: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.05) 0px,
-    rgba(255, 255, 255, 0.05) 2px,
-    transparent 2px,
-    transparent 14px,
-    rgba(255, 255, 255, 0.1) 14px,
-    rgba(255, 255, 255, 0.1) 17px,
-    transparent 17px,
-    transparent 38px
-  );
-  --signal-tear-band-size: 76px;
-  --signal-tear-speed: 2.6s;
-}
-.signal-tear {
-  position: fixed;
-  inset: 0;
-  z-index: 10002;
-  pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: overlay;
-  background-image: var(--signal-tear-band);
-  background-size: 100% var(--signal-tear-band-size);
-  animation:
-    signalTearScroll var(--signal-tear-speed) linear infinite,
-    signalTearJitter 5s steps(1) infinite;
-  animation-play-state: paused;
-  transition: opacity 0.45s ease;
-}
-.signal-tear.active {
-  opacity: 0.8;
-  animation-play-state: running;
-}
-@keyframes signalTearScroll {
-  0% {
-    background-position-y: 0;
-  }
-  100% {
-    background-position-y: var(--signal-tear-band-size);
-  }
-}
-@keyframes signalTearJitter {
-  /* Discrete, infrequent horizontal slips — sync failure, not chaos */
-  0%,
-  82%,
-  100% {
-    transform: translateX(0);
-  }
-  84% {
-    transform: translateX(5px);
-  }
-  86% {
-    transform: translateX(-3px);
-  }
-  88% {
-    transform: translateX(0);
-  }
-  91% {
-    transform: translateX(-4px);
-  }
-  93% {
-    transform: translateX(0);
-  }
-}
-.signal-tear-surface {
-  position: relative;
-}
-.signal-tear-surface::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: overlay;
-  background-image: var(--signal-tear-band);
-  background-size: 100% var(--signal-tear-band-size);
-  transition: opacity 0.3s ease;
-}
-.signal-tear-surface:hover::after {
-  opacity: 0.7;
-  animation:
-    signalTearScroll var(--signal-tear-speed) linear infinite,
-    signalTearJitter 5s steps(1) infinite;
-}
+    modal?.addEventListener("click", () => {
+      modal.classList.remove("flex");
+      modal.classList.add("hidden");
+    });
 
-/* ============================================================
-   SOFT EDGE VIGNETTE — very subtle darkening confined to the
-   extreme edges (~15-20%), centre left untouched. Reads as
-   ambient light falloff, like viewing a monitor in a dark room,
-   rather than another CRT effect layer. Sits below the CRT
-   noise/overlay in z-index so it stacks underneath them.
-   ============================================================ */
-.vignette-soft {
-  position: fixed;
-  inset: 0;
-  z-index: 9990;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.1) 78%,
-    rgba(0, 0, 0, 1) 100%
-  );
-}
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+        modal.classList.remove("flex");
+        modal.classList.add("hidden");
+      }
+    });
 
-/* ============================================================
-   SIGNAL LOST burst text — large, dominates the screen briefly
-   mid-transition. Reuses `.chromatic-text` for the RGB-split
-   ghosting instead of duplicating that logic.
-   ============================================================ */
-.signal-lost-wrap {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(1.08);
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-.signal-lost-wrap.reveal {
-  opacity: 1;
-  transform: scale(1);
-}
-.signal-lost-text {
-  font-family: "JetBrains Mono", monospace;
-  font-size: clamp(2.5rem, 10vw, 7rem);
-  font-weight: 900;
-  letter-spacing: 0.2em;
-  color: #e5e5e5;
-  text-transform: uppercase;
-  text-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
-}
-[data-section] {
-  opacity: 0.5;
-  filter: grayscale(0.4);
-  transition:
-    opacity 0.3s ease,
-    filter 0.3s ease;
-}
-[data-section].timeline-active {
-  opacity: 1;
-  filter: none;
+    let mouseX = 0;
+    let mouseY = 0;
+    let scrollY = window.scrollY;
+
+    const MAX_SCROLL_OFFSET_BASE = 40;
+    const MAX_SCROLL_OFFSET_OVERLAY = 60;
+
+    function updateParallax() {
+      const scrollableHeight = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        1,
+      );
+      const scrollFraction = Math.min(scrollY / scrollableHeight, 1);
+
+      if (bgBase) {
+        const yBase = scrollFraction * MAX_SCROLL_OFFSET_BASE;
+        bgBase.style.transform = `translate3d(0px, ${yBase}px, 0) scale(1.10)`;
+      }
+      if (bgOverlay) {
+        const yOverlay = scrollFraction * MAX_SCROLL_OFFSET_OVERLAY;
+        bgOverlay.style.transform = `translate3d(0, ${yOverlay}px, 0) scale(1.15)`;
+      }
+    }
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      requestAnimationFrame(updateParallax);
+    });
+
+    window.addEventListener("scroll", () => {
+      scrollY = window.scrollY;
+      requestAnimationFrame(updateParallax);
+    });
+  });
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      document.getElementById("signal-lost-wrap")?.classList.remove("reveal");
+      document.getElementById("signal-tear")?.classList.remove("active");
+    }, 80);
+    setTimeout(() => {
+      document.getElementById("transition-burst")?.classList.remove("active");
+      document
+        .querySelectorAll(".crt-boost")
+        .forEach((el) => el.classList.remove("crt-boost"));
+    }, 260);
+  });
+</script>
+</file>
+
+<file path="README.md">
+# Atelier Tatsuyama | Personal Archive
+
+> **Status:** [ACTIVE]  
+> **Vibe:** Tech-Industrial / CRT Aesthetic
+
+Project started during 2nd year of Highschool in Norway.
+Looking back I was so invested in it because it was an escape from the terribly uninspiring day and I was greatly inspired by the aesthetics of various computer games.
+
+Titanfall 2, Homeworld 2, Armored Core VI, Arknights, SNES Metal Warriors
+
+I hope to create my own space of inspiration and creativity with this website, and should anyone somehow come across it I hope that it inspires. . . somehow
+
+---
+
+### Astro Commands
+
+Just a personal reminder
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+</file>
+
+<file path="tsconfig.json">
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  }
 }
 </file>
 
@@ -2642,44 +1390,6 @@ export default defineConfig({
 }
 </file>
 
-<file path="README.md">
-# Aki Tatsu | Personal Archive
-
-> **Status:** [ACTIVE]  
-> **Location:** Osaka, Japan (Gap Year)  
-> **Vibe:** Retro-Industrial / CRT Aesthetic
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-</file>
-
-<file path="tsconfig.json">
-{
-  "extends": "astro/tsconfigs/strict",
-  "include": [
-    ".astro/types.d.ts",
-    "**/*"
-  ],
-  "exclude": [
-    "dist"
-  ],
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
-  }
-}
-</file>
-
 <file path="src/pages/index.astro">
 ---
 import { getCollection } from "astro:content";
@@ -2694,46 +1404,36 @@ const blogEntries = posts
     img: post.data.img,
   }));
 
-// import ScrollIndicator from "../components/ScrollIndicator.jsx";
 import "../styles/global.css";
 import AudioVisualizer from "../components/AudioVisualizer.astro";
 
-import defaultImg from "../assets/default.jpg";
+import AinethTillDeath from "../assets/Music/AinethTillDeathDoUsPart.mp3";
+import XomuMoonfall from "../assets/Music/Xomu - Moonfall VIP.mp3";
+import KurokoteiTheInfiniteSky from "../assets/Music/The Infinite Sky, A Lonesome Comet And The Decaying Civilization [1373662963].opus";
 
+const playlist = [
+  {
+    id: "01",
+    title: "Till Death Do Us Part",
+    artist: "Aineth",
+    src: AinethTillDeath,
+  },
+  { id: "02", title: "Moonfall VIP", artist: "Xomu", src: XomuMoonfall },
+  {
+    id: "03",
+    title: "The Infinite Sky, A... ",
+    artist: "Kurokotei",
+    src: KurokoteiTheInfiniteSky,
+  },
+];
+
+import defaultImg from "../assets/default.jpg";
 import homeLower from "../assets/Home(Lower)Gradient2.png";
 
 import dizzystarsLpiece from "../assets/dizzystairsLpiece.png";
 import dizzystarsRpiece from "../assets/dizzystairsRpiece.png";
 import dizzystarsMpiece from "../assets/dizzystairsMpiece.png";
 import clearstairs from "../assets/clearstairs.jpg";
-import log1 from "../assets/log1.jpg";
-import log2 from "../assets/log2.jpg";
-import log3 from "../assets/log3.jpg";
-import log4 from "../assets/log4.png";
-
-// const blogEntries = [
-// { id: '001', title: "Creation of this Website", sub: "Why, and how and I made this personal website of mine", img: log1 },
-// { id: '002', title: "Learning Japanese", sub: "Current journey, and how I wish I could have started", img: log2 },
-//   { id: '003', title: 'Introspection (Ananda Marga + etc)', sub: "Growing up with Ananda Marga and why I'm so resentful about it", img: log3 },
-//   { id: '004', title: 'Linux and Hyprland', sub: 'Ricing, minimalism, and complaints', img: log4 },
-// ];
-
-// Grid dimensions
-const cols = 12;
-const rows = 6;
-
-function getRandomPositions(count) {
-  // type: ignore
-  let cells = [];
-  for (let r = 1; r <= rows; r++) {
-    for (let c = 1; c <= cols; c++) {
-      cells.push({ row: r, col: c });
-    }
-  }
-  // Shuffle and pick the first 'count' cells
-  return cells.sort(() => Math.random() - 0.5).slice(0, count);
-}
-// const positions = getRandomPositions(blogEntries.length);
 
 const githubUsername = "MidoriNoHoshi";
 const githubProfile = `https://github.com/${githubUsername}`;
@@ -2741,24 +1441,28 @@ const email = "nemitatsu@proton.me";
 const instagram = "https://www.instagram.com/tatsu._.yama/";
 
 import projectsBg from "../assets/ProjectsRemoved.png";
+import projectsImageDefault from "../assets/default.jpg";
 import linuxRice from "../assets/LinuxRice.png";
 import japtoankiExample from "../assets/japtoankiExample.png";
 import japtoankiSampleVid from "../assets/japtoankiSampleVid.mp4";
 import obsidianScreenshot from "../assets/obsidianPlugin.png";
 import kyubiScreenshot from "../assets/kyubiScreenshot.png";
+import wayInfoScreenshot from "../assets/wayInfoHyprshot.png";
+
 const projects = [
   {
     id: "p1",
     title: "JaptoAnki",
     desc: "Japanese OCR to Anki flashcards.",
     github: "https://github.com/MidoriNoHoshi/JaptoAnki",
-    img: japtoankiExample, // Or a specific project screenshot
-    video: japtoankiSampleVid, // Optional video path
+    img: japtoankiExample,
+    video: japtoankiSampleVid,
   },
   {
     id: "p2",
-    title: "Obsidian Bg plugin",
+    title: "Obsidian Bg plugin (1st project)",
     desc: "Custom backgrounds for obsidian md",
+    github: "https://github.com/MidoriNoHoshi/Obsidian-Custom-Backgrounds",
     img: obsidianScreenshot,
   },
   {
@@ -2770,16 +1474,26 @@ const projects = [
   },
   {
     id: "p4",
-    title: "Kyubi",
+    title: "WayInfo",
+    desc: "Alternative to information bars",
+    link: "https://github.com/MidoriNoHoshi/wayInfo",
+    img: wayInfoScreenshot,
+  },
+  {
+    id: "p5",
+    title: "Kyubi (Deprecated)",
     desc: "Screen aware AI assistant.",
     link: "https://www.kyubi.dev/",
     img: kyubiScreenshot,
   },
+  {
+    id: "p6",
+    title: "Atelier Tatsuyama",
+    desc: "Personal Archive / Website",
+    link: "https://github.com/MidoriNoHoshi/Atelier-Tatsuyama",
+    img: projectsImageDefault,
+  },
 ];
-
-// 2. Reuse the Grid Logic
-const projectCols = 5;
-const projectRows = 3;
 
 import contactBg from "../assets/contactBg.png";
 ---
@@ -2793,10 +1507,10 @@ import contactBg from "../assets/contactBg.png";
   <body>
     <div id="loading-screen" class="loading-screen">
       <div
-        data-text="ようこそう！"
+        data-text="ようこそ！"
         class="chromatic-text loading-text tracking-[2rem] text-zinc-500 uppercase text-9xl"
       >
-        ようこそう！
+        ようこそ！
       </div>
       <div class="loading-bar-container">
         <div id="loading-bar" class="loading-bar"></div>
@@ -2839,7 +1553,6 @@ import contactBg from "../assets/contactBg.png";
           </feMerge>
 
           <feMerge>
-            <!-- <feMergeNode in="red-fringe" /> <feMergeNode in="blue-fringe"/> -->
             <feMergeNode in="fringe-combined"></feMergeNode>
             <feMergeNode in="SourceGraphic"></feMergeNode>
           </feMerge>
@@ -2873,7 +1586,7 @@ import contactBg from "../assets/contactBg.png";
 
         <div class="scan-line"></div>
         <div
-          class="fixed inset-0 pointer-events-none z-20 flex flex-col justify-between p-6 md:p-12"
+          class="fixed inset-0 pointer-events-none z-40 flex flex-col justify-between p-6 md:p-12"
         >
           <header
             class="flex items-center justify-between w-full pointer-events-auto"
@@ -2889,26 +1602,27 @@ import contactBg from "../assets/contactBg.png";
                 >
               </div>
             </div>
-            <nav class="hidden md:flex items-center gap-8 lg:gap-12">
+
+            <nav class="z-40 hidden md:flex items-center gap-8 lg:gap-12">
               <a
                 data-slide="0"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
               >
                 Home
               </a>
               <a
                 data-slide="1"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
                 >Blogs</a
               >
               <a
                 data-slide="2"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
                 >Projects</a
               >
               <a
                 data-slide="3"
-                class="menu-item text-sm font-medium tracking-widest uppercase"
+                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
                 >Contact</a
               >
             </nav>
@@ -2931,7 +1645,7 @@ import contactBg from "../assets/contactBg.png";
         >
           <section
             id="home"
-            class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center"
+            class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center relative overflow-hidden"
           >
             <img
               id="lowerCastle"
@@ -2943,10 +1657,16 @@ import contactBg from "../assets/contactBg.png";
               class="absolute inset-0 bg-black z-5 pointer-events-none transition-opacity duration-2000 ease-in-out"
             >
             </div>
-            <div class="relative z-10 max-w-4xl mx-auto px-6">
+
+            <!-- Terminal Container (Centered Focus) -->
+            <div
+              id="home-layout-container"
+              class="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center justify-center"
+            >
+              <!-- Initial Glitch Overlay -->
               <div
                 id="intro-content"
-                class="transition-all duration-1000 ease-in-out"
+                class="transition-all duration-1000 ease-in-out text-center"
               >
                 <div
                   data-text="Atelier Tatsuyama"
@@ -2954,43 +1674,116 @@ import contactBg from "../assets/contactBg.png";
                 >
                   <h1
                     data-text="Atelier Tatsuyama"
-                    class="glitch-text chromatic-text text-[9rem] md:text-[9xl] text-center font-black leading-none mb-4 select-none"
+                    class="glitch-text chromatic-text text-[5rem] lg:text-[8rem] text-center font-black leading-none mb-4 select-none"
                   >
                     Atelier Tatsuyama
                   </h1>
                 </div>
-
                 <div
                   class="flex items-center justify-center gap-4 text-xs font-mono text-gray-400 tracking-[0.3em] uppercase"
                 >
                   <span class="w-12 h-px bg-gray-500"></span>
-                  <span data-text="Click anywhere" class="">Click anywhere</span
-                  >
+                  <span data-text="Click anywhere">Click anywhere</span>
                   <span class="w-12 h-px bg-gray-500"></span>
                 </div>
               </div>
+
               <div
-                id="main-bio"
-                class="hidden opacity-0 transform translate-y-4 transition-all duration-100 ease-out"
+                id="cli-music-terminal"
+                class="cli-terminal-container hidden opacity-0 w-full font-mono text-sm text-zinc-400 space-y-4 relative z-20 transition-all duration-1000 ease-out"
               >
                 <div
-                  id="bio-move-container"
-                  class="relative text-left flex flex-col gap-0 transition-all duration-1000 ease-in-out mx-auto max-w-3xl"
+                  class="text-zinc-400 text-[12px] tracking-widest uppercase border-b border-white/10 pb-2 flex justify-between"
                 >
-                  <span
-                    class="text-neutral-200 font-mono text-[10px] block mb-0.1 tracking-tighter leading-none"
-                    >[ Entry: Introduction ]</span
+                  <span>[ TERMINAL_SESSION // TTY1 ]</span>
+                  <span>FRAMEWORK: VERCEL</span>
+                </div>
+
+                <!-- Command 1: Reading Intro File -->
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 text-zinc-300 font-bold">
+                    <span class="text-emerald-400">tatsuyama@atelier</span>
+                    <span class="text-zinc-600">:</span>
+                    <span class="text-blue-400">~/pages</span>
+                    <span class="text-zinc-500">$</span>
+                    <span id="cli-cmd-intro" class="text-white">cat intro.txt</span>
+                  </div>
+
+                  <div
+                    id="cli-intro-output"
+                    class="text-zinc-300 text-sm leading-relaxed space-y-2"
                   >
-                  <div class="bio-margin-line"></div>
-                  <p
-                    id="clean-paragraph"
-                    class="relative z-10 text-sm md:text-2xl font-light leading-snug md:leading-relaxed tracking-wide text-gray-300 m-0 mt-0"
+                    <span class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider">
+                      [ Entry: Introduction ]
+                    </span>
+                    <p id="clean-paragraph" class="m-0">
+                      Current_Location: 大阪(Osaka, Japan)<br />
+                      -<br />
+                      Welcome to my virtual atelier. A central repository for projects, logs, and inspirations.<br />
+                      Click on any track below to change music.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Command 2: Music Directory Listing -->
+                <div id="cli-music-section" class="space-y-2 pt-2">
+                  <div class="flex items-center gap-2 text-zinc-300 font-bold">
+                    <span class="text-emerald-400">tatsuyama@atelier</span>
+                    <span class="text-zinc-400">:</span>
+                    <span class="text-blue-400">~/assets/music</span>
+                    <span class="text-zinc-400">$</span>
+                    <span id="cli-command-typed" class="text-white"
+                      >ls -la --sort=time</span
+                    >
+                  </div>
+
+                  <div
+                    id="cli-listing"
+                    class="cli-listing border-y border-white/10 py-3 my-2 space-y-1.5"
                   >
-                    Location: 大阪(Osaka, Japan)<br />
-                    -<br />
-                    Welcome to my virtual atelier. A central repository for projects,
-                    logs, and inspirations.
-                  </p>
+                    <div
+                      class="text-[10px] text-zinc-400 flex justify-between font-bold uppercase tracking-wider mb-2 px-1"
+                    >
+                      <span>PERM</span>
+                      <span>FILENAME</span>
+                    </div>
+
+                    {
+                      playlist.map((track) => (
+                        <div
+                          class="track-cli-item group flex items-center justify-between py-1 px-1 -mx-1 hover:bg-white/10 transition-colors cursor-pointer"
+                          data-src={track.src}
+                          data-title={track.title}
+                          data-artist={track.artist}
+                        >
+                          <span class="text-[14px] text-zinc-400 font-mono group-hover:text-zinc-400">
+                            -rw-r--r--
+                          </span>
+                          <div class="flex items-center gap-2">
+                            <span class="text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                              >
+                            </span>
+                            <span class="text-zinc-300 group-hover:text-white font-mono group-hover:underline decoration-white/40">
+                              {track.artist}_-_{track.title.replace(/\s+/g, "_")}
+                              .mp3
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+
+                <!-- Next Prompt / Blinking Cursor -->
+                <div
+                  id="cli-final-prompt"
+                  class="cli-final-prompt flex items-center gap-2 text-zinc-300 pt-1"
+                >
+                  <span class="text-emerald-400">tatsuyama@atelier</span>
+                  <span class="text-zinc-600">:</span>
+                  <span class="text-blue-400">~/assets/music</span>
+                  <span class="text-zinc-500">$</span>
+                  <span class="cli-typing-cursor"></span>
                 </div>
               </div>
             </div>
@@ -3117,6 +1910,7 @@ import contactBg from "../assets/contactBg.png";
               </div>
             </div>
           </section>
+
           <section
             id="projects"
             class="relative snap-start shrink-0 w-screen h-screen overflow-hidden"
@@ -3204,7 +1998,6 @@ import contactBg from "../assets/contactBg.png";
             <div
               class="relative z-10 w-full max-w-6xl px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
             >
-              <!-- Roadmap (left column) -->
               <div
                 class="border border-white/20 bg-black/60 backdrop-blur-md p-8 md:p-10 relative"
               >
@@ -3282,7 +2075,6 @@ import contactBg from "../assets/contactBg.png";
                 </div>
               </div>
 
-              <!-- Contacts (right column) -->
               <div class="flex flex-col items-start gap-8 text-left">
                 <span class="text-sm font-mono tracking-[0.5em] text-zinc-200"
                   >Let's be friends, here are my contacts</span
@@ -3356,22 +2148,15 @@ import contactBg from "../assets/contactBg.png";
             </div>
           </section>
         </div>
-
-        <!-- <div class="fixed bottom-10 right-10 z-50"> -->
-        <!--   <ScrollIndicator client:load /> -->
-        <!-- </div> -->
       </main>
     </div>
     <script is:inline>
-      // Using 'load' ensures all assets are ready
       window.addEventListener("load", () => {
         const container = document.getElementById("scroll-container");
         const loadingBar = document.getElementById("loading-bar");
         const loadingScreen = document.getElementById("loading-screen");
 
         const homeSection = document.getElementById("home");
-        // let hasBeenTriggered = false;
-        // const lowerCastle = document.getElementById("lowerCastle")
         const mainContent = document.getElementById("main-content");
 
         const blogSection = document.getElementById("blog");
@@ -3379,9 +2164,6 @@ import contactBg from "../assets/contactBg.png";
         const previewAnchor = document.getElementById("preview-anchor");
 
         const projectsSection = document.getElementById("projects");
-        // const projectsBg = document.getElementById("projects-bg");
-
-        const roadmapSection = document.getElementById("roadmap");
 
         loadingBar.style.width = "100%";
 
@@ -3443,7 +2225,7 @@ import contactBg from "../assets/contactBg.png";
           },
           {
             root: container,
-            threshold: 0.6, // triggers when 60% visible
+            threshold: 0.6,
           },
         );
 
@@ -3484,10 +2266,6 @@ import contactBg from "../assets/contactBg.png";
           });
         });
 
-        // Boost the CRT static right before navigating to a blog entry, so
-        // the burst covers the hard page-transition cut. [id].astro starts
-        // in this same boosted state and settles back down after it loads,
-        // making the two page loads read as one continuous effect.
         function navigateWithCrtBurst(e, href) {
           if (!href) return;
           e.preventDefault();
@@ -3495,20 +2273,14 @@ import contactBg from "../assets/contactBg.png";
           const tear = document.getElementById("signal-tear");
           const lostWrap = document.getElementById("signal-lost-wrap");
 
-          // Stage 1: noise ramps up immediately, burst fades in
           document.getElementById("transition-burst")?.classList.add("active");
           document
             .querySelectorAll(".crt-noise, .crt-overlay")
             .forEach((el) => el.classList.add("crt-boost"));
 
-          // Stage 2: signal tear (horizontal sync failure) fades in
           window.setTimeout(() => tear?.classList.add("active"), 90);
-
-          // Stage 3: noise has fully ramped, "SIGNAL LOST" dominates the screen
           window.setTimeout(() => lostWrap?.classList.add("reveal"), 220);
 
-          // Stage 4: the actual page swap happens while the screen is
-          // still saturated with interference, hiding the hard cut
           window.setTimeout(() => {
             window.location.href = href;
           }, 420);
@@ -3553,6 +2325,7 @@ import contactBg from "../assets/contactBg.png";
             navigateWithCrtBurst(e, previewAnchor.getAttribute("href")),
           );
         }
+
         const projectsObserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
@@ -3579,36 +2352,13 @@ import contactBg from "../assets/contactBg.png";
               }
             });
           },
-          { root: container, threshold: 0.6 }, // Threshold matches blog logic
+          { root: container, threshold: 0.6 },
         );
         projectsObserver.observe(projectsSection);
-
-        // const roadmapObserver = new IntersectionObserver(
-        //   (entries) => {
-        //     entries.forEach((entry) => {
-        //         const grid = roadmapSection.querySelector(".grid-overlay");
-        //
-        //       if (entry.isIntersecting) {
-        //         grid.style.opacity = "1";
-        //         grid.style.transform = "scaleY(1)";
-        //
-        //         } else {
-        //           roadmapSection.classList.remove("active");
-        //           grid.style.opacity = "0";
-        //           grid.style.transform = "scaleY(0)";
-        //         }
-        //       });
-        //   },
-        //   {
-        //     root: container,
-        //     threshold: 0.6, // triggers when 60% visible
-        //   }
-        // );
-        // roadmapObserver.observe(roadmapSection)
       });
 
       function typeWriter(element, speed, callback) {
-        const text = element.innerHTML.trim().replace(/<br\s*\/?>/gi, "\n"); // Preserve line breaks
+        const text = element.innerHTML.trim().replace(/<br\s*\/?>/gi, "\n");
         element.innerHTML = "";
         element.style.visibility = "visible";
 
@@ -3625,37 +2375,63 @@ import contactBg from "../assets/contactBg.png";
             i++;
             setTimeout(type, speed);
           } else if (callback) {
-            callback(); // Run glitch effect logic after typing
+            callback();
           }
         }
         type();
       }
 
-      // function shufflePortals() {
-      //   const portals = document.querySelectorAll('[data-portal]');
-      //   const cols = 5;
-      //   const rows = 3;
-      //
-      //   let cells = [];
-      //   for (let r = 1; r <= rows; r++) {
-      //     for (let c = 1; c <= cols; c++) {
-      //       cells.push({ row: r, col: c });
-      //     }
-      //   }
-      //   const shuffledCells = cells.sort(() => Math.random() - 0.5);
-      //
-      //   portals.forEach((portal, index) => {
-      //     const cell = shuffledCells[index];
-      //     // Use the center-point math
-      //     const left = (cell.col - 1) * 20 + 10;
-      //     const top = (cell.row - 1) * 33.33 + 16.66;
-      //
-      //     // Apply new coordinates
-      //     portal.style.left = `${left}%`;
-      //     portal.style.top = `${top}%`;
-      //     portal.style.transform = 'translate(-50%, -50%)';
-      //   });
-      // }
+      function runTerminalTypewriter() {
+        const cmdIntroEl = document.getElementById("cli-cmd-intro");
+        const cleanParagraph = document.getElementById("clean-paragraph");
+        const cmdMusicEl = document.getElementById("cli-command-typed");
+        const listingEl = document.getElementById("cli-listing");
+        const finalPromptEl = document.getElementById("cli-final-prompt");
+
+        if (!cmdIntroEl) return;
+
+        // Sequence 1: Type `cat intro.txt`
+        typeWriter(cmdIntroEl, 30, () => {
+          // Sequence 2: Type paragraph content
+          setTimeout(() => {
+            if (cleanParagraph) {
+              typeWriter(cleanParagraph, 10, () => {
+                // Sequence 3: Type `ls -la --sort=time`
+                setTimeout(() => {
+                  if (cmdMusicEl) {
+                    typeWriter(cmdMusicEl, 30, () => {
+                      // Sequence 4: Reveal file items and prompt
+                      setTimeout(() => {
+                        if (listingEl) listingEl.classList.add("cli-part-revealed");
+                      }, 150);
+
+                      setTimeout(() => {
+                        if (finalPromptEl) finalPromptEl.classList.add("cli-part-revealed");
+                      }, 450);
+                    });
+                  }
+                }, 200);
+              });
+            }
+          }, 150);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cliTracks = document.querySelectorAll(".track-cli-item");
+        cliTracks.forEach((item) => {
+          item.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const src = item.getAttribute("data-src");
+            const title = item.getAttribute("data-title");
+            const artist = item.getAttribute("data-artist");
+
+            if (window.changeTrack) {
+              window.changeTrack(src, title, artist);
+            }
+          });
+        });
+      });
 
       function shuffleProjectPortals() {
         const portals = document.querySelectorAll("[data-project-portal]");
@@ -3672,7 +2448,6 @@ import contactBg from "../assets/contactBg.png";
 
         portals.forEach((portal, index) => {
           const cell = shuffledCells[index];
-          // EXACT MATH FROM BLOG LOGIC
           const left = (cell.col - 1) * 20 + 10;
           const top = (cell.row - 1) * 33.33 + 16.66;
 
@@ -3681,6 +2456,7 @@ import contactBg from "../assets/contactBg.png";
           portal.style.transform = "translate(-50%, -50%)";
         });
       }
+
       let audioStarted = false;
 
       function trigger() {
@@ -3689,70 +2465,30 @@ import contactBg from "../assets/contactBg.png";
           window.startBackgroundAudio();
         }
         const intro = document.getElementById("intro-content");
-        const bio = document.getElementById("main-bio");
-        const cleanParagraph = document.getElementById("clean-paragraph");
-        const bioLine = document.querySelector(".bio-margin-line");
-        // const bioContainer = document.getElementById("bio-move-container");
+        const terminal = document.getElementById("cli-music-terminal");
+        const homeSection = document.getElementById("home");
+        const veil = document.getElementById("castleVeil");
 
-        intro.classList.add("opacity-0", "pointer-events-none");
-
-        // if (intro && bio) {
-        //   intro.classList.add('opacity-0', 'pointer-events-none');
-        //
-        //   if (playing) {
-        //     playing.classList.remove('hidden');
-        //     setTimeout(() => playing.classList.add('opacity-100'), 100);
-        //   }
-        //
-        //   setTimeout(() => {
-        //     intro.classList.add('hidden');
-        //     bio.classList.remove('hidden');
-        //     requestAnimationFrame(() => {
-        //       bio.classList.remove('opacity-0', 'translate-y-4');
-        //       bio.classList.add('opacity-100', 'translate-y-0');
-        //     });
-        //   }, 1000) // duration-1000 transition
-        // }
-        if (intro && bio) {
+        if (intro && terminal) {
           intro.classList.add("opacity-0", "pointer-events-none");
+
           setTimeout(() => {
             intro.classList.add("hidden");
-            bio.classList.remove("hidden");
+            terminal.classList.remove("hidden");
 
             requestAnimationFrame(() => {
-              bio.classList.remove("opacity-0", "translate-y-4");
-              bio.classList.add("opacity-100", "translate-y-0");
-              typeWriter(
-                cleanParagraph,
-                1,
-                () => {
-                  const homeSection = document.getElementById("home");
-                  const veil = document.getElementById("castleVeil");
-                  const bioContainer =
-                    document.getElementById("bio-move-container");
-                  hasBeenTriggered = true;
-                  if (bioContainer) bioContainer.classList.add("bio-shifted");
-                  if (veil) {
-                    veil.classList.add("hidden-veil");
-                  }
-                  if (homeSection) {
-                    homeSection.classList.add("triggered");
-                  }
-                  if (bioLine) {
-                    bioLine.classList.add("line-draw");
-                  }
-                },
-                100,
-              );
+              terminal.classList.remove("opacity-0");
+              terminal.classList.add("opacity-100", "triggered");
+
+              if (veil) veil.classList.add("hidden-veil");
+              if (homeSection) homeSection.classList.add("triggered");
+
+              runTerminalTypewriter();
             });
-          }, 1000);
-          setTimeout(() => {
-            bioLine.style.height = "80%"; // This one alone controls bioLine height
-          }, 200);
+          }, 600);
         }
       }
 
-      // On any first click, start music (like in the Hypergryph website)
       window.addEventListener(
         "click",
         () => {

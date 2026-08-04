@@ -80,161 +80,168 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
   <div id="signal-tear" class="signal-tear active"></div>
   <div class="vignette-soft"></div>
 
-  <!-- MAIN BLOG CONTENT -->
+  <!-- MAIN BLOG CONTENT <-->
   <div
-    class="min-h-screen text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black"
+    id="scroll-container"
+    class="relative z-10 h-screen w-screen overflow-y-auto overflow-x-hidden"
   >
-    <!-- TOP NAVIGATION BAR -->
-    <div class="w-full flex flex-wrap justify-between items-center gap-4 mb-12">
-      <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
-      <div class="flex items-center gap-4">
-        <AudioVisualizer />
-        <button
-          class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+    <div
+      class="min-h-screen text-zinc-300 p-6 md:p-20 font-mono relative z-10 selection:bg-white selection:text-black"
+    >
+      <!-- TOP NAVIGATION BAR -->
+      <div
+        class="w-full flex flex-wrap justify-between items-center gap-4 mb-12"
+      >
+        <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
+        <div class="flex items-center gap-4">
+          <AudioVisualizer />
+          <button
+            class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+          >
+            [ LANG: EN ]
+          </button>
+        </div>
+
+        <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
+        <a
+          href="/#blog"
+          class="text-zinc-500 hover:text-white group transition-colors"
         >
-          [ LANG: EN ]
-        </button>
+          <span
+            class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+            data-text="[!] RETURN_TO_ARCHIVE"
+          >
+            [!] RETURN_TO_ARCHIVE
+          </span>
+        </a>
       </div>
 
-      <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
-      <a
-        href="/#blog"
-        class="text-zinc-500 hover:text-white group transition-colors"
+      <!-- ARTICLE CONTAINER -->
+      <article
+        class="w-full relative bg-black/40 backdrop-blur-sm p-8 border border-white/10 rounded-sm"
       >
-        <span
-          class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
-          data-text="[!] RETURN_TO_ARCHIVE"
-        >
-          [!] RETURN_TO_ARCHIVE
-        </span>
-      </a>
-    </div>
+        <header class="border-b border-zinc-800 pb-6 mb-10">
+          <div
+            class="flex flex-col md:flex-row items-start md:items-center gap-6"
+          >
+            <!-- SMALL 300px LOG IMAGE -->
+            {
+              img && (
+                <div class="w-full md:w-75 shrink-0 border border-white/10 p-1 bg-black/60">
+                  <img
+                    src={img.src}
+                    alt={title}
+                    class="w-full h-auto max-h-45 object-cover border border-white/5"
+                  />
+                </div>
+              )
+            }
 
-    <!-- ARTICLE CONTAINER -->
-    <article
-      class="w-full relative bg-black/40 backdrop-blur-sm p-8 border border-white/10 rounded-sm"
-    >
-      <header class="border-b border-zinc-800 pb-6 mb-10">
-        <div
-          class="flex flex-col md:flex-row items-start md:items-center gap-6"
-        >
-          <!-- SMALL 300px LOG IMAGE -->
-          {
-            img && (
-              <div class="w-full md:w-75 shrink-0 border border-white/10 p-1 bg-black/60">
-                <img
-                  src={img.src}
-                  alt={title}
-                  class="w-full h-auto max-h-45 object-cover border border-white/5"
-                />
+            <!-- TITLE & METADATA COLUMN -->
+            <div class="flex-1">
+              <div
+                class="text-[10px] text-zinc-600 mb-3 font-mono tracking-widest uppercase"
+              >
+                LOG_ID: {post.id} // STATUS: OPEN
               </div>
-            )
-          }
 
-          <!-- TITLE & METADATA COLUMN -->
-          <div class="flex-1">
-            <div
-              class="text-[10px] text-zinc-600 mb-3 font-mono tracking-widest uppercase"
-            >
-              LOG_ID: {post.id} // STATUS: OPEN
+              <h1
+                class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 chromatic-text text-white"
+                data-text={title}
+              >
+                {title}
+              </h1>
+
+              <p
+                class="text-zinc-500 text-xs tracking-[0.3em] uppercase leading-relaxed"
+              >
+                {subtitle}
+              </p>
             </div>
-
-            <h1
-              class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 chromatic-text text-white"
-              data-text={title}
-            >
-              {title}
-            </h1>
-
-            <p
-              class="text-zinc-500 text-xs tracking-[0.3em] uppercase leading-relaxed"
-            >
-              {subtitle}
-            </p>
           </div>
+        </header>
+
+        <div>
+          <p class="text-zinc-300 text-xs">
+            UPDATED: {pubDate}
+          </p>
+
+          <p class="text-zinc-300 text-xs">
+            WORDCOUNT: {wordCount}
+          </p>
         </div>
-      </header>
+      </article>
 
-      <div>
-        <p class="text-zinc-300 text-xs">
-          UPDATED: {pubDate}
-        </p>
-
-        <p class="text-zinc-300 text-xs">
-          WORDCOUNT: {wordCount}
-        </p>
-      </div>
-    </article>
-
-    <div
-      class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative w-full"
-    >
-      <div class="lg:col-span-7 prose prose-invert max-w-none">
-        <Content />
-      </div>
-
-      <aside
-        class="lg:col-span-5 sticky top-12 border-l border-white/10 pl-6 flex flex-col gap-8"
+      <div
+        class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative w-full"
       >
+        <div class="lg:col-span-7 prose prose-invert max-w-none">
+          <Content />
+        </div>
+
+        <aside
+          class="lg:col-span-5 sticky top-12 border-l border-white/10 pl-6 flex flex-col gap-8"
+        >
+          <div
+            class="text-s font-mono text-zinc-500 tracking-widest uppercase border-b border-white/10 pb-2"
+          >
+            // MEDIA_TIMELINE
+          </div>
+          <div id="timeline-target" class="flex flex-col gap-8"></div>
+        </aside>
+      </div>
+
+      <div class="mt-20">
+        <a
+          href="/#blog"
+          class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors"
+        >
+          <span
+            class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+            data-text="[!] RETURN_TO_ARCHIVE"
+          >
+            [!] RETURN_TO_ARCHIVE
+          </span>
+        </a>
+      </div>
+
+      <footer
+        class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest"
+      >
+        END_OF_FILE // TERMINAL_ID: TATSUYAMA_NODE_01
+      </footer>
+    </div>
+
+    <!-- IMAGE LIGHTBOX MODAL -->
+    <div
+      id="image-modal"
+      class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 cursor-zoom-out"
+    >
+      <div
+        class="relative max-w-5xl max-h-[90vh] border border-white/20 bg-black p-2 flex flex-col items-center"
+      >
+        <!-- Top Terminal Bar -->
         <div
-          class="text-s font-mono text-zinc-500 tracking-widest uppercase border-b border-white/10 pb-2"
+          class="w-full flex justify-between items-center px-4 py-2 border-b border-white/10 text-[10px] font-mono text-zinc-400 mb-2"
         >
-          // MEDIA_TIMELINE
+          <span>[ VIEWPORT_INSPECTOR // ZOOM_MODE ]</span>
+          <span class="text-zinc-600">ESC_OR_CLICK_TO_CLOSE</span>
         </div>
-        <div id="timeline-target" class="flex flex-col gap-8"></div>
-      </aside>
-    </div>
 
-    <div class="mt-20">
-      <a
-        href="/#blog"
-        class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors"
-      >
-        <span
-          class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
-          data-text="[!] RETURN_TO_ARCHIVE"
+        <!-- Target Enlarged Image -->
+        <img
+          id="modal-img"
+          src=""
+          alt="Enlarged view"
+          class="max-h-[75vh] w-auto object-contain border border-white/10"
+        />
+
+        <div
+          id="modal-caption"
+          class="mt-3 text-xs font-mono text-zinc-400 text-center tracking-widest uppercase"
         >
-          [!] RETURN_TO_ARCHIVE
-        </span>
-      </a>
-    </div>
-
-    <footer
-      class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest"
-    >
-      END_OF_FILE // TERMINAL_ID: TATSUYAMA_NODE_01
-    </footer>
-  </div>
-
-  <!-- IMAGE LIGHTBOX MODAL -->
-  <div
-    id="image-modal"
-    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 cursor-zoom-out"
-  >
-    <div
-      class="relative max-w-5xl max-h-[90vh] border border-white/20 bg-black p-2 flex flex-col items-center"
-    >
-      <!-- Top Terminal Bar -->
-      <div
-        class="w-full flex justify-between items-center px-4 py-2 border-b border-white/10 text-[10px] font-mono text-zinc-400 mb-2"
-      >
-        <span>[ VIEWPORT_INSPECTOR // ZOOM_MODE ]</span>
-        <span class="text-zinc-600">ESC_OR_CLICK_TO_CLOSE</span>
-      </div>
-
-      <!-- Target Enlarged Image -->
-      <img
-        id="modal-img"
-        src=""
-        alt="Enlarged view"
-        class="max-h-[75vh] w-auto object-contain border border-white/10"
-      />
-
-      <div
-        id="modal-caption"
-        class="mt-3 text-xs font-mono text-zinc-400 text-center tracking-widest uppercase"
-      >
-        <!-- Image src or alt text gets injected here -->
+          <!-- Image src or alt text gets injected here -->
+        </div>
       </div>
     </div>
   </div>
