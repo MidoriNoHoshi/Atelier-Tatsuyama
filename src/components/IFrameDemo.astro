@@ -10,16 +10,13 @@ const { src, title, height = "600px" } = Astro.props;
 ---
 
 <div class={`my-8 mx-auto w-full transition-all duration-300`}>
-  <!-- Outer Cassette / Hardware Chassis Frame -->
   <div
     class="relative overflow-hidden rounded-xl border-2 border-neutral-800 bg-neutral-950 p-3 shadow-2xl shadow-black/80"
   >
-    <!-- Top Hardware Telemetry Bar -->
     <div
       class="mb-2 flex items-center justify-between border-b border-neutral-800/80 px-2 pb-2 font-mono text-[10px] uppercase tracking-wider text-neutral-400"
     >
       <div class="flex items-center gap-2">
-        <!-- Mechanical / LED Status Indicator -->
         <span
           class="h-2 w-2 rounded-full bg-emerald-700 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"
         ></span>
@@ -40,17 +37,14 @@ const { src, title, height = "600px" } = Astro.props;
       </div>
     </div>
 
-    <!-- Inner Bezel Screen Wrapper -->
     <div
       class="relative overflow-hidden rounded-lg border border-neutral-800 bg-black shadow-inner"
     >
-      <!-- CRT Screen Overlay Effects -->
       <div
         class="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-transparent via-black/5 to-black/20"
       >
       </div>
 
-      <!-- Embedded Viewport -->
       <iframe
         src={src}
         title={title}
@@ -60,7 +54,6 @@ const { src, title, height = "600px" } = Astro.props;
         sandbox="allow-scripts allow-same-origin"></iframe>
     </div>
 
-    <!-- Bottom Chassis Metadata & Screw Accents -->
     <div
       class="mt-2 flex items-center justify-between px-1 font-mono text-[9px] text-neutral-600"
     >

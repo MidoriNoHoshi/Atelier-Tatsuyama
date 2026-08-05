@@ -337,8 +337,6 @@ import contactBg from "../assets/contactBg.png";
                   <span>FRAMEWORK: VERCEL</span>
                 </div>
 
-                <!-- Command 1: Reading Intro File -->
-                <!-- Command 1: Reading Intro File -->
                 <div class="space-y-2">
                   <div class="flex items-center gap-2 text-zinc-300 font-bold">
                     <span class="text-emerald-400">tatsuyama@atelier</span>
@@ -364,7 +362,6 @@ import contactBg from "../assets/contactBg.png";
                   </div>
                 </div>
 
-                <!-- Command 2: Music Directory Listing -->
                 <!-- Added opacity-0 cli-listing-section class to keep prompt hidden until sequence starts -->
                 <div id="cli-music-section" class="space-y-2 pt-2 cli-listing">
                   <div class="flex items-center gap-2 text-zinc-300 font-bold">
@@ -413,7 +410,6 @@ import contactBg from "../assets/contactBg.png";
                     }
                   </div>
                 </div>
-                <!-- Next Prompt / Blinking Cursor -->
                 <div
                   id="cli-final-prompt"
                   class="cli-final-prompt flex items-center gap-2 text-zinc-300 pt-1"
@@ -1029,7 +1025,7 @@ import contactBg from "../assets/contactBg.png";
         if (!cmdIntroEl || !cleanParagraph) return;
 
         const introText =
-          "Current_Location: 大阪(Osaka, Japan)\n-\nWelcome to my virtual atelier. A central repository for projects, logs, and inspirations.\n-\nPlease take a look at my journey creating this website:\n-\n--Log:001 Creating the website.mdx\n-\nClick on any track below to change music.";
+          "Current_Location: 大阪(Osaka, Japan)\n-\nWelcome to my virtual atelier. A central repository for projects, logs, and inspirations.\n-\nPlease take a look at my journey creating this website:\n-\n--Log:001 Creating the website.mdx\n-\nHonestly, haven't gotten around to actually writing the others yet. . . \n-\nClick on any track below to change music.";
 
         // Step 1: Type `cat intro.txt`
         typeWriter(cmdIntroEl, "cat intro.txt", 30, () => {

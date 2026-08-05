@@ -127,14 +127,14 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
 
         <!-- TOP-RIGHT: RETURN TO ARCHIVE -->
         <a
-          href="/#blog"
+          href="/#home"
           class="text-zinc-500 hover:text-white group transition-colors"
         >
           <span
             class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
-            data-text="[!] RETURN_TO_ARCHIVE"
+            data-text="[!] RETURN_TO_ARCHIVE_[HOME]"
           >
-            [!] RETURN_TO_ARCHIVE
+            [!] RETURN_TO_ARCHIVE_[HOME]
           </span>
         </a>
       </div>
@@ -222,21 +222,20 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
         >
           <span
             class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
-            data-text="[!] RETURN_TO_ARCHIVE"
+            data-text="[!] RETURN_TO_ARCHIVE_[BLOGS]"
           >
-            [!] RETURN_TO_ARCHIVE
+            [!] RETURN_TO_ARCHIVE_[BLOGS]
           </span>
         </a>
       </div>
 
       <footer
-        class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-700 font-mono tracking-widest"
+        class="pt-10 border-t border-zinc-900 text-[10px] text-zinc-100 font-mono tracking-widest"
       >
         END_OF_FILE // TERMINAL_ID: TATSUYAMA_NODE_01
       </footer>
     </div>
 
-    <!-- IMAGE LIGHTBOX MODAL -->
     <div
       id="image-modal"
       class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-12 cursor-zoom-out"
@@ -244,7 +243,6 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
       <div
         class="relative max-w-5xl max-h-[90vh] border border-white/20 bg-black p-2 flex flex-col items-center"
       >
-        <!-- Top Terminal Bar -->
         <div
           class="w-full flex justify-between items-center px-4 py-2 border-b border-white/10 text-[10px] font-mono text-zinc-400 mb-2"
         >

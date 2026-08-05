@@ -1,0 +1,3 @@
+src/components/timelineItems.astro
+src/components/gallery.astro
+src/components/MDXImage.astro
