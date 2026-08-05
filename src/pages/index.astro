@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
 
 const posts = await getCollection("blog");
 const blogEntries = posts
@@ -35,7 +36,7 @@ const playlist = [
 ];
 
 import defaultImg from "../assets/default.jpg";
-import homeLower from "../assets/Home(Lower)Gradient2.png";
+import homeLower from "../assets/HomeLowerGradient2.png";
 
 import dizzystarsLpiece from "../assets/dizzystairsLpiece.png";
 import dizzystarsRpiece from "../assets/dizzystairsRpiece.png";
@@ -283,11 +284,13 @@ import contactBg from "../assets/contactBg.png";
             id="home"
             class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center relative overflow-hidden"
           >
-            <img
+            <Image
               id="lowerCastle"
-              src={homeLower.src}
+              src={homeLower}
+              alt="Home Background"
               class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 z-0 pointer-events-none"
             />
+
             <div
               id="castleVeil"
               class="absolute inset-0 bg-black z-5 pointer-events-none transition-opacity duration-2000 ease-in-out"
@@ -556,9 +559,10 @@ import contactBg from "../assets/contactBg.png";
             <div
               class="projects-reveal-wrapper absolute inset-0 pointer-events-none bg-black"
             >
-              <img
+              <Image
                 id="projects-bg"
-                src={projectsBg.src}
+                src={projectsBg}
+                alt="teamLab Borderless selfie"
                 class="absolute inset-0 w-full h-full object-cover opacity-48"
               />
               <div
@@ -625,9 +629,10 @@ import contactBg from "../assets/contactBg.png";
             id="contact"
             class="snap-start shrink-0 w-screen h-screen bg-zinc-900 text-white flex items-center justify-center relative overflow-hidden"
           >
-            <img
+            <Image
               id="contactBg"
-              src={contactBg.src}
+              alt="Tokyo Selfie"
+              src={contactBg}
               class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
             />
 
