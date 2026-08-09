@@ -1,0 +1,304 @@
+---
+title: Creating the Website
+sub: Process in which this website was created.
+description: Process in which this website was created.
+pubDate: 2026-08-03
+img: ../../../assets/log1.jpg
+overlayImg: ../../../assets/cellsbackground.png
+---
+
+import { Image } from "astro:assets";
+import ImageGroup from "../../../components/MDXImage.astro";
+import Gallery from "../../../components/gallery.astro";
+import TimelineItem from "../../../components/timelineItems.astro";
+import IFrameDemo from "../../../components/IFrameDemo.astro";
+
+import silverKnightsMarch from "../../../assets/01CreationBlog/23_i01.png";
+import smallChenRain from "../../../assets/01CreationBlog/theory-chen-koschei-and-chixiao-the-sword-of-kings-v0-9fjr6kv1etx41.webp";
+import burningCityPenguin from "../../../assets/01CreationBlog/2026-08-03-230120_hyprshot.png";
+import burningroad from "../../../assets/01CreationBlog/2026-08-03-230147_hyprshot.png";
+import undertides from "../../../assets/01CreationBlog/maxresdefault.jpg";
+import lightUndertides from "../../../assets/01CreationBlog/Ac18_14.png";
+import emperorBlade from "../../../assets/01CreationBlog/118011335_p0.jpg";
+import collapsingBlade from "../../../assets/01CreationBlog/118011335_p1.jpg";
+
+import impulseGundamCockpit from "../../../assets/01CreationBlog/ImpulseGundam_cockpit_Shin.png";
+import rezel_launch from "../../../assets/01CreationBlog/Rezel_launch.gif";
+import zakuSeedAttack from "../../../assets/01CreationBlog/swappy-20250118_203800.png";
+import zakuSeedSpace from "../../../assets/01CreationBlog/swappy-20250118_203905.png";
+
+import zaku_lunamaria from "../../../assets/01CreationBlog/Hg_Gunner_Zaku_Lunamaria.jpg";
+import gundam_virtue from "../../../assets/01CreationBlog/Gundam_Virtue_Burst_Mode_Day.webp";
+
+import frameworkBrainstorm from "../../../assets/01CreationBlog/Framework_Brainstorm.JPG";
+import initialBrainstorm from "../../../assets/01CreationBlog/Initial_Brainstorm.JPG";
+
+import cellsbackground from "../../../assets/01CreationBlog/cells_background.png";
+import cellsbackgroundUnedited from "../../../assets/01CreationBlog/cells_background_unedited.jpg";
+
+import fuzzyText from "../../../assets/01CreationBlog/reactbits_fuzzytext.gif";
+import EarlyPlan from "../../../assets/01CreationBlog/EarlyPlan.JPG";
+import EarlyPlan1 from "../../../assets/01CreationBlog/EarlyPlan1.JPG";
+import EarlyPlan2 from "../../../assets/01CreationBlog/EarlyPlan2.JPG";
+import graphView from "../../../assets/01CreationBlog/obsidianGraphView.png";
+import sideScroller from "../../../assets/01CreationBlog/sideScroller.gif";
+import MSRBlog from "../../../assets/01CreationBlog/MonsterSirenRecordsBlogInspiration.png";
+import MSRMusic from "../../../assets/01CreationBlog/MonsterSirenRecordsMusicPlayer.png";
+import MSR1Screenshot from "../../../assets/01CreationBlog/msr1stscreenshot.png";
+import MSR2Screenshot from "../../../assets/01CreationBlog/msr2ndscreenshot.png";
+import ZZZLoading from "../../../assets/01CreationBlog/ZZZcrttransitionLoading.png";
+import zzz_tv_mode from "../../../assets/01CreationBlog/zzz_tv_mode.jpg";
+
+import homeOriginal from "../../../assets/HomeOriginal.JPG";
+import homeEdited from "../../../assets/HomeLowerGradient2.png";
+
+import cBoulevard from "../../../assets/clearstairs.jpg";
+import dBoulevard_original from "../../../assets/dizzystairs.jpg";
+import dBoulevardL from "../../../assets/dizzystairsLpiece.png";
+import dBoulevardC from "../../../assets/dizzystairsMpiece.png";
+import dBoulevardR from "../../../assets/dizzystairsRpiece.png";
+import projectsOriginal from "../../../assets/Projects.JPG";
+import projectsE from "../../../assets/ProjectsRemoved.png";
+
+import log2img from "../../../assets/log2.jpg";
+import log3img from "../../../assets/log3.jpg";
+import contactsBG from "../../../assets/contactBg.png";
+
+## Motivation
+
+<TimelineItem section="Motivation">
+  <Gallery columns={4}>
+    <Image
+      src={silverKnightsMarch}
+      alt="Silver Knights March Kazimierz"
+      quality="high"
+    />
+    <Image src={smallChenRain} alt="Rain and grime" quality="high" />
+    <Image src={burningCityPenguin} alt="Feirce Storms" quality="high" />
+    <Image src={burningroad} alt="Misery and choas" quality="high" />
+    <Image src={undertides} alt="Undertides art" quality="high" />
+    <Image
+      src={lightUndertides}
+      alt="Arknight's massive structures are so cool"
+      quality="high"
+    />
+    <Image src={emperorBlade} alt="Ashy and menacing" quality="high" />
+    <Image
+      src={collapsingBlade}
+      alt="Invokes a sense of dread"
+      quality="high"
+    />
+  </Gallery>
+  Arknights art
+  <Gallery columns={2}>
+    <Image src={rezel_launch} alt="Launch from ship" quality="high" />
+    <Image
+      src={impulseGundamCockpit}
+      alt="Impulse Gundam Cockpit"
+      quality="high"
+    />
+    <Image
+      src={zakuSeedAttack}
+      alt="Zaku attacking orb colony"
+      quality="high"
+    />
+    <Image src={zakuSeedSpace} alt="Zaku attack in space" quality="high" />
+    Gundam Seed Cockpit scenes
+  </Gallery>
+</TimelineItem>
+
+The inception of this "atelier" website traces back to a minor dispute I had with my father, whom had made a personal portfolio style website to display his projects.\
+I found his website to be quite plain and generally visually uninspiring, and gave him my criticisms plainly, to which he replied with his usual "It's sooo~ easy to ciritise" and of course what he's really saying is:
+
+> [!warning] But it is so much harder to actually do
+
+Essentially he's challenging me to create a website of my own, to which I accepted and promised I would create a "cooler" website.
+During this time, I was a fan of Arknights and I had been itching to create something inspired by that style, so the idea came about that I could imitate the dark, grungy, tech-look of Arknights.
+
+Buuuut, since before I was born, both my parents were great fans of Gundam and subsequently I to became a fan. And while I never planned to incorporate a little Gundam aesthetic, it was always in the back of mind. Specifically these scenes of the cockpits.\
+
+_(btw, my favourites are the GN-005 Gundam Virtue and Hg gunner Zaku Warrior Lunamaria. . . Basically I really like big cannons)_
+
+<Gallery columns={2} class="not-timeline">
+  <Image
+    src={gundam_virtue}
+    alt="GN-005 Virtue piloted by Tieria Erde"
+    quality="high"
+  />
+  <Image
+    src={zaku_lunamaria}
+    alt="Hg Gunner Zaku piloted by Lunamaria Hawke"
+    quality="high"
+  />
+</Gallery>
+
+## Aesthetics
+
+<TimelineItem section="Aesthetics">
+  <Image src={MSRMusic} alt="MSR Music Player" quality="high" />
+
+<Gallery columns={2}>
+  <Image src={MSRBlog} alt="MSR Blog page layout" quality="high" />
+  <Image src={ZZZLoading} alt="Crt loading" quality="high" />
+</Gallery>
+<Image src={zzz_tv_mode} alt="ZZZ crt array" quality="high" />
+
+</TimelineItem>
+
+Arknights (Hypergryph) and Zenless Zone Zero (MiHoYo) have some of the coolest visual language and style I have ever seen. Zenless Zone Zero much less so, but the CRT monitor / arrays is specifically what I fell in love with.
+
+> [!info] I visited and used these three websites from Arknights / Hypergryph extensively:
+>
+> - [https://monster-siren.hypergryph.com/](https://monster-siren.hypergryph.com/)
+> - [https://www.gryphline.com/en-us/home](https://www.gryphline.com/en-us/home)
+> - [https://www.arknights.jp/](https://www.arknights.jp/)
+> - [https://zenless.hoyoverse.com/en-us/...](https://zenless.hoyoverse.com/en-us/main?utm_source=web&utm_medium=landingpage&utm_campaign=logo)>
+
+| Design Element                    | Primary Reference                  | Target Execution                                                      |
+| :-------------------------------- | :--------------------------------- | :-------------------------------------------------------------------- |
+| **Grid & Spatial Layout**         | Monster-Siren-Records + Hypergryph | dark + interesting backgrounds, thin border grids, high contrast text |
+| **Viewport Post-Processing**      | Zenless Zone Zero                  | Analog CRT scanlines, flicker transitions, subtle noise overlays      |
+| **UI Components**                 | Arknights (Game)                   | Custom cursors, glowing status indicators, monospaced metadata        |
+| **Loading Screen + Music Player** | Monster-Siren-Records              |                                                                       |
+
+## Architecture + Iteration
+
+<TimelineItem section="Architecture + Iteration">
+  <Gallery columns={3}>
+    <Image
+      src={initialBrainstorm}
+      alt="Messy brainstorming I know"
+      quality="high"
+    />
+    <Image src={EarlyPlan} alt="EarlyPlan" quality="high" />
+    <Image src={EarlyPlan2} alt="EarlyPlan" quality="high" />
+  </Gallery>
+  The initial brainstorming in the Library
+
+  <Gallery columns={3}>
+    <Image
+      src={frameworkBrainstorm}
+      alt="Framework Brainstorming"
+      quality="high"
+    />
+    <Image src={EarlyPlan1} alt="EarlyPlan" quality="high" />
+    <Image src={graphView} alt="GraphView of programming notes" quality="high" />
+</Gallery>
+<Gallery columns={2}>
+    <Image
+      src={MSR1Screenshot}
+      alt="Screenshot from MSR"
+      quality="high"
+    />
+    <Image src={MSR2Screenshot} alt="Screenshot of discolesium from MSR" quality="high" />
+  </Gallery>
+</TimelineItem>
+
+These brainstorms on the right are all that remain from my first day of building my website.\
+I was aware of "Reactbits" already, and was fully intending on relying on their components as cornerstones of my website. "Fuzzy Text" specifically.
+
+<Image
+  src={fuzzyText}
+  alt="Reactbits fuzzy-text element"
+  quality="high"
+  class="not-timeline"
+/>
+
+I love clean digital spaces, and initially I was intending to make a simple and clean personal website as well. However, my favourite website that I frequented often was Monster-Siren-Records (An Arknights Radio essentially), which is heavy with dynamic and visual elements reflecting the artstyle of the game.
+
+Arknights despite being a mere mobile game has produced so much amazing music in pretty much every genre, I'm always curious to hear what their new tracks are. In terms of art style and aesthetics it's also incredible so I started looking more into it as I took HTML and CSS courses online.
+
+---
+
+After finishing the HTML + Javascript and CSS online beginner lessons I made version1:
+
+<IFrameDemo
+  src="/demos/Version1/index.html"
+  title="Version 1 - Local Static Build"
+  height="480px"
+/>
+
+---
+
+So at this point that I thought I would go steal as many elements from the Hypergryph Monster Siren website as I could, so it started out as a black background with side-scrolling.\
+On the Hypergryph website, they somehow made it seem like the input of scrolling with the mouse is jacked and it actually scrolls to the side and in my attempt to copy this I wasted _many, many_ hours.\
+Eventually I did manage to make it work _most of the time_ by jacking the scrolling input into horizontal scrolling, but this breaks horizontal swiping. So in the end I removed it, as not being able to have proper scrolling feels like grinding my mind's dick through a wood-chipper.
+
+It would have been amazing if I still had that website attempt lying around somewhere, but all I have is my side-scroller animation mimicking Monster-Siren-Records.
+
+<Image
+  src={sideScroller}
+  alt="Side scroller demo"
+  class="not-timeline h-auto my-4 border border-white/10"
+  width={780}
+/>
+
+I also wanted to have an audio visualiser on the top left just like
+Monster-Siren-Records, which I left entirely up to Claude.
+
+From here, I only then somehow found out about the huggingface Deepsite AI website (makes you a website with a single prompt). So of course I immediately waste all my free tokens trying to make it copy the Monster-Siren-Records.
+And the website it produced was cool and clean though not really what I was looking for, so I salvaged it, stealing the scan-line, crosshair cursor, menu-items, and the logic behind the wobble for the "Hello Friend" text. Now that I have seen many websites and personal portfolios, the issue I find with AI websites is that they ALL look so generic they actually become the most ugly, this includes those with 3D animation.
+
+So after a good many months after I started trying to make my website, Zenless Zone Zero came out and I would have had 0 interest in the game had I not seen how they mixed distortion and cuteness in their advertisements.
+The CRT monitor array / navigation with the bangboo was such a cool and amazing idea to me that I became determined to incorporate something like it in my project. Together with the release of Balatro (which has amazing CRT effects) I fell in love with CRT distortions (I even started using Cool Retro Term).
+
+## Photography -> Assets
+
+<TimelineItem section="Photography -> Assets">
+  <Gallery columns={2}>
+    <Image src={dBoulevard_original} alt="1st Photo" quality="high" />
+    <Image src={cBoulevard} alt="2nd night's photo" quality="high" />
+  </Gallery>
+</TimelineItem>
+<TimelineItem section="Photography -> Assets">
+  <Gallery columns={2}>
+    <Image src={projectsOriginal} alt="TeamLab Borderless" quality="high" />
+    <Image src={projectsE} alt="Removed Friends" quality="high" />
+  </Gallery>
+  <Gallery columns={3}>
+    <Image src={log2img} alt="002Log image" quality="high" />
+    <Image src={log3img} alt="003Log image" quality="high" />
+    <Image src={contactsBG} alt="Contacts Background" quality="high" />
+  </Gallery>
+  <Gallery columns={2}>
+    <Image
+      src={cellsbackgroundUnedited}
+      alt="Solar Panel Cells"
+      quality="high"
+    />
+    <Image src={cellsbackground} alt="Blogs Background Layer" quality="high" />
+  </Gallery>
+</TimelineItem>
+
+All the images (backgrounds) where taken by me with my wonderfully amazing unreliable phone camera. (I use a Acquos Sense 9 btw)
+This piece of shit, I mean incredibly artistic piece of kit has _transformed_ so many of my photos that i've almost come to embrace this _"feature"_.
+You see, at certain, seemingly random times when I wish to take a picture, the phone will show that the photo has been taken (with the thumbnail in the corner and everything), while hiding the fact that the sensor is still exposed. So when I go to check the photo, _moving the camera_ the photo takes a couple of seconds to "load" (shutting the apeture) and I see a complete mess that looks nothing like the thumbnail I was shown!
+What an absolute nightmare.
+
+For example:
+My blurry stairway photo. The clear photo besides it I took the night after.
+Embracing the whims of my camera, I knew that I wanted to use this blurry stairway picture I took for the some section. My first idea was to just edit out the walls, skew them, and apply an opacity gradient on them to make it look like they go on forever, fading out, leaving a middle section 1/2rd the width of the viewport to have the blog portals.
+But it just kept on looking weird, and I have so little experience with GIMP.
+So in an attempt to comprimise, I split the photo into 3 parts and used them for the unique transition animation.
+
+<Gallery columns={3} class="not-timeline">
+  <Image src={dBoulevardL} alt="Left-side" quality="high" />
+  <Image src={dBoulevardC} alt="Centre" quality="high" />
+  <Image src={dBoulevardR} alt="Right-side" quality="high" />
+</Gallery>
+
+For the Home section, I was originally planning on having a wireframe of some buildings in Osaka, or a Arknights Stylised picture of the Osaka Castle, and I even tried getting Gemini Nano Banana to produce something. So I gave up, and wrote this kind of introductory paragraph.
+And then, only after moving it to the side did I realise that a clean Osaka castle picture taken by me would probably look best anyway.
+
+<Image
+  src={homeOriginal}
+  alt="Osaka Castle"
+  class="not-timeline h-auto my-4 border border-white/10"
+  quality="high"
+/>
+<Image
+  src={homeEdited}
+  alt="Partial opacity"
+  class="not-timeline border border-white/10"
+  quality="high"
+/>

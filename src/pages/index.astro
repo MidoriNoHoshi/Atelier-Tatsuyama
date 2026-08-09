@@ -3,14 +3,24 @@ import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 
 const posts = await getCollection("blog");
-const blogEntries = posts
+
+// Map all posts and split their IDs into lang and slug
+const allBlogEntries = posts
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .map((post) => ({
-    id: post.id,
-    title: post.data.title,
-    sub: post.data.sub || post.data.description || "",
-    img: post.data.img,
-  }));
+  .map((post) => {
+    const [lang, slug] = post.id.split("/");
+    return {
+      fullId: post.id,
+      slug: slug || post.id,
+      lang: lang ? lang.toLowerCase() : "en",
+      title: post.data.title,
+      sub: post.data.sub || post.data.description || "",
+      img: post.data.img,
+    };
+  });
+
+// Filter initial SSR render list to one language (e.g. English) so SSR doesn't duplicate items
+const blogEntries = allBlogEntries.filter((entry) => entry.lang === "en");
 
 import "../styles/global.css";
 import AudioVisualizer from "../components/AudioVisualizer.astro";
@@ -116,7 +126,7 @@ import contactBg from "../assets/contactBg.png";
     <div id="loading-screen" class="loading-screen">
       <div
         data-text="ようこそ！"
-        class="chromatic-text loading-text tracking-[2rem] text-zinc-500 uppercase text-9xl"
+        class="loading-text tracking-[2rem] text-zinc-500 uppercase text-9xl"
       >
         ようこそ！
       </div>
@@ -127,1044 +137,1104 @@ import contactBg from "../assets/contactBg.png";
 
     <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
       <defs>
-        <filter
-          id="subtle-aberration"
-          x="-15%"
-          y="-15%"
-          width="130%"
-          height="130%"
-        >
-          <feOffset in="SourceGraphic" dx="2.5" dy="0" result="red-shift"
-          ></feOffset>
-          <feOffset in="SourceGraphic" dx="-2.5" dy="0" result="blue-shift"
-          ></feOffset>
+        <feOffset in="SourceGraphic" dx="2.5" dy="0" result="red-shift"
+        ></feOffset>
+        <feOffset in="SourceGraphic" dx="-2.5" dy="0" result="blue-shift"
+        ></feOffset>
 
-          <feColorMatrix
-            in="red-shift"
-            type="matrix"
-            values="1 0.5 0 0 0  0 0.2 0 0 0  0 0 0 0 0  0 0 0 0.6 0"
-            result="red-fringe"></feColorMatrix>
-          <feColorMatrix
-            in="blue-shift"
-            type="matrix"
-            values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0"
-            result="blue-fringe"></feColorMatrix>
+        <feColorMatrix
+          in="red-shift"
+          type="matrix"
+          values="1 0.5 0 0 0  0 0.2 0 0 0  0 0 0 0 0  0 0 0 0.6 0"
+          result="red-fringe"></feColorMatrix>
+        <feColorMatrix
+          in="blue-shift"
+          type="matrix"
+          values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0"
+          result="blue-fringe"></feColorMatrix>
 
-          <feGaussianBlur in="red-fringe" stdDeviation="0.2" result="red-blur"
-          ></feGaussianBlur>
-          <feGaussianBlur in="blue-fringe" stdDeviation="0.2" result="blue-blur"
-          ></feGaussianBlur>
+        <feGaussianBlur in="red-fringe" stdDeviation="0.2" result="red-blur"
+        ></feGaussianBlur>
+        <feGaussianBlur in="blue-fringe" stdDeviation="0.2" result="blue-blur"
+        ></feGaussianBlur>
 
-          <feMerge result="fringe-combined">
-            <feMergeNode in="red-blur"></feMergeNode>
-            <feMergeNode in="blue-blur"></feMergeNode>
-          </feMerge>
+        <feMerge result="fringe-combined">
+          <feMergeNode in="red-blur"></feMergeNode>
+          <feMergeNode in="blue-blur"></feMergeNode>
+        </feMerge>
 
-          <feMerge>
-            <feMergeNode in="fringe-combined"></feMergeNode>
-            <feMergeNode in="SourceGraphic"></feMergeNode>
-          </feMerge>
-        </filter>
+        <feMerge>
+          <feMergeNode in="fringe-combined"></feMergeNode>
+          <feMergeNode in="SourceGraphic"></feMergeNode>
+        </feMerge>
       </defs>
     </svg>
-    <div id="transition-burst">
-      <div id="signal-lost-wrap" class="signal-lost-wrap">
-        <span class="chromatic-text signal-lost-text" data-text="SIGNAL LOST"
-          >SIGNAL LOST</span
-        >
-      </div>
+  </body>
+  <div id="transition-burst">
+    <div id="signal-lost-wrap" class="signal-lost-wrap">
+      <span class="signal-lost-text" data-text="SIGNAL LOST">SIGNAL LOST</span>
     </div>
-    <div class="crt-noise"></div>
-    <div class="crt-overlay"></div>
-    <div id="signal-tear" class="signal-tear"></div>
-    <div class="vignette-soft"></div>
-    <div class="crt-screen">
-      <main
-        class="opacity-0 transition-opacity duration-1000 ease-in-out"
-        id="main-content"
+  </div>
+  <div class="crt-noise"></div>
+  <div class="crt-overlay"></div>
+  <div class="vignette-soft"></div>
+  <div class="crt-screen">
+    <main
+      class="opacity-0 transition-opacity duration-1000 ease-in-out"
+      id="main-content"
+    >
+      <div
+        class="absolute inset-0 bg-radial from-black/10 via-black/10 to-black/95 z-1 pointer-events-none"
       >
-        <div
-          class="absolute inset-0 bg-radial from-black/10 via-black/10 to-black/95 z-1 pointer-events-none"
-        >
-        </div>
-        <div
-          class="absolute inset-0 bg-radial from-transparent via-black/60 to-black pointer-events-none"
-        >
-        </div>
+      </div>
+      <div
+        class="absolute inset-0 bg-radial from-transparent via-black/60 to-black pointer-events-none"
+      >
+      </div>
 
-        <div class="scan-line"></div>
-        <div
-          class="fixed inset-0 pointer-events-none z-40 flex flex-col justify-between p-6 md:p-12"
+      <div class="scan-line"></div>
+      <div
+        class="fixed inset-0 pointer-events-none z-40 flex flex-col justify-between p-6 md:p-12"
+      >
+        <header
+          class="flex items-center justify-between w-full pointer-events-auto"
         >
-          <header
-            class="flex items-center justify-between w-full pointer-events-auto"
-          >
-            <div class="flex flex-col items-start gap-2">
-              <div class="flex items-center gap-4">
-                <AudioVisualizer />
-                <div class="relative" id="lang-switcher">
+          <div class="flex flex-col items-start gap-2">
+            <div class="flex items-center gap-4">
+              <AudioVisualizer />
+              <div class="relative" id="lang-switcher">
+                <button
+                  id="lang-toggle"
+                  class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+                >
+                  [ LANG: <span id="lang-current">EN</span> ]
+                </button>
+                <div
+                  id="lang-menu"
+                  class="hidden absolute top-full left-0 mt-1 border border-white/10 bg-black/95 backdrop-blur-sm min-w-full z-50"
+                >
                   <button
-                    id="lang-toggle"
-                    class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+                    data-lang="EN"
+                    class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                    >EN</button
                   >
-                    [ LANG: <span id="lang-current">EN</span> ]
-                  </button>
-                  <div
-                    id="lang-menu"
-                    class="hidden absolute top-full left-0 mt-1 border border-white/10 bg-black/95 backdrop-blur-sm min-w-full z-50"
+                  <button
+                    data-lang="JP"
+                    class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                    >JP</button
                   >
-                    <button
-                      data-lang="EN"
-                      class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
-                      >EN</button
-                    >
-                    <button
-                      data-lang="JP"
-                      class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
-                      >JP</button
-                    >
-                    <button
-                      data-lang="NOR"
-                      class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
-                      >NOR</button
-                    >
-                  </div>
+                  <button
+                    data-lang="NOR"
+                    class="lang-option block w-full text-left text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
+                    >NOR</button
+                  >
                 </div>
               </div>
-              <div
-                id="playing"
-                class="playing-label hidden opacity-0 transition-all duration-700 ease-out text-xs font-mono tracking-widest text-neutral-300"
-              >
-                Now playing: <span class="text-neutral-300 track-title-display"
-                  >---</span
-                >
-              </div>
             </div>
-            <nav class="z-40 hidden md:flex items-center gap-8 lg:gap-12">
-              <a
-                data-slide="0"
-                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
-              >
-                Home
-              </a>
-              <a
-                data-slide="1"
-                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
-                >Blogs</a
-              >
-              <a
-                data-slide="2"
-                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
-                >Projects</a
-              >
-              <a
-                data-slide="3"
-                class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
-                >Contact</a
-              >
-            </nav>
-          </header>
-
-          <footer
-            class="flex flex-col md:flex-row items-center justify-between gap-6 pointer-events-auto"
-          >
             <div
-              class="text-xs font-mono tracking-[0.4em] text-white uppercase"
+              id="playing"
+              class="playing-label hidden opacity-0 transition-all duration-700 ease-out text-xs font-mono tracking-widest text-neutral-300"
             >
-              AKI TATSUYAMA
+              Now playing: <span class="text-neutral-300 track-title-display"
+                >---</span
+              >
             </div>
-          </footer>
-        </div>
+          </div>
+          <nav class="z-40 hidden md:flex items-center gap-8 lg:gap-12">
+            <a
+              data-slide="0"
+              data-i18n="home"
+              class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
+            >
+              Home
+            </a>
+            <a
+              data-slide="1"
+              data-i18n="blogs"
+              class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
+              >Blogs</a
+            >
+            <a
+              data-slide="2"
+              data-i18n="projects"
+              class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
+              >Projects</a
+            >
+            <a
+              data-slide="3"
+              data-i18n="contact"
+              class="menu-item text-sm font-medium tracking-widest uppercase cursor-pointer"
+              >Contact</a
+            >
+          </nav>
+        </header>
 
-        <div
-          id="scroll-container"
-          class="flex flex-col h-screen w-screen overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth"
+        <footer
+          class="flex flex-col md:flex-row items-center justify-between gap-6 pointer-events-auto"
         >
-          <section
-            id="home"
-            class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center relative overflow-hidden"
+          <div class="text-xs font-mono tracking-[0.4em] text-white uppercase">
+            AKI TATSUYAMA
+          </div>
+        </footer>
+      </div>
+
+      <div
+        id="scroll-container"
+        class="flex flex-col h-screen w-screen overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth"
+      >
+        <section
+          id="home"
+          class="snap-start shrink-0 w-screen h-screen bg-black text-white flex items-center justify-center relative overflow-hidden"
+        >
+          <Image
+            id="lowerCastle"
+            src={homeLower}
+            alt="Home Background"
+            class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 z-0 pointer-events-none"
+          />
+
+          <div
+            id="castleVeil"
+            class="absolute inset-0 bg-black z-5 pointer-events-none transition-opacity duration-2000 ease-in-out"
           >
-            <Image
-              id="lowerCastle"
-              src={homeLower}
-              alt="Home Background"
-              class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 z-0 pointer-events-none"
-            />
+          </div>
 
+          <!-- Terminal Container (Centered Focus) -->
+          <div
+            id="home-layout-container"
+            class="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center justify-center"
+          >
+            <!-- Initial Glitch Overlay -->
             <div
-              id="castleVeil"
-              class="absolute inset-0 bg-black z-5 pointer-events-none transition-opacity duration-2000 ease-in-out"
+              id="intro-content"
+              class="transition-all duration-1000 ease-in-out text-center"
             >
-            </div>
-
-            <!-- Terminal Container (Centered Focus) -->
-            <div
-              id="home-layout-container"
-              class="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center justify-center"
-            >
-              <!-- Initial Glitch Overlay -->
               <div
-                id="intro-content"
-                class="transition-all duration-1000 ease-in-out text-center"
+                data-text="Atelier Tatsuyama"
+                class="flex flex-col items-center justify-center gap-4 mb-6 text-neutral-600"
               >
-                <div
+                <h1
                   data-text="Atelier Tatsuyama"
-                  class="chromatic-text flex flex-col items-center justify-center gap-4 mb-6 text-neutral-600"
+                  class="menu-item text-[5rem] lg:text-[8rem] text-center font-black leading-none mb-4 select-none"
                 >
-                  <h1
-                    data-text="Atelier Tatsuyama"
-                    class="glitch-text chromatic-text text-[5rem] lg:text-[8rem] text-center font-black leading-none mb-4 select-none"
-                  >
-                    Atelier Tatsuyama
-                  </h1>
-                </div>
-                <div
-                  class="flex items-center justify-center gap-4 text-xs font-mono text-gray-400 tracking-[0.3em] uppercase"
-                >
-                  <span class="w-12 h-px bg-gray-500"></span>
-                  <span data-text="Click anywhere">Click anywhere</span>
-                  <span class="w-12 h-px bg-gray-500"></span>
-                </div>
+                  Atelier Tatsuyama
+                </h1>
               </div>
               <div
-                id="cli-music-terminal"
-                class="cli-terminal-container hidden opacity-0 w-full font-mono text-sm text-zinc-400 space-y-4 relative z-20 transition-all duration-1000 ease-out"
+                class="flex items-center justify-center gap-4 text-xs font-mono text-gray-400 tracking-[0.3em] uppercase"
               >
-                <div
-                  class="text-zinc-400 text-[12px] tracking-widest uppercase border-b border-white/10 pb-2 flex justify-between"
-                >
-                  <span>[ TERMINAL_SESSION // TTY1 ]</span>
-                  <span>FRAMEWORK: VERCEL</span>
-                </div>
+                <span class="w-12 h-px bg-gray-500"></span>
+                <span data-text="Click anywhere">Click anywhere</span>
+                <span class="w-12 h-px bg-gray-500"></span>
+              </div>
+            </div>
+            <div
+              id="cli-music-terminal"
+              class="cli-terminal-container hidden opacity-0 w-full font-mono text-sm text-zinc-400 space-y-4 relative z-20 transition-all duration-1000 ease-out"
+            >
+              <div
+                class="text-zinc-400 text-[12px] tracking-widest uppercase border-b border-white/10 pb-2 flex justify-between"
+              >
+                <span>[ TERMINAL_SESSION // TTY1 ]</span>
+                <span>FRAMEWORK: VERCEL</span>
+              </div>
 
-                <div class="space-y-2">
-                  <div class="flex items-center gap-2 text-zinc-300 font-bold">
-                    <span class="text-emerald-400">tatsuyama@atelier</span>
-                    <span class="text-zinc-600">:</span>
-                    <span class="text-blue-400">~/pages</span>
-                    <span class="text-zinc-500">$</span>
-                    <span id="cli-cmd-intro" class="text-white"
-                      >cat intro.txt</span
-                    >
-                  </div>
-
-                  <div
-                    id="cli-intro-output"
-                    class="text-zinc-300 text-sm leading-relaxed space-y-2 pl-2"
-                  >
-                    <span
-                      class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider"
-                    >
-                      [ Entry: Introduction ]
-                    </span>
-                    <!-- Added id="clean-paragraph" and whitespace-pre-wrap -->
-                    <p id="clean-paragraph" class="m-0 whitespace-pre-wrap"></p>
-                  </div>
-                </div>
-
-                <!-- Added opacity-0 cli-listing-section class to keep prompt hidden until sequence starts -->
-                <div id="cli-music-section" class="space-y-2 pt-2 cli-listing">
-                  <div class="flex items-center gap-2 text-zinc-300 font-bold">
-                    <span class="text-emerald-400">tatsuyama@atelier</span>
-                    <span class="text-zinc-400">:</span>
-                    <span class="text-blue-400">~/assets/music</span>
-                    <span class="text-zinc-400">$</span>
-                    <span id="cli-command-typed" class="text-white"
-                      >ls -la --sort=time</span
-                    >
-                  </div>
-
-                  <div
-                    id="cli-listing"
-                    class="cli-listing border-y border-white/10 py-3 my-2 space-y-1.5"
-                  >
-                    <div
-                      class="text-[10px] text-zinc-400 flex justify-between font-bold uppercase tracking-wider mb-2 px-1"
-                    >
-                      <span>PERM</span>
-                      <span>FILENAME</span>
-                    </div>
-
-                    {
-                      playlist.map((track) => (
-                        <div
-                          class="track-cli-item group flex items-center justify-between py-1 px-1 -mx-1 hover:bg-white/10 transition-colors cursor-pointer"
-                          data-src={track.src}
-                          data-title={track.title}
-                          data-artist={track.artist}
-                        >
-                          <span class="text-[14px] text-zinc-400 font-mono group-hover:text-zinc-400">
-                            -rw-r--r--
-                          </span>
-                          <div class="flex items-center gap-2">
-                            <span class="text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                              &gt;
-                            </span>
-                            <span class="text-zinc-300 group-hover:text-white font-mono group-hover:underline decoration-white/40">
-                              {track.artist}_-_
-                              {track.title.replace(/\s+/g, "_")}.mp3
-                            </span>
-                          </div>
-                        </div>
-                      ))
-                    }
-                  </div>
-                </div>
-                <div
-                  id="cli-final-prompt"
-                  class="cli-final-prompt flex items-center gap-2 text-zinc-300 pt-1"
-                >
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-zinc-300 font-bold">
                   <span class="text-emerald-400">tatsuyama@atelier</span>
                   <span class="text-zinc-600">:</span>
-                  <span class="text-blue-400">~/assets/music</span>
+                  <span class="text-blue-400">~/pages</span>
                   <span class="text-zinc-500">$</span>
-                  <span class="cli-typing-cursor"></span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section
-            id="blog"
-            class="relative snap-start shrink-0 w-screen h-screen overflow-hidden"
-          >
-            <div class="absolute inset-0 bg-black z-0"></div>
-            <img
-              src={clearstairs.src}
-              class="clear-stairs absolute inset-0 w-full h-full object-cover opacity-5 z-0"
-            />
-
-            <div class="absolute inset-0 z-10 pointer-events-none">
-              <img
-                src={dizzystarsLpiece.src}
-                class="stairs-piece left-piece absolute inset-0 w-full h-full object-cover"
-              />
-              <img
-                src={dizzystarsMpiece.src}
-                class="stairs-piece middle-piece absolute inset-0 w-full h-full object-cover"
-              />
-              <img
-                src={dizzystarsRpiece.src}
-                class="stairs-piece right-piece absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-            <div class="grid-overlay"></div>
-
-            <div
-              id="blog-ui-container"
-              class="relative z-20 flex h-full w-full items-center opacity-0 transition-opacity duration-1000"
-            >
-              <div class="w-3/5 h-full flex flex-col justify-center px-20">
-                <div
-                  id="blog-preview-frame"
-                  class="relative group max-w-4xl signal-tear-surface"
-                >
-                  <a
-                    id="preview-anchor"
-                    href={`/blogs/${blogEntries[0].id}`}
-                    class="block cursor-pointer"
+                  <span id="cli-cmd-intro" class="text-white"
+                    >cat intro.txt</span
                   >
-                    <div
-                      class="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-white/50 z-20"
-                    >
-                    </div>
-                    <div
-                      class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-white/50 z-20"
-                    >
-                    </div>
-
-                    <div
-                      class="relative aspect-video border border-white/10 overflow-hidden bg-black/60"
-                    >
-                      <img
-                        id="preview-img"
-                        src={(blogEntries[0].img ?? defaultImg).src}
-                        class="w-full h-full object-cover opacity-80 transition-all duration-500 scale-105 group:hover:scale-115"
-                      />
-                    </div>
-
-                    <div
-                      class="absolute bottom-8 left-8 z-30 bg-neutral-900 opacity-80"
-                    >
-                      <h2
-                        id="logId"
-                        class="text-sm font-black tracking-tighter text-white"
-                      >
-                        Log #{blogEntries[0].id}:
-                        <span class="text-sm ml-2 font-mono text-zinc-100"
-                          >{blogEntries[0].title}</span
-                        >
-                      </h2>
-                      <p
-                        id="preview-sub"
-                        class="mt-4 text-zinc-300 font-mono text-sm max-w-md"
-                      >
-                        {blogEntries[0].sub}
-                      </p>
-                    </div>
-                  </a>
                 </div>
-              </div>
-              <div
-                class="w-2/5 h-[60vh] border-l border-t border-white/5 flex flex-col"
-              >
+
                 <div
-                  class="p-6 border-b border-white/10 flex justify-between items-center"
+                  id="cli-intro-output"
+                  class="text-zinc-300 text-sm leading-relaxed space-y-2 pl-2"
                 >
                   <span
-                    class="text-xl font-mono text-zinc-200 tracking-[0.5em] uppercase"
-                    >Archive of Logs</span
+                    class="text-neutral-500 font-mono text-[11px] block uppercase tracking-wider"
                   >
-                  <span class="text-[10px] font-mono text-zinc-300"
-                    >TOTAL_RECORDS: {blogEntries.length}</span
-                  >
-                </div>
-
-                <div class="flex-1 overflow-y-auto no-scrollbar py-4">
-                  {
-                    blogEntries.map((entry) => (
-                      <a
-                        href={`/blogs/${entry.id}`}
-                        class="blog-item signal-tear-surface w-full group relative p-6 text-left transition-all hover:bg-white/5 block"
-                        data-id={entry.id}
-                        data-title={entry.title}
-                        data-sub={entry.sub}
-                        data-img={(entry.img ?? defaultImg).src}
-                      >
-                        <div class="flex items-center gap-4" />
-                        <span class="text-[10px] font-mono text-zinc-600">
-                          #{entry.id}
-                        </span>
-                        <h3 class="text-lg font-mono tracking-tight text-zinc-300 group-hover:text-white transition-colors">
-                          #{entry.title}
-                        </h3>
-                      </a>
-                    ))
-                  }
+                    [ Entry: Introduction ]
+                  </span>
+                  <!-- Added id="clean-paragraph" and whitespace-pre-wrap -->
+                  <p id="clean-paragraph" class="m-0 whitespace-pre-wrap"></p>
                 </div>
               </div>
-            </div>
-          </section>
 
-          <section
-            id="projects"
-            class="relative snap-start shrink-0 w-screen h-screen overflow-hidden"
-          >
-            <div class="absolute inset-0 bg-black z-0"></div>
-
-            <div
-              class="projects-reveal-wrapper absolute inset-0 pointer-events-none bg-black"
-            >
-              <Image
-                id="projects-bg"
-                src={projectsBg}
-                alt="teamLab Borderless selfie"
-                class="absolute inset-0 w-full h-full object-cover opacity-48"
-              />
-              <div
-                id="projects-blur"
-                class="projects-reveal projects-blur-mask"
-              >
-              </div>
-              <div id="projects-reveal" class="projects-reveal"></div>
-            </div>
-
-            <div class="grid-overlay"></div>
-
-            <div
-              id="project-portal-container"
-              class="relative z-20 h-screen w-screen overflow-hidden"
-            >
-              {
-                projects.map((project) => (
-                  <a
-                    href={project.github || project.link}
-                    target="_blank"
-                    class="blog-portal group absolute w-64 h-80 border border-white/20 overflow-hidden cursor-pointer opacity-0 transition-all duration-700 ease-in-out"
-                    data-project-portal
+              <!-- Added opacity-0 cli-listing-section class to keep prompt hidden until sequence starts -->
+              <div id="cli-music-section" class="space-y-2 pt-2 cli-listing">
+                <div class="flex items-center gap-2 text-zinc-300 font-bold">
+                  <span class="text-emerald-400">tatsuyama@atelier</span>
+                  <span class="text-zinc-400">:</span>
+                  <span class="text-blue-400">~/assets/music</span>
+                  <span class="text-zinc-400">$</span>
+                  <span id="cli-command-typed" class="text-white"
+                    >ls -la --sort=time</span
                   >
-                    <img
-                      src={project.img.src}
-                      class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div class="absolute bottom-4 left-4 z-30 text-left bg-neutral-900 opacity-70">
-                      <span class="text-[10px] font-mono text-zinc-100 block uppercase">
-                        PROJ_ID: {project.id}
-                      </span>
-                      <h3 class="text-lg font-bold tracking-tighter uppercase">
-                        {project.title}
-                      </h3>
-                      <h6 class="text-xs font-light tracking-tighter">
-                        {project.desc}
-                      </h6>
-                    </div>
-                    <div class="absolute inset-0 border border-black group-hover:border-white transition-all duration-300" />
-                  </a>
-                ))
-              }
-            </div>
-
-            <div class="absolute top-36 left-14 z-30 text-left">
-              <span
-                data-text="- SOURCE DIRECTORY"
-                class="text-sm font-mono tracking-widest text-zinc-200 block"
-              >
-                - SOURCE DIRECTORY
-              </span>
-              <br />
-              <h2
-                data-text="PROJECTS"
-                class="text-4xl font-bold tracking-tight"
-              >
-                PROJECTS
-              </h2>
-            </div>
-          </section>
-
-          <section
-            id="contact"
-            class="snap-start shrink-0 w-screen h-screen bg-zinc-900 text-white flex items-center justify-center relative overflow-hidden"
-          >
-            <Image
-              id="contactBg"
-              alt="Tokyo Selfie"
-              src={contactBg}
-              class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
-            />
-
-            <div
-              class="relative z-10 w-full max-w-6xl px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
-            >
-              <div
-                class="border border-white/20 bg-black/60 backdrop-blur-md p-8 md:p-10 relative"
-              >
-                <div class="flex items-center gap-4 mb-8">
-                  <div class="w-4 h-3 bg-yellow-300"></div>
-                  <h2
-                    class="text-2xl font-mono tracking-[0.3em] uppercase text-neutral-100"
-                  >
-                    Website Roadmap
-                  </h2>
                 </div>
 
                 <div
-                  class="space-y-4 font-mono text-sm md:text-base max-h-[45vh] overflow-y-auto no-scrollbar pr-2"
+                  id="cli-listing"
+                  class="cli-listing border-y border-white/10 py-3 my-2 space-y-1.5"
                 >
+                  <div
+                    class="text-[10px] text-zinc-400 flex justify-between font-bold uppercase tracking-wider mb-2 px-1"
+                  >
+                    <span>PERM</span>
+                    <span>FILENAME</span>
+                  </div>
+
                   {
-                    [
-                      { task: "Add Instagram to Contacts", status: "DONE!" },
-                      {
-                        task: "Animate blog list + preview transition",
-                        status: "DONE!",
-                      },
-                      { task: "Switch blog content to MDX", status: "DONE!" },
-                      {
-                        task: "Merge Roadmap into Contacts",
-                        status: "DONE!",
-                      },
-                      { task: "Refine home page intro", status: "DOING" },
-                      {
-                        task: "Background and images to work with blogs",
-                        status: "DOING",
-                      },
-                      {
-                        task: "Contacts background transition",
-                        status: "PLANNED",
-                      },
-                      {
-                        task: "More tracks (Xomu-Moonfall + etc)",
-                        status: "PLANNED",
-                      },
-                      {
-                        task: "Add more to home page (looks empty)",
-                        status: "PLANNED",
-                      },
-                      { task: "Auto Subtitles project", status: "PLANNED" },
-                      {
-                        task: "Auto scanlation (manga + lightnovels) project",
-                        status: "PLANNED",
-                      },
-                      { task: "Clean up the code!", status: "PLANNED" },
-                      {
-                        task: "Static electric effect on Contacts",
-                        status: "PONDERING",
-                      },
-                      { task: "WRITE MORE BLOGS", status: "PONDERING" },
-                      {
-                        task: "Japanese + Norwegian toggle for website",
-                        status: "PONDERING",
-                      },
-                      { task: "DVORAK typing trainer", status: "PONDERING" },
-                    ].map((item) => (
-                      <div class="flex items-start gap-4 group">
-                        <div class="flex-1">{item.task}</div>
-                        <span
-                          class={`text-[11px] px-2 py-1 border border-current shrink-0 ${item.status === "DOING" ? "text-yellow-300" : "text-zinc-500"}`}
-                        >
-                          {item.status}
+                    playlist.map((track) => (
+                      <div
+                        class="track-cli-item group flex items-center justify-between py-1 px-1 -mx-1 hover:bg-white/10 transition-colors cursor-pointer"
+                        data-src={track.src}
+                        data-title={track.title}
+                        data-artist={track.artist}
+                      >
+                        <span class="text-[14px] text-zinc-400 font-mono group-hover:text-zinc-400">
+                          -rw-r--r--
                         </span>
+                        <div class="flex items-center gap-2">
+                          <span class="text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                            &gt;
+                          </span>
+                          <span class="text-zinc-300 group-hover:text-white font-mono group-hover:underline decoration-white/40">
+                            {track.artist}_-_
+                            {track.title.replace(/\s+/g, "_")}.mp3
+                          </span>
+                        </div>
                       </div>
                     ))
                   }
                 </div>
-
-                <div
-                  class="mt-8 pt-6 border-t border-white/20 flex justify-between items-center text-[12px] font-mono text-zinc-500"
-                >
-                  <span>LAST MODIFIED: 2026_08_02</span>
-                </div>
               </div>
-
-              <div class="flex flex-col items-start gap-8 text-left">
-                <span class="text-sm font-mono tracking-[0.5em] text-zinc-200"
-                  >Let's be friends, here are my contacts</span
-                >
-
-                <div class="flex flex-col gap-8">
-                  <a href={`mailto:${email}`} class="group">
-                    <span
-                      class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left"
-                    >
-                      email address
-                      <svg
-                        class="w-5 h-5 transition-colors group-hover:text-zinc-500"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path
-                          d="m15.24 8.998 3.656-3.073v15.81H2.482C1.11 21.735 0 20.609 0 19.223V6.944l7.58 6.38a2.186 2.186 0 0 0 2.871-.042l4.792-4.284h-.003zm-5.456 3.538 1.809-1.616a2.438 2.438 0 0 1-1.178-.533L.905 2.395A.552.552 0 0 0 0 2.826v2.811l8.226 6.923a1.186 1.186 0 0 0 1.558-.024zM23.871 2.463a.551.551 0 0 0-.776-.068l-3.199 2.688v16.653h1.623c1.371 0 2.481-1.127 2.481-2.513V2.824a.551.551 0 0 0-.129-.36z"
-                        ></path>
-                      </svg>
-                    </span>
-                    <span
-                      class="text-2xl font-light hover:text-zinc-500 transition-colors"
-                      >{email}</span
-                    >
-                  </a>
-
-                  <a href={githubProfile} target="_blank" class="group">
-                    <span
-                      class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left"
-                    >
-                      github profile
-                      <svg
-                        class="w-5 h-5 transition-colors group-hover:text-zinc-500"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path
-                          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C3.42 15.07 1.95 14.7 1.95 14.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-                        ></path>
-                      </svg>
-                    </span>
-                    <span
-                      class="text-2xl font-light hover:text-zinc-500 transition-colors"
-                      >@{githubUsername}</span
-                    >
-                  </a>
-
-                  <a href={instagram} target="_blank" class="group">
-                    <span
-                      class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left"
-                    >
-                      instagram
-                      <svg
-                        class="w-5 h-5 transition-colors group-hover:text-zinc-500"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path
-                          d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.01 4 20 5.99 20 7.75v8.5C20 18.01 18.01 20 16.25 20h-8.5C5.99 20 4 18.01 4 16.25v-8.5C4 5.99 5.99 4 7.75 4zm9.5 1.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"
-                        ></path>
-                      </svg>
-                    </span>
-                    <span
-                      class="text-2xl font-light hover:text-zinc-500 transition-colors"
-                      >@tatsu._.yama</span
-                    >
-                  </a>
-                </div>
+              <div
+                id="cli-final-prompt"
+                class="cli-final-prompt flex items-center gap-2 text-zinc-300 pt-1"
+              >
+                <span class="text-emerald-400">tatsuyama@atelier</span>
+                <span class="text-zinc-600">:</span>
+                <span class="text-blue-400">~/assets/music</span>
+                <span class="text-zinc-500">$</span>
+                <span class="cli-typing-cursor"></span>
               </div>
             </div>
-          </section>
-        </div>
-      </main>
-    </div>
-    <script is:inline>
-      window.addEventListener("load", () => {
-        const container = document.getElementById("scroll-container");
-        const loadingBar = document.getElementById("loading-bar");
-        const loadingScreen = document.getElementById("loading-screen");
+          </div>
+        </section>
 
-        const homeSection = document.getElementById("home");
-        const mainContent = document.getElementById("main-content");
+        <section
+          id="blog"
+          class="relative snap-start shrink-0 w-screen h-screen overflow-hidden"
+        >
+          <div class="absolute inset-0 bg-black z-0"></div>
+          <img
+            src={clearstairs.src}
+            class="clear-stairs absolute inset-0 w-full h-full object-cover opacity-5 z-0"
+          />
 
-        const blogSection = document.getElementById("blog");
-        const blogItems = document.querySelectorAll(".blog-item");
-        const previewAnchor = document.getElementById("preview-anchor");
+          <div class="absolute inset-0 z-10 pointer-events-none">
+            <img
+              src={dizzystarsLpiece.src}
+              class="stairs-piece left-piece absolute inset-0 w-full h-full object-cover"
+            />
+            <img
+              src={dizzystarsMpiece.src}
+              class="stairs-piece middle-piece absolute inset-0 w-full h-full object-cover"
+            />
+            <img
+              src={dizzystarsRpiece.src}
+              class="stairs-piece right-piece absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div class="grid-overlay"></div>
 
-        const projectsSection = document.getElementById("projects");
+          <div
+            id="blog-ui-container"
+            class="relative z-20 flex h-full w-full items-center opacity-0 transition-opacity duration-1000"
+          >
+            <div class="w-3/5 h-full flex flex-col justify-center px-20">
+              <div id="blog-preview-frame" class="relative group max-w-4xl">
+                <a
+                  id="preview-anchor"
+                  href={`/blog/${blogEntries[0].lang}/${blogEntries[0].slug}`}
+                  class="block cursor-pointer"
+                >
+                  <div
+                    class="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-white/50 z-20"
+                  >
+                  </div>
+                  <div
+                    class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-white/50 z-20"
+                  >
+                  </div>
 
-        loadingBar.style.width = "100%";
+                  <div
+                    class="relative aspect-video border border-white/10 overflow-hidden bg-black/60"
+                  >
+                    <img
+                      id="preview-img"
+                      src={(blogEntries[0].img ?? defaultImg).src}
+                      class="w-full h-full object-cover opacity-80 transition-all duration-500 scale-105 group:hover:scale-115"
+                    />
+                  </div>
 
-        setTimeout(() => {
-          loadingScreen.classList.add("hidden");
-          mainContent.classList.remove("opacity-0");
-          mainContent.classList.add("opacity-100");
-        }, 580);
+                  <div
+                    class="absolute bottom-8 left-8 z-30 bg-neutral-900 opacity-80"
+                  >
+                    <h2
+                      id="logId"
+                      class="text-sm font-black tracking-tighter text-white"
+                    >
+                      Log #{blogEntries[0].id}:
+                      <span class="text-sm ml-2 font-mono text-zinc-100"
+                        >{blogEntries[0].title}</span
+                      >
+                    </h2>
+                    <p
+                      id="preview-sub"
+                      class="mt-4 text-zinc-300 font-mono text-sm max-w-md"
+                    >
+                      {blogEntries[0].sub}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div
+              class="w-2/5 h-[60vh] border-l border-t border-white/5 flex flex-col"
+            >
+              <div
+                class="p-6 border-b border-white/10 flex justify-between items-center"
+              >
+                <span
+                  class="text-xl font-mono text-zinc-200 tracking-[0.5em] uppercase"
+                  >Archive of Logs</span
+                >
+                <span
+                  class="text-[10px] font-mono text-zinc-300"
+                  id="total-records-count"
+                >
+                  TOTAL_RECORDS: {blogEntries.length}
+                </span>
+              </div>
 
-        document.querySelectorAll(".menu-item").forEach((item) => {
-          item.addEventListener("click", () => {
-            const index = parseInt(item.dataset.slide);
-            container.scrollTo({
-              top: window.innerHeight * index,
-              behavior: "smooth",
-            });
+              <div class="flex-1 overflow-y-auto no-scrollbar py-4">
+                {
+                  allBlogEntries.map((entry) => (
+                    <a
+                      href={`/blog/${entry.lang}/${entry.slug}`}
+                      class="blog-item w-full group relative p-6 text-left transition-all hover:bg-white/5 block"
+                      data-id={entry.slug}
+                      data-slug={entry.slug}
+                      data-lang={entry.lang}
+                      data-title={entry.title}
+                      data-sub={entry.sub}
+                      data-img={(entry.img ?? defaultImg).src}
+                    >
+                      <div class="flex items-center gap-4" />
+                      <span class="text-[10px] font-mono text-zinc-600">
+                        #{entry.slug}
+                      </span>
+                      <h3 class="text-lg font-mono tracking-tight text-zinc-300 group-hover:text-white transition-colors">
+                        #{entry.title}
+                      </h3>
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="projects"
+          class="relative snap-start shrink-0 w-screen h-screen overflow-hidden"
+        >
+          <div class="absolute inset-0 bg-black z-0"></div>
+
+          <div
+            class="projects-reveal-wrapper absolute inset-0 pointer-events-none bg-black"
+          >
+            <Image
+              id="projects-bg"
+              src={projectsBg}
+              alt="teamLab Borderless selfie"
+              class="absolute inset-0 w-full h-full object-cover opacity-48"
+            />
+            <div id="projects-blur" class="projects-reveal projects-blur-mask">
+            </div>
+            <div id="projects-reveal" class="projects-reveal"></div>
+          </div>
+
+          <div class="grid-overlay"></div>
+
+          <div
+            id="project-portal-container"
+            class="relative z-20 h-screen w-screen overflow-hidden"
+          >
+            {
+              projects.map((project) => (
+                <a
+                  href={project.github || project.link}
+                  target="_blank"
+                  class="blog-portal group absolute w-64 h-80 border border-white/20 overflow-hidden cursor-pointer opacity-0 transition-all duration-700 ease-in-out"
+                  data-project-portal
+                >
+                  <img
+                    src={project.img.src}
+                    class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div class="absolute bottom-4 left-4 z-30 text-left bg-neutral-900 opacity-70">
+                    <span class="text-[10px] font-mono text-zinc-100 block uppercase">
+                      PROJ_ID: {project.id}
+                    </span>
+                    <h3 class="text-lg font-bold tracking-tighter uppercase">
+                      {project.title}
+                    </h3>
+                    <h6 class="text-xs font-light tracking-tighter">
+                      {project.desc}
+                    </h6>
+                  </div>
+                  <div class="absolute inset-0 border border-black group-hover:border-white transition-all duration-300" />
+                </a>
+              ))
+            }
+          </div>
+
+          <div class="absolute top-36 left-14 z-30 text-left">
+            <span
+              data-text="- SOURCE DIRECTORY"
+              class="text-sm font-mono tracking-widest text-zinc-200 block"
+            >
+              - SOURCE DIRECTORY
+            </span>
+            <br />
+            <h2 data-text="PROJECTS" class="text-4xl font-bold tracking-tight">
+              PROJECTS
+            </h2>
+          </div>
+        </section>
+
+        <section
+          id="contact"
+          class="snap-start shrink-0 w-screen h-screen bg-zinc-900 text-white flex items-center justify-center relative overflow-hidden"
+        >
+          <Image
+            id="contactBg"
+            alt="Tokyo Selfie"
+            src={contactBg}
+            class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+          />
+
+          <div
+            class="relative z-10 w-full max-w-6xl px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
+          >
+            <div
+              class="border border-white/20 bg-black/60 backdrop-blur-md p-8 md:p-10 relative"
+            >
+              <div class="flex items-center gap-4 mb-8">
+                <div class="w-4 h-3 bg-yellow-300"></div>
+                <h2
+                  class="text-2xl font-mono tracking-[0.3em] uppercase text-neutral-100"
+                >
+                  Website Roadmap
+                </h2>
+              </div>
+
+              <div
+                class="space-y-4 font-mono text-sm md:text-base max-h-[45vh] overflow-y-auto no-scrollbar pr-2"
+              >
+                {
+                  [
+                    { task: "Add Instagram to Contacts", status: "DONE!" },
+                    {
+                      task: "Animate blog list + preview transition",
+                      status: "DONE!",
+                    },
+                    { task: "Switch blog content to MDX", status: "DONE!" },
+                    {
+                      task: "Merge Roadmap into Contacts",
+                      status: "DONE!",
+                    },
+                    { task: "Refine home page intro", status: "DOING" },
+                    {
+                      task: "Background and images to work with blogs",
+                      status: "DOING",
+                    },
+                    {
+                      task: "Contacts background transition",
+                      status: "PLANNED",
+                    },
+                    {
+                      task: "More tracks (Xomu-Moonfall + etc)",
+                      status: "PLANNED",
+                    },
+                    {
+                      task: "Add more to home page (looks empty)",
+                      status: "PLANNED",
+                    },
+                    { task: "Auto Subtitles project", status: "PLANNED" },
+                    {
+                      task: "Auto scanlation (manga + lightnovels) project",
+                      status: "PLANNED",
+                    },
+                    { task: "Clean up the code!", status: "PLANNED" },
+                    {
+                      task: "Static electric effect on Contacts",
+                      status: "PONDERING",
+                    },
+                    { task: "WRITE MORE BLOGS", status: "PONDERING" },
+                    {
+                      task: "Japanese + Norwegian toggle for website",
+                      status: "PONDERING",
+                    },
+                    { task: "DVORAK typing trainer", status: "PONDERING" },
+                  ].map((item) => (
+                    <div class="flex items-start gap-4 group">
+                      <div class="flex-1">{item.task}</div>
+                      <span
+                        class={`text-[11px] px-2 py-1 border border-current shrink-0 ${item.status === "DOING" ? "text-yellow-300" : "text-zinc-500"}`}
+                      >
+                        {item.status}
+                      </span>
+                    </div>
+                  ))
+                }
+              </div>
+
+              <div
+                class="mt-8 pt-6 border-t border-white/20 flex justify-between items-center text-[12px] font-mono text-zinc-500"
+              >
+                <span>LAST MODIFIED: 2026_08_02</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-start gap-8 text-left">
+              <span class="text-sm font-mono tracking-[0.5em] text-zinc-200"
+                >Let's be friends, here are my contacts</span
+              >
+
+              <div class="flex flex-col gap-8">
+                <a href={`mailto:${email}`} class="group">
+                  <span
+                    class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left"
+                  >
+                    email address
+                    <svg
+                      class="w-5 h-5 transition-colors group-hover:text-zinc-500"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="m15.24 8.998 3.656-3.073v15.81H2.482C1.11 21.735 0 20.609 0 19.223V6.944l7.58 6.38a2.186 2.186 0 0 0 2.871-.042l4.792-4.284h-.003zm-5.456 3.538 1.809-1.616a2.438 2.438 0 0 1-1.178-.533L.905 2.395A.552.552 0 0 0 0 2.826v2.811l8.226 6.923a1.186 1.186 0 0 0 1.558-.024zM23.871 2.463a.551.551 0 0 0-.776-.068l-3.199 2.688v16.653h1.623c1.371 0 2.481-1.127 2.481-2.513V2.824a.551.551 0 0 0-.129-.36z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span
+                    class="text-2xl font-light hover:text-zinc-500 transition-colors"
+                    >{email}</span
+                  >
+                </a>
+
+                <a href={githubProfile} target="_blank" class="group">
+                  <span
+                    class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left"
+                  >
+                    github profile
+                    <svg
+                      class="w-5 h-5 transition-colors group-hover:text-zinc-500"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C3.42 15.07 1.95 14.7 1.95 14.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span
+                    class="text-2xl font-light hover:text-zinc-500 transition-colors"
+                    >@{githubUsername}</span
+                  >
+                </a>
+
+                <a href={instagram} target="_blank" class="group">
+                  <span
+                    class="flex items-center gap-2 text-[18px] font-mono text-zinc-400 uppercase text-left"
+                  >
+                    instagram
+                    <svg
+                      class="w-5 h-5 transition-colors group-hover:text-zinc-500"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.01 4 20 5.99 20 7.75v8.5C20 18.01 18.01 20 16.25 20h-8.5C5.99 20 4 18.01 4 16.25v-8.5C4 5.99 5.99 4 7.75 4zm9.5 1.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span
+                    class="text-2xl font-light hover:text-zinc-500 transition-colors"
+                    >@tatsu._.yama</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script is:inline>
+    window.addEventListener("load", () => {
+      const container = document.getElementById("scroll-container");
+      const loadingBar = document.getElementById("loading-bar");
+      const loadingScreen = document.getElementById("loading-screen");
+
+      const homeSection = document.getElementById("home");
+      const mainContent = document.getElementById("main-content");
+
+      const blogSection = document.getElementById("blog");
+      const blogItems = document.querySelectorAll(".blog-item");
+      const previewAnchor = document.getElementById("preview-anchor");
+
+      const projectsSection = document.getElementById("projects");
+
+      loadingBar.style.width = "100%";
+
+      setTimeout(() => {
+        loadingScreen.classList.add("hidden");
+        mainContent.classList.remove("opacity-0");
+        mainContent.classList.add("opacity-100");
+      }, 580);
+
+      document.querySelectorAll(".menu-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          const index = parseInt(item.dataset.slide);
+          container.scrollTo({
+            top: window.innerHeight * index,
+            behavior: "smooth",
           });
         });
+      });
 
-        const homeObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                homeSection.classList.add("active");
-              } else {
-                homeSection.classList.remove("active");
-              }
-            });
-          },
-          { root: container, threshold: 0.5 },
-        );
+      const homeObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              homeSection.classList.add("active");
+            } else {
+              homeSection.classList.remove("active");
+            }
+          });
+        },
+        { root: container, threshold: 0.5 },
+      );
 
-        homeObserver.observe(homeSection);
+      homeObserver.observe(homeSection);
 
-        const blogobserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                blogSection.classList.add("active");
+      const blogobserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              blogSection.classList.add("active");
 
-                const grid = blogSection.querySelector(".grid-overlay");
-                grid.style.opacity = "1";
-                grid.style.transform = "scaleY(1)";
+              const grid = blogSection.querySelector(".grid-overlay");
+              grid.style.opacity = "1";
+              grid.style.transform = "scaleY(1)";
 
-                setTimeout(() => {
-                  const uiContainer =
-                    document.getElementById("blog-ui-container");
-                  uiContainer.classList.remove("opacity-0");
-                  uiContainer.classList.add("opacity-100");
-                }, 200);
-              } else {
-                blogSection.classList.remove("active");
+              setTimeout(() => {
                 const uiContainer =
                   document.getElementById("blog-ui-container");
-                uiContainer.classList.remove("opacity-100");
-                uiContainer.classList.add("opacity-0");
-              }
-            });
-          },
-          {
-            root: container,
-            threshold: 0.6,
-          },
-        );
-
-        blogobserver.observe(blogSection);
-        document.addEventListener("keydown", (e) => {
-          const slideHeight = window.innerHeight;
-          const currentScroll = container.scrollTop;
-          const currentSlide = Math.floor(currentScroll / slideHeight);
-          const maxSlides = container.children.length - 1;
-          if (e.key === "ArrowDown" && currentSlide < maxSlides) {
-            container.scrollTo({
-              top: slideHeight * (currentSlide + 1),
-              behavior: "smooth",
-            });
-          } else if (e.key === "ArrowUp" && currentSlide > 0) {
-            container.scrollTo({
-              top: slideHeight * (currentSlide - 1),
-              behavior: "smooth",
-            });
-          }
-        });
-
-        blogItems.forEach((item) => {
-          item.addEventListener("mouseenter", () => {
-            const id = item.dataset.id;
-            const title = item.dataset.title;
-            const sub = item.dataset.sub;
-            const img = item.dataset.img;
-
-            document.getElementById("preview-img").src = img;
-            document.getElementById("preview-sub").textContent = sub;
-            document.getElementById("logId").innerHTML =
-              `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-100">${title}</span>`;
-
-            if (previewAnchor) {
-              previewAnchor.href = `/blogs/${id}`;
-            }
-          });
-        });
-
-        function navigateWithCrtBurst(e, href) {
-          if (!href) return;
-          e.preventDefault();
-
-          const tear = document.getElementById("signal-tear");
-          const lostWrap = document.getElementById("signal-lost-wrap");
-
-          document.getElementById("transition-burst")?.classList.add("active");
-          document
-            .querySelectorAll(".crt-noise, .crt-overlay")
-            .forEach((el) => el.classList.add("crt-boost"));
-
-          window.setTimeout(() => tear?.classList.add("active"), 90);
-          window.setTimeout(() => lostWrap?.classList.add("reveal"), 220);
-
-          window.setTimeout(() => {
-            window.location.href = href;
-          }, 420);
-        }
-
-        const ERROR_MESSAGES = [
-          "SIGNAL NOT FOUND",
-          "ERR_404_NOT_FOUND",
-          "SYSTEM_CORRUPTED",
-          "NULL_POINTER_EXCEPTION",
-          "DATA_STREAM_LOST",
-          "ACCESS_DENIED_0x80",
-        ];
-
-        blogItems.forEach((item) => {
-          item.addEventListener("click", (e) =>
-            navigateWithCrtBurst(e, item.getAttribute("href")),
-          );
-          item.addEventListener("mouseenter", () => {
-            const id = item.dataset.id;
-            const title = item.dataset.title;
-            const sub = item.dataset.sub;
-            const img = item.dataset.img;
-
-            const randomError =
-              ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
-
-            document.getElementById("preview-img").src = img;
-            document.getElementById("preview-sub").textContent =
-              `[${randomError}] ${sub}`;
-            document.getElementById("logId").innerHTML =
-              `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-100">${title}</span>`;
-
-            if (previewAnchor) {
-              previewAnchor.href = `/blogs/${id}`;
-            }
-          });
-        });
-
-        if (previewAnchor) {
-          previewAnchor.addEventListener("click", (e) =>
-            navigateWithCrtBurst(e, previewAnchor.getAttribute("href")),
-          );
-        }
-
-        const projectsObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              const reveal = document.getElementById("projects-reveal");
-              const grid = projectsSection.querySelector(".grid-overlay");
-
-              if (entry.isIntersecting) {
-                shuffleProjectPortals();
-                projectsSection.classList.add("active");
-
-                grid.style.opacity = "1";
-                grid.style.transform = "scaleY(1)";
-
-                setTimeout(() => {
-                  projectsSection.classList.add("portals-visible");
-                  reveal.classList.add("revealed");
-                }, 200);
-              } else {
-                projectsSection.classList.remove("active", "portals-visible");
-                reveal.classList.remove("revealed");
-
-                grid.style.opacity = "0";
-                grid.style.transform = "scaleY(0)";
-              }
-            });
-          },
-          { root: container, threshold: 0.6 },
-        );
-        projectsObserver.observe(projectsSection);
-      });
-
-      function typeWriter(element, text, speed, callback) {
-        element.style.visibility = "visible";
-        element.textContent = "";
-
-        let i = 0;
-        function type() {
-          if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-          } else if (callback) {
-            callback();
-          }
-        }
-        type();
-      }
-
-      function runTerminalTypewriter() {
-        const cmdIntroEl = document.getElementById("cli-cmd-intro");
-        const cleanParagraph = document.getElementById("clean-paragraph");
-        const musicSectionEl = document.getElementById("cli-music-section");
-        const cmdMusicEl = document.getElementById("cli-command-typed");
-        const listingEl = document.getElementById("cli-listing");
-        const finalPromptEl = document.getElementById("cli-final-prompt");
-
-        if (!cmdIntroEl || !cleanParagraph) return;
-
-        const introText =
-          "Current_Location: 大阪(Osaka, Japan)\n-\nWelcome to my virtual atelier. A central repository for projects, logs, and inspirations.\n-\nPlease take a look at my journey creating this website:\n-\n--Log:001 Creating the website.mdx\n-\nHonestly, haven't gotten around to actually writing the others yet. . . \n-\nClick on any track below to change music.";
-
-        // Step 1: Type `cat intro.txt`
-        typeWriter(cmdIntroEl, "cat intro.txt", 30, () => {
-          // Step 2: Type intro text paragraph
-          setTimeout(() => {
-            typeWriter(cleanParagraph, introText, 8, () => {
-              // Convert log string into interactive anchor element
-              cleanParagraph.innerHTML = cleanParagraph.innerHTML.replace(
-                "--Log:001 Creating the website.mdx",
-                '<a href="/blogs/001" class="text-white underline decoration-dotted underline-offset-4 hover:text-emerald-400 transition-colors cursor-pointer">--Log:001 Creating the website.mdx</a>',
-              );
-
-              // Step 3: Reveal second prompt line and type `ls -la --sort=time`
-              setTimeout(() => {
-                if (musicSectionEl)
-                  musicSectionEl.classList.add("cli-part-revealed");
-                if (!cmdMusicEl) return;
-
-                typeWriter(cmdMusicEl, "ls -la --sort=time", 30, () => {
-                  // Step 4: Reveal file listing and trailing prompt cursor sequentially
-                  setTimeout(() => {
-                    if (listingEl) listingEl.classList.add("cli-part-revealed");
-                  }, 100);
-                  setTimeout(() => {
-                    if (finalPromptEl)
-                      finalPromptEl.classList.add("cli-part-revealed");
-                  }, 300);
-                });
+                uiContainer.classList.remove("opacity-0");
+                uiContainer.classList.add("opacity-100");
               }, 200);
-            });
-          }, 150);
-        });
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("lang-toggle");
-        const menu = document.getElementById("lang-menu");
-        const current = document.getElementById("lang-current");
-        if (!toggle || !menu) return;
-
-        const saved = localStorage.getItem("selected_lang");
-        if (saved && current) current.textContent = saved;
-
-        toggle.addEventListener("click", (e) => {
-          e.stopPropagation();
-          menu.classList.toggle("hidden");
-        });
-
-        document.querySelectorAll(".lang-option").forEach((opt) => {
-          opt.addEventListener("click", () => {
-            const lang = opt.dataset.lang;
-            if (current) current.textContent = lang;
-            localStorage.setItem("selected_lang", lang);
-            menu.classList.add("hidden");
-          });
-        });
-
-        document.addEventListener("click", () => menu.classList.add("hidden"));
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const cliTracks = document.querySelectorAll(".track-cli-item");
-        cliTracks.forEach((item) => {
-          item.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const src = item.getAttribute("data-src");
-            const title = item.getAttribute("data-title");
-            const artist = item.getAttribute("data-artist");
-
-            if (window.changeTrack) {
-              window.changeTrack(src, title, artist);
+            } else {
+              blogSection.classList.remove("active");
+              const uiContainer = document.getElementById("blog-ui-container");
+              uiContainer.classList.remove("opacity-100");
+              uiContainer.classList.add("opacity-0");
             }
           });
+        },
+        {
+          root: container,
+          threshold: 0.6,
+        },
+      );
+
+      blogobserver.observe(blogSection);
+      document.addEventListener("keydown", (e) => {
+        const slideHeight = window.innerHeight;
+        const currentScroll = container.scrollTop;
+        const currentSlide = Math.floor(currentScroll / slideHeight);
+        const maxSlides = container.children.length - 1;
+        if (e.key === "ArrowDown" && currentSlide < maxSlides) {
+          container.scrollTo({
+            top: slideHeight * (currentSlide + 1),
+            behavior: "smooth",
+          });
+        } else if (e.key === "ArrowUp" && currentSlide > 0) {
+          container.scrollTo({
+            top: slideHeight * (currentSlide - 1),
+            behavior: "smooth",
+          });
+        }
+      });
+
+      blogItems.forEach((item) => {
+        item.addEventListener("mouseenter", () => {
+          const id = item.dataset.id;
+          const title = item.dataset.title;
+          const sub = item.dataset.sub;
+          const img = item.dataset.img;
+
+          document.getElementById("preview-img").src = img;
+          document.getElementById("preview-sub").textContent = sub;
+          document.getElementById("logId").innerHTML =
+            `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-100">${title}</span>`;
+
+          if (previewAnchor) {
+            previewAnchor.href = `/blog/${id}`;
+          }
         });
       });
 
-      function shuffleProjectPortals() {
-        const portals = document.querySelectorAll("[data-project-portal]");
-        const cols = 5;
-        const rows = 3;
+      function navigateWithCrtBurst(e, href) {
+        if (!href) return;
+        e.preventDefault();
 
-        let cells = [];
-        for (let r = 1; r <= rows; r++) {
-          for (let c = 1; c <= cols; c++) {
-            cells.push({ row: r, col: c });
+        const lostWrap = document.getElementById("signal-lost-wrap");
+
+        document.getElementById("transition-burst")?.classList.add("active");
+        document
+          .querySelectorAll(".crt-noise, .crt-overlay")
+          .forEach((el) => el.classList.add("crt-boost"));
+
+        window.setTimeout(() => tear?.classList.add("active"), 90);
+        window.setTimeout(() => lostWrap?.classList.add("reveal"), 220);
+
+        window.setTimeout(() => {
+          window.location.href = href;
+        }, 420);
+      }
+
+      const ERROR_MESSAGES = [
+        "SIGNAL NOT FOUND",
+        "ERR_404_NOT_FOUND",
+        "SYSTEM_CORRUPTED",
+        "NULL_POINTER_EXCEPTION",
+        "DATA_STREAM_LOST",
+        "ACCESS_DENIED_0x80",
+      ];
+
+      blogItems.forEach((item) => {
+        item.addEventListener("click", (e) =>
+          navigateWithCrtBurst(e, item.getAttribute("href")),
+        );
+        item.addEventListener("mouseenter", () => {
+          const id = item.dataset.id;
+          const title = item.dataset.title;
+          const sub = item.dataset.sub;
+          const img = item.dataset.img;
+
+          const randomError =
+            ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
+
+          document.getElementById("preview-img").src = img;
+          document.getElementById("preview-sub").textContent =
+            `[${randomError}] ${sub}`;
+          document.getElementById("logId").innerHTML =
+            `Log #${id}: <span class="text-sm ml-2 font-mono text-zinc-100">${title}</span>`;
+
+          if (previewAnchor) {
+            previewAnchor.href = `/blog/${id}`;
+          }
+        });
+      });
+
+      if (previewAnchor) {
+        previewAnchor.addEventListener("click", (e) =>
+          navigateWithCrtBurst(e, previewAnchor.getAttribute("href")),
+        );
+      }
+
+      const projectsObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const reveal = document.getElementById("projects-reveal");
+            const grid = projectsSection.querySelector(".grid-overlay");
+
+            if (entry.isIntersecting) {
+              shuffleProjectPortals();
+              projectsSection.classList.add("active");
+
+              grid.style.opacity = "1";
+              grid.style.transform = "scaleY(1)";
+
+              setTimeout(() => {
+                projectsSection.classList.add("portals-visible");
+                reveal.classList.add("revealed");
+              }, 200);
+            } else {
+              projectsSection.classList.remove("active", "portals-visible");
+              reveal.classList.remove("revealed");
+
+              grid.style.opacity = "0";
+              grid.style.transform = "scaleY(0)";
+            }
+          });
+        },
+        { root: container, threshold: 0.6 },
+      );
+      projectsObserver.observe(projectsSection);
+    });
+
+    function typeWriter(element, text, speed, callback) {
+      element.style.visibility = "visible";
+      element.textContent = "";
+
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else if (callback) {
+          callback();
+        }
+      }
+      type();
+    }
+
+    function runTerminalTypewriter() {
+      const cmdIntroEl = document.getElementById("cli-cmd-intro");
+      const cleanParagraph = document.getElementById("clean-paragraph");
+      const musicSectionEl = document.getElementById("cli-music-section");
+      const cmdMusicEl = document.getElementById("cli-command-typed");
+      const listingEl = document.getElementById("cli-listing");
+      const finalPromptEl = document.getElementById("cli-final-prompt");
+      const activeLang = (
+        localStorage.getItem("selected_lang") || "EN"
+      ).toLowerCase();
+
+      if (!cmdIntroEl || !cleanParagraph) return;
+
+      const introText =
+        "Current_Location: 大阪(Osaka, Japan)\n-\nWelcome to my virtual atelier. A central repository for projects, logs, and inspirations.\n-\nPlease take a look at my journey creating this website:\n-\n--Log:001 Creating the website.mdx\n-\nHonestly, haven't gotten around to actually writing the others yet. . . \n-\nClick on any track below to change music.";
+
+      // Step 1: Type `cat intro.txt`
+      typeWriter(cmdIntroEl, "cat intro.txt", 30, () => {
+        // Step 2: Type intro text paragraph
+        setTimeout(() => {
+          typeWriter(cleanParagraph, introText, 8, () => {
+            // Convert log string into interactive anchor element
+            cleanParagraph.innerHTML = cleanParagraph.innerHTML.replace(
+              "--Log:001 Creating the website.mdx",
+              '<a href="/blog/${activeLang}/001" class="text-white underline decoration-dotted underline-offset-4 hover:text-emerald-400 transition-colors cursor-pointer">--Log:001 Creating the website.mdx</a>',
+            );
+
+            // Step 3: Reveal second prompt line and type `ls -la --sort=time`
+            setTimeout(() => {
+              if (musicSectionEl)
+                musicSectionEl.classList.add("cli-part-revealed");
+              if (!cmdMusicEl) return;
+
+              typeWriter(cmdMusicEl, "ls -la --sort=time", 30, () => {
+                // Step 4: Reveal file listing and trailing prompt cursor sequentially
+                setTimeout(() => {
+                  if (listingEl) listingEl.classList.add("cli-part-revealed");
+                }, 100);
+                setTimeout(() => {
+                  if (finalPromptEl)
+                    finalPromptEl.classList.add("cli-part-revealed");
+                }, 300);
+              });
+            }, 200);
+          });
+        }, 150);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("lang-toggle");
+      const menu = document.getElementById("lang-menu");
+      const current = document.getElementById("lang-current");
+      if (!toggle || !menu) return;
+
+      const saved = localStorage.getItem("selected_lang");
+      if (saved && current) current.textContent = saved;
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menu.classList.toggle("hidden");
+      });
+
+      document.querySelectorAll(".lang-option").forEach((opt) => {
+        opt.addEventListener("click", () => {
+          const lang = opt.dataset.lang;
+          if (current) current.textContent = lang;
+          localStorage.setItem("selected_lang", lang);
+          menu.classList.add("hidden");
+        });
+      });
+
+      document.addEventListener("click", () => menu.classList.add("hidden"));
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const cliTracks = document.querySelectorAll(".track-cli-item");
+      cliTracks.forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const src = item.getAttribute("data-src");
+          const title = item.getAttribute("data-title");
+          const artist = item.getAttribute("data-artist");
+
+          if (window.changeTrack) {
+            window.changeTrack(src, title, artist);
+          }
+        });
+      });
+    });
+
+    function shuffleProjectPortals() {
+      const portals = document.querySelectorAll("[data-project-portal]");
+      const cols = 5;
+      const rows = 3;
+
+      let cells = [];
+      for (let r = 1; r <= rows; r++) {
+        for (let c = 1; c <= cols; c++) {
+          cells.push({ row: r, col: c });
+        }
+      }
+      const shuffledCells = cells.sort(() => Math.random() - 0.5);
+
+      portals.forEach((portal, index) => {
+        const cell = shuffledCells[index];
+        const left = (cell.col - 1) * 20 + 10;
+        const top = (cell.row - 1) * 33.33 + 16.66;
+
+        portal.style.left = `${left}%`;
+        portal.style.top = `${top}%`;
+        portal.style.transform = "translate(-50%, -50%)";
+      });
+    }
+
+    let audioStarted = false;
+
+    function trigger() {
+      if (!audioStarted && window.startBackgroundAudio) {
+        audioStarted = true;
+        window.startBackgroundAudio();
+      }
+      const intro = document.getElementById("intro-content");
+      const terminal = document.getElementById("cli-music-terminal");
+      const homeSection = document.getElementById("home");
+      const veil = document.getElementById("castleVeil");
+
+      if (intro && terminal) {
+        intro.classList.add("opacity-0", "pointer-events-none");
+
+        setTimeout(() => {
+          intro.classList.add("hidden");
+          terminal.classList.remove("hidden");
+
+          requestAnimationFrame(() => {
+            terminal.classList.remove("opacity-0");
+            terminal.classList.add("opacity-100", "triggered");
+
+            if (veil) veil.classList.add("hidden-veil");
+            if (homeSection) homeSection.classList.add("triggered");
+
+            runTerminalTypewriter();
+          });
+        }, 600);
+      }
+    }
+
+    window.addEventListener(
+      "click",
+      () => {
+        trigger();
+      },
+      { once: true },
+    );
+  </script>
+  <script>
+    import { translations } from "../lib/i18n.ts";
+
+    function updateBlogHrefs(lang) {
+      const activeLang = lang.toLowerCase();
+      let visibleCount = 0;
+
+      // 1. Filter list items by active language and update hrefs
+      document.querySelectorAll(".blog-item").forEach((item) => {
+        const itemLang = item.dataset.lang;
+        const slug = item.dataset.slug;
+
+        if (itemLang === activeLang) {
+          item.style.display = "block";
+          visibleCount++;
+          if (slug) {
+            item.setAttribute("href", `/blog/${activeLang}/${slug}`);
+          }
+        } else {
+          item.style.display = "none";
+        }
+      });
+
+      // 2. Update Total Records counter
+      const totalCountEl = document.getElementById("total-records-count");
+      if (totalCountEl) {
+        totalCountEl.textContent = `TOTAL_RECORDS: ${visibleCount}`;
+      }
+
+      // 3. Update preview anchor to match active language
+      const previewAnchor = document.getElementById("preview-anchor");
+      if (previewAnchor) {
+        const currentHref = previewAnchor.getAttribute("href");
+        if (currentHref) {
+          const slug = currentHref.split("/").filter(Boolean).pop();
+          previewAnchor.setAttribute("href", `/blog/${activeLang}/${slug}`);
+        }
+      }
+    }
+
+    function applyLanguage(lang) {
+      const dict = translations[lang] || translations.EN;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (key && dict[key]) {
+          el.textContent = dict[key];
+          if (el.hasAttribute("data-text")) {
+            el.setAttribute("data-text", dict[key]);
           }
         }
-        const shuffledCells = cells.sort(() => Math.random() - 0.5);
+      });
 
-        portals.forEach((portal, index) => {
-          const cell = shuffledCells[index];
-          const left = (cell.col - 1) * 20 + 10;
-          const top = (cell.row - 1) * 33.33 + 16.66;
+      updateBlogHrefs(lang);
+      localStorage.setItem("selected_lang", lang);
+    }
 
-          portal.style.left = `${left}%`;
-          portal.style.top = `${top}%`;
-          portal.style.transform = "translate(-50%, -50%)";
+    document.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("selected_lang") || "EN";
+      const current = document.getElementById("lang-current");
+      if (current) current.textContent = saved;
+      applyLanguage(saved);
+
+      document.querySelectorAll(".lang-option").forEach((opt) => {
+        opt.addEventListener("click", () => {
+          const lang = opt.dataset.lang;
+          if (current) current.textContent = lang;
+          applyLanguage(lang);
+          document.getElementById("lang-menu")?.classList.add("hidden");
         });
-      }
-
-      let audioStarted = false;
-
-      function trigger() {
-        if (!audioStarted && window.startBackgroundAudio) {
-          audioStarted = true;
-          window.startBackgroundAudio();
-        }
-        const intro = document.getElementById("intro-content");
-        const terminal = document.getElementById("cli-music-terminal");
-        const homeSection = document.getElementById("home");
-        const veil = document.getElementById("castleVeil");
-
-        if (intro && terminal) {
-          intro.classList.add("opacity-0", "pointer-events-none");
-
-          setTimeout(() => {
-            intro.classList.add("hidden");
-            terminal.classList.remove("hidden");
-
-            requestAnimationFrame(() => {
-              terminal.classList.remove("opacity-0");
-              terminal.classList.add("opacity-100", "triggered");
-
-              if (veil) veil.classList.add("hidden-veil");
-              if (homeSection) homeSection.classList.add("triggered");
-
-              runTerminalTypewriter();
-            });
-          }, 600);
-        }
-      }
-
-      window.addEventListener(
-        "click",
-        () => {
-          trigger();
-        },
-        { once: true },
-      );
-    </script>
-  </body>
+      });
+    });
+  </script>
 </html>

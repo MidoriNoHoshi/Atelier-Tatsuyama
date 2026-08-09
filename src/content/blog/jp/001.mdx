@@ -1,0 +1,309 @@
+---
+title: ウェブサイトの制作
+sub: このウェブサイトが制作されたプロセス。
+description: このウェブサイトが制作されたプロセス。
+pubDate: 2026-08-03
+img: ../../../assets/log1.jpg
+overlayImg: ../../../assets/cellsbackground.png
+---
+
+import { Image } from "astro:assets";
+import ImageGroup from "../../../components/MDXImage.astro";
+import Gallery from "../../../components/gallery.astro";
+import TimelineItem from "../../../components/timelineItems.astro";
+import IFrameDemo from "../../../components/IFrameDemo.astro";
+
+import silverKnightsMarch from "../../../assets/01CreationBlog/23_i01.png";
+import smallChenRain from "../../../assets/01CreationBlog/theory-chen-koschei-and-chixiao-the-sword-of-kings-v0-9fjr6kv1etx41.webp";
+import burningCityPenguin from "../../../assets/01CreationBlog/2026-08-03-230120_hyprshot.png";
+import burningroad from "../../../assets/01CreationBlog/2026-08-03-230147_hyprshot.png";
+import undertides from "../../../assets/01CreationBlog/maxresdefault.jpg";
+import lightUndertides from "../../../assets/01CreationBlog/Ac18_14.png";
+import emperorBlade from "../../../assets/01CreationBlog/118011335_p0.jpg";
+import collapsingBlade from "../../../assets/01CreationBlog/118011335_p1.jpg";
+
+import impulseGundamCockpit from "../../../assets/01CreationBlog/ImpulseGundam_cockpit_Shin.png";
+import rezel_launch from "../../../assets/01CreationBlog/Rezel_launch.gif";
+import zakuSeedAttack from "../../../assets/01CreationBlog/swappy-20250118_203800.png";
+import zakuSeedSpace from "../../../assets/01CreationBlog/swappy-20250118_203905.png";
+
+import zaku_lunamaria from "../../../assets/01CreationBlog/Hg_Gunner_Zaku_Lunamaria.jpg";
+import gundam_virtue from "../../../assets/01CreationBlog/Gundam_Virtue_Burst_Mode_Day.webp";
+
+import frameworkBrainstorm from "../../../assets/01CreationBlog/Framework_Brainstorm.JPG";
+import initialBrainstorm from "../../../assets/01CreationBlog/Initial_Brainstorm.JPG";
+
+import cellsbackground from "../../../assets/01CreationBlog/cells_background.png";
+import cellsbackgroundUnedited from "../../../assets/01CreationBlog/cells_background_unedited.jpg";
+
+import fuzzyText from "../../../assets/01CreationBlog/reactbits_fuzzytext.gif";
+import EarlyPlan from "../../../assets/01CreationBlog/EarlyPlan.JPG";
+import EarlyPlan1 from "../../../assets/01CreationBlog/EarlyPlan1.JPG";
+import EarlyPlan2 from "../../../assets/01CreationBlog/EarlyPlan2.JPG";
+import graphView from "../../../assets/01CreationBlog/obsidianGraphView.png";
+import sideScroller from "../../../assets/01CreationBlog/sideScroller.gif";
+import MSRBlog from "../../../assets/01CreationBlog/MonsterSirenRecordsBlogInspiration.png";
+import MSRMusic from "../../../assets/01CreationBlog/MonsterSirenRecordsMusicPlayer.png";
+import MSR1Screenshot from "../../../assets/01CreationBlog/msr1stscreenshot.png";
+import MSR2Screenshot from "../../../assets/01CreationBlog/msr2ndscreenshot.png";
+import ZZZLoading from "../../../assets/01CreationBlog/ZZZcrttransitionLoading.png";
+import zzz_tv_mode from "../../../assets/01CreationBlog/zzz_tv_mode.jpg";
+
+import homeOriginal from "../../../assets/HomeOriginal.JPG";
+import homeEdited from "../../../assets/HomeLowerGradient2.png";
+
+import cBoulevard from "../../../assets/clearstairs.jpg";
+import dBoulevard_original from "../../../assets/dizzystairs.jpg";
+import dBoulevardL from "../../../assets/dizzystairsLpiece.png";
+import dBoulevardC from "../../../assets/dizzystairsMpiece.png";
+import dBoulevardR from "../../../assets/dizzystairsRpiece.png";
+import projectsOriginal from "../../../assets/Projects.JPG";
+import projectsE from "../../../assets/ProjectsRemoved.png";
+
+import log2img from "../../../assets/log2.jpg";
+import log3img from "../../../assets/log3.jpg";
+import contactsBG from "../../../assets/contactBg.png";
+
+## 動機
+
+<TimelineItem section="Motivation">
+  <Gallery columns={4}>
+    <Image
+      src={silverKnightsMarch}
+      alt="Silver Knights March Kazimierz"
+      quality="high"
+    />
+    <Image src={smallChenRain} alt="Rain and grime" quality="high" />
+    <Image src={burningCityPenguin} alt="Feirce Storms" quality="high" />
+    <Image src={burningroad} alt="Misery and choas" quality="high" />
+    <Image src={undertides} alt="Undertides art" quality="high" />
+    <Image
+      src={lightUndertides}
+      alt="Arknight's massive structures are so cool"
+      quality="high"
+    />
+    <Image src={emperorBlade} alt="Ashy and menacing" quality="high" />
+    <Image
+      src={collapsingBlade}
+      alt="Invokes a sense of dread"
+      quality="high"
+    />
+  </Gallery>
+  Arknights art
+  <Gallery columns={2}>
+    <Image src={rezel_launch} alt="Launch from ship" quality="high" />
+    <Image
+      src={impulseGundamCockpit}
+      alt="Impulse Gundam Cockpit"
+      quality="high"
+    />
+    <Image
+      src={zakuSeedAttack}
+      alt="Zaku attacking orb colony"
+      quality="high"
+    />
+    <Image src={zakuSeedSpace} alt="Zaku attack in space" quality="high" />
+    Gundam Seed Cockpit scenes
+  </Gallery>
+</TimelineItem>
+
+この「アトリエ」ウェブサイトの発端は、自身のプロジェクトを展示するために個人ポートフォリオ型のウェブサイトを作成した父との小さな意見の食い違いにさかのぼる。
+
+父のウェブサイトは非常に簡素で視覚的な魅力に欠けると判断し、率直に批評を伝えたところ、父はいつものように「批判するのは簡単だ」と返答した。彼の意図は要するに以下の通りである。
+
+    [!warning] 実際に自分で制作することは遥かに困難である
+
+要するに、父は私に独自のウェブサイトを作成するよう挑戦を突きつけたのであり、私はそれを受諾し、より優れたウェブサイトを構築することを約束した。
+当時、私はアークナイツのファンであり、そのスタイルに影響を受けた作品を制作したいと考えていたため、アークナイツのダークでグランジなテック調のデザインを模倣するという構想が生まれた。
+
+しかし、私が生まれる前から両親はガンダムの熱心なファンであり、その影響で私もファンとなった。ガンダムの美学を取り入れる計画は最初から明確にあったわけではないが、常に念頭に存在していた。特にコックピットの描写シーンである。\
+
+（なお、私のお気に入りはGN-005 ガンダムヴァーチェとHG ガナーザクウォーリア（ルナマリア専用機）である。要するに、大型の火器を好む傾向がある）
+
+
+<Gallery columns={2} class="not-timeline">
+  <Image
+    src={gundam_virtue}
+    alt="GN-005 Virtue piloted by Tieria Erde"
+    quality="high"
+  />
+  <Image
+    src={zaku_lunamaria}
+    alt="Hg Gunner Zaku piloted by Lunamaria Hawke"
+    quality="high"
+  />
+</Gallery>
+
+## 美学・デザイン言語 
+
+<TimelineItem section="Aesthetics">
+  <Image src={MSRMusic} alt="MSR Music Player" quality="high" />
+
+<Gallery columns={2}>
+  <Image src={MSRBlog} alt="MSR Blog page layout" quality="high" />
+  <Image src={ZZZLoading} alt="Crt loading" quality="high" />
+</Gallery>
+<Image src={zzz_tv_mode} alt="ZZZ crt array" quality="high" />
+
+</TimelineItem>
+
+アークナイツ（HYPERGRYPH）およびゼンレスゾーンゼロ（MiHoYo）は、非常に優れたビジュアル言語とスタイルを有している。ゼンレスゾーンゼロにおいては特にCRTモニター／アレイの表現に強く惹きつけられた。
+
+> [!info] アークナイツ／HYPERGRYPHに関する以下の3つのウェブサイトを頻繁に参照・利用した:
+>
+> - [https://monster-siren.hypergryph.com/](https://monster-siren.hypergryph.com/)
+> - [https://www.gryphline.com/en-us/home](https://www.gryphline.com/en-us/home)
+> - [https://www.arknights.jp/](https://www.arknights.jp/)
+> - [https://zenless.hoyoverse.com/en-us/...](https://zenless.hoyoverse.com/en-us/main?utm_source=web&utm_medium=landingpage&utm_campaign=logo)>
+
+
+| デザイン要素                    | 主なリファレンス                  | 目標とする実装 Execution                                                      |
+| :-------------------------------- | :--------------------------------- | :-------------------------------------------------------------------- |
+| **グリッドおよび空間レイアウト**         | Monster-Siren-Records + Hypergryph | ダーク調の背景、細い境界線グリッド、高コントラストのテキスト|
+| **ビューポートのポストプロセス**      | ゼンレスゾーンゼロ                  | アナログCRT走査線、フリッカー遷移、微細なノイズオーバーレイ      |
+| **UIコンポーネント**                 | アークナイツ（ゲーム本編）                   | カスタムカーソル、発光ステータスインジケーター、等幅フォントのメタデータ
+        |
+| **ローディング画面 + 音楽プレイヤー** | Monster-Siren-Records              |                                                                       |
+
+## アーキテクチャとイテレーション
+
+<TimelineItem section="Architecture + Iteration">
+  <Gallery columns={3}>
+    <Image
+      src={initialBrainstorm}
+      alt="Messy brainstorming I know"
+      quality="high"
+    />
+    <Image src={EarlyPlan} alt="EarlyPlan" quality="high" />
+    <Image src={EarlyPlan2} alt="EarlyPlan" quality="high" />
+  </Gallery>
+  The initial brainstorming in the Library
+
+  <Gallery columns={3}>
+    <Image
+      src={frameworkBrainstorm}
+      alt="Framework Brainstorming"
+      quality="high"
+    />
+    <Image src={EarlyPlan1} alt="EarlyPlan" quality="high" />
+    <Image src={graphView} alt="GraphView of programming notes" quality="high" />
+</Gallery>
+<Gallery columns={2}>
+    <Image
+      src={MSR1Screenshot}
+      alt="Screenshot from MSR"
+      quality="high"
+    />
+    <Image src={MSR2Screenshot} alt="Screenshot of discolesium from MSR" quality="high" />
+  </Gallery>
+</TimelineItem>
+
+右側に示したブレインストーミングの記録は、ウェブサイト構築の初日に作成されたものの残存物である。
+当時すでに「Reactbits」の存在を認知しており、そのコンポーネント、特に「Fuzzy Text」をウェブサイトの基盤として利用することを想定していた。
+
+<Image
+  src={fuzzyText}
+  alt="Reactbits fuzzy-text element"
+  quality="high"
+  class="not-timeline"
+/>
+
+クリーンなデジタル空間を好むため、当初はシンプルかつ洗練された個人ウェブサイトの構築を目指していた。しかし、頻繁に利用していたお気に入りのウェブサイトであるMonster-Siren-Records（アークナイツの音楽配信プラットフォーム）は、ゲームのアートスタイルを反映した動的かつ視覚的な要素で構成されていた。
+
+アークナイツはモバイルゲームでありながら、ほぼ全てのジャンルにおいて優れた楽曲を制作しており、新曲の発表には常に強い関心を寄せていた。アートスタイルおよび美学的観点においても非常に洗練されているため、オンラインでHTMLおよびCSSの講座を受講する過程で、さらに詳細な調査を行った。
+
+---
+
+HTML、JavaScript、CSSのオンライン初心者レッスンを完了した後、バージョン1を作成した。
+
+<IFrameDemo
+  src="/demos/Version1/index.html"
+  title="Version 1 - Local Static Build"
+  height="480px"
+/>
+
+---
+
+この段階で、HYPERGRYPHのMonster-Sirenウェブサイトから可能な限り多くの要素を取り入れる方針へと転換し、黒背景と横スクロールを採用した構造から開始した。
+
+HYPERGRYPHのウェブサイトでは、マウスのスクロール入力が水平スクロールへ変換される仕様となっており、これを再現する試みに多大な時間を費やした。
+
+最終的にスクロール入力を水平方向に変換することで概ね動作させることができたものの、この処理により水平スワイプ動作が阻害される問題が発生した。適切なスクロール操作が妨げられることによる操作性の低下を避けるため、最終的にこの機能は除去した。
+
+Monster-Siren-Recordsを模倣した横スクロールの動的検証記録のみが手元に残されている。
+
+<Image
+  src={sideScroller}
+  alt="Side scroller demo"
+  class="not-timeline h-auto my-4 border border-white/10"
+  width={780}
+/>
+
+また、Monster-Siren-Recordsと同様に画面左上にオーディオビジュアライザーを配置することを構想し、その実装処理はClaudeに任せた。
+
+その後、1つのプロンプトからウェブサイトを生成するHugging Faceの「Deepsite AI」の存在を知り、Monster-Siren-Recordsの再現を試みる過程で利用枠を消費した。
+生成されたウェブサイトは洗練されていたものの、目的としていた方向性とは異なっていたため、走査線、クロスヘアカーソル、メニュー項目、および「Hello Friend」テキストの揺れ処理のロジックのみを抽出して利用した。多数のウェブサイトやポートフォリオを観察した結果、AI生成によるウェブサイトは極めて汎用的であり、3Dアニメーションを含むものも含め、独自性に欠ける傾向があることが判明した。
+
+ウェブサイトの制作を開始してから数か月後、ゼンレスゾーンゼロがリリースされた。広告において歪み効果と独特のデザインが融合されていた点に強い関心を持った。
+Bangbooを用いたCRTモニターアレイ／ナビゲーションの構造は非常に優れた概念であり、プロジェクトへの導入を決定した。同時にリリースされた『Balatro』（優れたCRTエフェクトを備える）の影響もあり、CRTによる歪み効果に対する関心が深まった（Cool Retro Termの利用を開始するに至った）。
+
+
+## 撮影素材からアセットへ
+
+<TimelineItem section="Photography -> Assets">
+  <Gallery columns={2}>
+    <Image src={dBoulevard_original} alt="1st Photo" quality="high" />
+    <Image src={cBoulevard} alt="2nd night's photo" quality="high" />
+  </Gallery>
+</TimelineItem>
+<TimelineItem section="Photography -> Assets">
+  <Gallery columns={2}>
+    <Image src={projectsOriginal} alt="TeamLab Borderless" quality="high" />
+    <Image src={projectsE} alt="Removed Friends" quality="high" />
+  </Gallery>
+  <Gallery columns={3}>
+    <Image src={log2img} alt="002Log image" quality="high" />
+    <Image src={log3img} alt="003Log image" quality="high" />
+    <Image src={contactsBG} alt="Contacts Background" quality="high" />
+  </Gallery>
+  <Gallery columns={2}>
+    <Image
+      src={cellsbackgroundUnedited}
+      alt="Solar Panel Cells"
+      quality="high"
+    />
+    <Image src={cellsbackground} alt="Blogs Background Layer" quality="high" />
+  </Gallery>
+</TimelineItem>
+
+背景として使用されている画像はすべて、自身が所有するスマートフォンのカメラ（AQUOS Sense 9）を用いて撮影されたものである。
+この機器は特定の条件下において独特の撮影挙動を示し、撮影された画像に意図しない光学的な効果をもたらす場合がある。
+具体的には、撮影操作を行った際、画面上ではキャプチャが完了したように表示されるものの、センサーの露光が継続している場合がある。その結果、端末を移動させた際に絞りが閉じるまでの数秒間の動きが記録され、初期表示とは異なるブレ生じた画像が生成される。
+
+例として：
+ブレが生じた階段の写真と、その翌夜に撮影した鮮明な写真が存在する。
+このブレの生じた階段の写真を特定セクションに使用することを決定した。当初の構想では、壁面を除去・傾斜させ、不透明度のグラデーションを適用することで無限に続く奥行きを表現し、ビューポート幅の3分の1の中央領域にブログへのアクセスポイントを配置することを計画していた。
+しかし、GIMPでの編集技術の制限もあり、意図した視覚効果が得られなかった。
+そのため、画像を3つのパーツに分割し、独自のトランジションアニメーションとして配置する仕様へと変更した。
+
+<Gallery columns={3} class="not-timeline">
+  <Image src={dBoulevardL} alt="Left-side" quality="high" />
+  <Image src={dBoulevardC} alt="Centre" quality="high" />
+  <Image src={dBoulevardR} alt="Right-side" quality="high" />
+</Gallery>
+
+ホームセクションについては、当初、大阪の建造物のワイヤーフレーム、あるいは大阪城をアークナイツ風にスタイライズした画像を配置することを計画し、Gemini Nano Bananaによる生成を試みたものの、十分な結果が得られなかったため、導入用の文言を記述する形式に変更した。
+その後、配置を側面に移動させた際、自ら撮影した鮮明な大阪城の写真を使用することが最も適切であるとの結論に至った。
+
+<Image
+  src={homeOriginal}
+  alt="Osaka Castle"
+  class="not-timeline h-auto my-4 border border-white/10"
+  quality="high"
+/>
+<Image
+  src={homeEdited}
+  alt="Partial opacity"
+  class="not-timeline border border-white/10"
+  quality="high"
+/>

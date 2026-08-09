@@ -1,27 +1,32 @@
 ---
 import { getCollection, render } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import "../../styles/global.css";
-import AudioVisualizer from "../../components/AudioVisualizer.astro";
+import Layout from "../../../layouts/Layout.astro";
+import "../../../styles/global.css";
+import AudioVisualizer from "../../../components/AudioVisualizer.astro";
 
-import defaultBaseImg from "../../assets/log1.jpg";
-import defaultOverlayImg from "../../assets/cellsbackground.png";
+import defaultBaseImg from "../../../assets/log1.jpg";
+import defaultOverlayImg from "../../../assets/cellsbackground.png";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
-  return posts.map((post) => ({
-    params: { id: post.id },
-    props: { post },
-  }));
+  return posts.map((post) => {
+    // post.id is en/001", "jp/001", "nor/001"
+    const parts = post.id.split("/");
+    const lang = parts[0];
+    const slug = parts[1];
+    return {
+      params: { lang: lang.toLowerCase(), id: slug }, // Creates /blog/en/001, /blog/jp/001, etc.
+      props: { post, lang: lang.toUpperCase(), slug },
+    };
+  });
 }
 
-const { post } = Astro.props;
+const { post, lang, slug } = Astro.props;
 const { Content } = await render(post);
 const { title, sub, description, pubDate, img, overlayImg } = post.data;
 
 const subtitle = sub || description || "NO_DATA_ARCHIVED";
 
-// Compact regex to prevent Neovim Tree-sitter parser breakage in frontmatter
 const rawContent = post.body || "";
 const cleanText = rawContent
   .replace(/import\s+.*?;|<[^>]*>|#+\s+|[*_~`]|>\s+/g, "")
@@ -95,12 +100,18 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
         <!-- TOP-LEFT: AUDIO VISUALIZER & LANGUAGE BUTTON -->
         <div class="flex items-center gap-4">
           <AudioVisualizer />
-          <div class="relative" id="lang-switcher">
+          <!-- Inside src/pages/blog/[id].astro header -->
+          <div
+            class="relative"
+            id="lang-switcher"
+            data-slug={slug}
+            data-current-lang={lang}
+          >
             <button
               id="lang-toggle"
               class="text-[10px] font-mono tracking-widest uppercase border border-white/10 px-3 py-1 hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
             >
-              [ LANG: <span id="lang-current">EN</span> ]
+              [ LANG: <span id="lang-current">{lang}</span> ]
             </button>
             <div
               id="lang-menu"
@@ -131,7 +142,7 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
           class="text-zinc-500 hover:text-white group transition-colors"
         >
           <span
-            class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+            class="tracking-[0.3em] uppercase text-[10px]"
             data-text="[!] RETURN_TO_ARCHIVE_[HOME]"
           >
             [!] RETURN_TO_ARCHIVE_[HOME]
@@ -169,7 +180,7 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
               </div>
 
               <h1
-                class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 chromatic-text text-white"
+                class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-3 text-white"
                 data-text={title}
               >
                 {title}
@@ -221,7 +232,7 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
           class="text-zinc-500 hover:text-white mb-12 inline-block group transition-colors"
         >
           <span
-            class="chromatic-text tracking-[0.3em] uppercase text-[10px]"
+            class="tracking-[0.3em] uppercase text-[10px]"
             data-text="[!] RETURN_TO_ARCHIVE_[BLOGS]"
           >
             [!] RETURN_TO_ARCHIVE_[BLOGS]
@@ -415,5 +426,27 @@ const bgOverlaySrc = overlayImg ? overlayImg.src : defaultOverlayImg.src;
         .querySelectorAll(".crt-boost")
         .forEach((el) => el.classList.remove("crt-boost"));
     }, 260);
+  });
+</script>
+
+<script>
+  import { translations } from "../../../lib/i18n.ts";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const switcher = document.getElementById("lang-switcher");
+    const slug = switcher?.dataset.slug;
+    const currentLang = switcher?.dataset.currentLang?.toLowerCase();
+
+    document.querySelectorAll(".lang-option").forEach((opt) => {
+      opt.addEventListener("click", () => {
+        const selectedLang = opt.dataset.lang.toLowerCase();
+        const currentSlug = window.location.pathname.split("/").pop();
+
+        localStorage.setItem("selected_lang", selectedLang.toUpperCase());
+
+        // Redirect to the corresponding language post
+        window.location.href = `/blog/${selectedLang}/${currentSlug}`;
+      });
+    });
   });
 </script>

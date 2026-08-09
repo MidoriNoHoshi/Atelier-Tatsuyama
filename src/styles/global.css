@@ -19,39 +19,6 @@ body {
   width: 100vw;
 }
 
-.chromatic-text {
-  position: relative;
-  display: inline-block;
-  color: inherit; /* Respects text-zinc-500 or low opacity classes */
-} /* Creating the Red and Blue chromatic layers */
-.chromatic-text::before,
-.chromatic-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.6; /* Keeps it subtle */
-  z-index: -1;
-} /* The Red Shift */
-.chromatic-text::before {
-  color: #ff0000;
-  transform: translateX(-1.5px);
-  mix-blend-mode: screen; /* Blends colors back to white where they overlap */
-} /* The Blue Shift */
-.chromatic-text::after {
-  color: #0000ff;
-  transform: translateX(1.5px);
-  mix-blend-mode: screen;
-}
-.chromatic-text:hover::before {
-  animation: glitch-1 0.1s infinite;
-}
-.chromatic-text:hover::after {
-  animation: glitch-2 0.1s infinite reverse;
-}
 .loading-screen {
   position: fixed;
   inset: 0;
@@ -342,21 +309,105 @@ body {
   position: relative;
   transition: color 0.3s ease;
 }
-@keyframes textBlink {
-  0%,
+
+@keyframes lightFlickerStart {
+  0% {
+    opacity: 0;
+  }
+  1% {
+    opacity: 0.9;
+  }
+  2% {
+    opacity: 0.05;
+  }
+  3.5% {
+    opacity: 1;
+  }
+  5% {
+    opacity: 0;
+  }
+  7% {
+    opacity: 0.85;
+  }
+  8.5% {
+    opacity: 0.1;
+  }
+  10% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  22% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+  }
+  45.5% {
+    opacity: 0.2;
+  }
+  46% {
+    opacity: 0.9;
+  }
+  46.5% {
+    opacity: 0.1;
+  }
+  47% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  75.5% {
+    opacity: 0.5;
+  }
+  76% {
+    opacity: 1;
+  }
   100% {
     opacity: 1;
   }
-  50% {
-    opacity: 0.1;
+}
+
+/* Steady State, 4s infinite loop */
+@keyframes lightFlickerLoop {
+  0%,
+  68%,
+  70.2%,
+  88%,
+  89.2%,
+  100% {
+    opacity: 1;
+  }
+  69% {
+    opacity: 0.3;
+  }
+  69.5% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.15;
+  }
+  88.5% {
+    opacity: 0.4;
   }
 }
+
 .menu-item:hover {
-  color: #ffffff; /* color: transparent; */
+  color: #ffffff;
   text-shadow: 0 0 24px rgba(255, 255, 255, 1);
-  animation: textBlink 0.01s steps(2, start) infinite; /* Flickering (glitchy?) look for menu-items by blinking super fast */
+  animation:
+    lightFlickerStart 1.8s steps(1, end) forwards,
+    lightFlickerLoop 4s steps(1, end) 1.8s infinite;
   cursor: pointer;
-  filter: url(#chromatic-aberration) drop-shadow(0 0 2px rgba(255, 255, 255, 1));
+  drop-shadow: 0 0 2px rgba(255, 255, 255, 1);
 }
 .main-bio {
   transition: transition 1.2s;
@@ -712,107 +763,6 @@ body {
   100% {
     opacity: 0.9;
   }
-}
-
-/* ============================================================
-   SIGNAL TEAR MASK — reusable analog sync-failure overlay.
-   Not a "glitch explosion": mostly still, with rare, brief
-   horizontal slips, like a CRT losing vertical hold or a VHS
-   tape hitting a bad tracking patch.
-
-   Two ways to use the same pattern (kept in one CSS variable so
-   the gradient definition only exists once):
-     1. Fixed full-screen layer: <div class="signal-tear"></div>,
-        toggled with the `.active` modifier (used during page
-        transitions).
-     2. Local hover variant: add `.signal-tear-surface` to any
-        `relative`-friendly element (e.g. a blog link) and its own
-        ::after picks up the tear on :hover — no extra DOM node.
-   ============================================================ */
-:root {
-  --signal-tear-band: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.05) 0px,
-    rgba(255, 255, 255, 0.05) 2px,
-    transparent 2px,
-    transparent 14px,
-    rgba(255, 255, 255, 0.1) 14px,
-    rgba(255, 255, 255, 0.1) 17px,
-    transparent 17px,
-    transparent 38px
-  );
-  --signal-tear-band-size: 76px;
-  --signal-tear-speed: 2.6s;
-}
-.signal-tear {
-  position: fixed;
-  inset: 0;
-  z-index: 10002;
-  pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: overlay;
-  background-image: var(--signal-tear-band);
-  background-size: 100% var(--signal-tear-band-size);
-  animation:
-    signalTearScroll var(--signal-tear-speed) linear infinite,
-    signalTearJitter 5s steps(1) infinite;
-  animation-play-state: paused;
-  transition: opacity 0.45s ease;
-}
-.signal-tear.active {
-  opacity: 0.8;
-  animation-play-state: running;
-}
-@keyframes signalTearScroll {
-  0% {
-    background-position-y: 0;
-  }
-  100% {
-    background-position-y: var(--signal-tear-band-size);
-  }
-}
-@keyframes signalTearJitter {
-  /* Discrete, infrequent horizontal slips — sync failure, not chaos */
-  0%,
-  82%,
-  100% {
-    transform: translateX(0);
-  }
-  84% {
-    transform: translateX(5px);
-  }
-  86% {
-    transform: translateX(-3px);
-  }
-  88% {
-    transform: translateX(0);
-  }
-  91% {
-    transform: translateX(-4px);
-  }
-  93% {
-    transform: translateX(0);
-  }
-}
-.signal-tear-surface {
-  position: relative;
-}
-.signal-tear-surface::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: overlay;
-  background-image: var(--signal-tear-band);
-  background-size: 100% var(--signal-tear-band-size);
-  transition: opacity 0.3s ease;
-}
-.signal-tear-surface:hover::after {
-  opacity: 0.7;
-  animation:
-    signalTearScroll var(--signal-tear-speed) linear infinite,
-    signalTearJitter 5s steps(1) infinite;
 }
 
 /* ============================================================

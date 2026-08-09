@@ -1,0 +1,29 @@
+---
+title: Creating JaptoAnki
+sub: Why and journey of JaptoAnki
+description: Japanese -> anki cards program
+pubDate: 2026-08-10
+img: ../../../assets/coolLog.png
+overlayImg: ../../../assets/cellsbackground.png
+---
+
+I loved RTK, and finished it within a couple of months of starting it. And as I was practicing with the community made anki decks for daily practice I became increasingly frustrated that the Heisig stories weren't displayed in the cards.
+Eventually I found this deck: in which has hocanhlinks for each kanji (these links, have the koohii community stories made for going through the RTK book).
+And that was amazing, but I really disliked having to click on the links manually each time and all this micro-friction in just trying to memorise and practice some Kanji.
+Also, all of these decks were missing a crucial point which was the actual reading of the kanji. Sometimes the kun-yomi and on-yomi would be there (but what use is there in having those if there's no word there?) This proved to be quite a challenge actually because the script now needs jaconv (or an alternative), fugashi, tqdm, etc to provide the actual reading.
+And the reading would have to be displayed as furigana (which is usually easy to display in Anki, but when the html for the cards starts to get complicated was a enormous pain in the ass)
+
+Anyway, I eventually vibe-coded the beginnings of JaptoAnki which was this simple python script which would use Manga-OCR (cause I didn't know about Mocuro until wayyy later unfortunately) to extract kanji compound words from manga.
+This script sucked so unbelievably bad, because mangaOCR is only meant to recognise manga text in a bounding box. As in, not the entire fucking page all together. I ignored this obvious CRUCIAL issue thinking that it was a issue with my code.
+So I made the script connect to Anki through ankiconnect so that the extracted kanji would go straight into my anki deck.
+The cards themselves I defined? created the models? in anki with hocanhlinks (basically copying the other deck from earlier) for each kanji within the word / sentence.
+
+Of course, I never actually used the script and just kept trying to make it work (STILL USING MANGA-OCR ON THE ENTIRE PAGE BTW), adding features like making new decks and adding tags through flags, a user .txt file in ~/ where users could list their "mastered kanji" so that anything extracted from manga which contained only kanji within "mastered kanji" would be ignored, and "mastered kanji" would never produce hocanhlinks.
+
+It was just about now that I finally looked into Manga-OCR and found the obvious major issue.
+So I looked about, and found Mokuro-OCR and was devastated to find that the people at Mokuro made pretty much exactly what I was looking for in an OCR.
+After switching to Mokuro and adding google translate capability (which, to avoid paying, the script actually bundles 10 sentences / words together and sends to google-translate for translation at a time, before waiting and repeating with the next batch) the script started becoming an actual usable tool.
+
+I changed from a cli tool to something more UI like with questionary, allowing for file navigation, and choosing of files that way.
+The issue with navigating with questionary is that any directory with < 36? options can't use the keyboard shortcuts meaning you have to use the arrow keys painfully slowly.
+Questionary remained for quite a while before I asked an AI to vibecode me a yazi-style navigation which it did perfectly first try. . . fuck

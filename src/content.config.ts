@@ -11,11 +11,12 @@ const blog = defineCollection({
       description: z.string().optional(),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
+      lang: z.enum(["EN", "JP", "NOR"]).default("JP"),
       tags: z.array(z.string()).optional(),
       draft: z.boolean().optional(),
       img: image().optional(),
-      overlayImg: image().optional(), // <-- ADD THIS
-      wordCount: z.number().optional(), // <-- ADD THIS
+      overlayImg: image().optional(),
+      wordCount: z.number().optional(),
     }),
 });
 
